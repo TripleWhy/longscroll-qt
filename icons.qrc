@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="icon1">icons/73_zps5aa404e5.png</file>
+        <file alias="icon2">icons/admin.png</file>
+        <file alias="icon3">icons/Administrator2.png</file>
+        <file alias="icon4">icons/fJ6pCVmKan.png</file>
+        <file alias="icon5">icons/radiationv.png.jpe</file>
+        <file alias="icon6">icons/sasklanadmin.png.jpe</file>
+        <file alias="icon7">icons/security.gif</file>
+    </qresource>
+</RCC>
