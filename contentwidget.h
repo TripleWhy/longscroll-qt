@@ -8,7 +8,7 @@ class NavigatorWidget;
 class ImgInfo;
 class ContentWidgetItemFactory;
 
-#define LAZY_ALIGN 1
+#define CONTENTWIDGET_LAZY_ALIGN 1
 class ContentWidget : public NotifyableScrollContentWidget
 {
 	Q_OBJECT
@@ -27,7 +27,7 @@ private:
 		QList<ItemInfo> items;
 		int y = 0;
 		bool displaying = false;
-#if LAZY_ALIGN
+#if CONTENTWIDGET_LAZY_ALIGN
 		bool aligned = false;
 #endif
 	};

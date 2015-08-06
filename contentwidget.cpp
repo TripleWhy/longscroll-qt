@@ -155,7 +155,7 @@ void ContentWidget::updateRows()
 		if (row.displaying)
 			continue;
 		row.displaying = true;
-#if LAZY_ALIGN
+#if CONTENTWIDGET_LAZY_ALIGN
 		if (!row.aligned)
 			alignRow(row);
 #endif
@@ -186,7 +186,6 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 	}
 	rowWidget->setGeometry(0, rowInfo.y, visibleRect.width(), rowHeight);
 
-//	for (ItemInfo const & item : rowInfo.items)
 	for (int i = 0; i < rowInfo.items.size(); ++i)
 	{
 		ItemInfo const & item = rowInfo.items[i];
@@ -308,11 +307,11 @@ void ContentWidget::calculateSize()
 			{
 				item.x = rowWidth + xSpacing;
 				row.items.append(item);
-#if LAZY_ALIGN
+#if CONTENTWIDGET_LAZY_ALIGN
 				row.aligned = !align;
 #else
 				if (align)
-					alignRow(row, visibleRect.width());
+					alignRow(row);
 #endif
 				y += rowHeight + ySpacing;
 				rowInfosNew.append(row);
@@ -322,7 +321,7 @@ void ContentWidget::calculateSize()
 			}
 			else	//underfill
 			{
-#if LAZY_ALIGN
+#if CONTENTWIDGET_LAZY_ALIGN
 				row.aligned = !align;
 #else
 				if (align)
@@ -348,7 +347,7 @@ void ContentWidget::calculateSize()
 	size.setWidth(visibleRect.width());
 	if (!row.items.isEmpty())
 	{
-#if LAZY_ALIGN
+#if CONTENTWIDGET_LAZY_ALIGN
 		row.aligned = !alignLast;
 #else
 		if (alignLast)
@@ -443,7 +442,9 @@ void ContentWidget::alignRow(ContentWidget::RowInfo & row)
 		x += w + xSpacing;
 	}
 	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
+#if CONTENTWIDGET_LAZY_ALIGN
 	row.aligned = true;
+#endif
 }
 
 void ContentWidget::setShowing(bool visible)
