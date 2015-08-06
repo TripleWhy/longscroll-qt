@@ -19,6 +19,12 @@ protected:
 	virtual void showEvent(QShowEvent * event) override;
 	virtual void hideEvent(QHideEvent * event) override;
 	void findVisible();
+
+signals:
+	void userScrolled();
+
+private:
+	bool programmaticScroll = false;
 };
 
 #endif // NOTIFYINGSCROLLAREA_H

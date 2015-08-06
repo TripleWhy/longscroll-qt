@@ -4,22 +4,28 @@
 
 void NotifyingScrollArea::scrollBy(int dx, int dy)
 {
+	programmaticScroll = true;
 	if (dx != 0)
 		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + dx);
 	if (dy != 0)
 		verticalScrollBar()->setValue(verticalScrollBar()->value() + dy);
+	programmaticScroll = false;
 }
 
 void NotifyingScrollArea::scrollTo(int x, int y)
 {
+	programmaticScroll = true;
 	horizontalScrollBar()->setValue(x);
 	verticalScrollBar()->setValue(y);
+	programmaticScroll = false;
 }
 
 void NotifyingScrollArea::scrollContentsBy(int dx, int dy)
 {
 	QScrollArea::scrollContentsBy(dx, dy);
 	findVisible();
+	if (!programmaticScroll)
+		emit userScrolled();
 }
 
 void NotifyingScrollArea::resizeEvent(QResizeEvent * event)
