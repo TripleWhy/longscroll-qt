@@ -2,10 +2,6 @@
 #include "ui_mainwindow.h"
 #include "contentwidget.h"
 #include "contentwidgetitemfactory.h"
-#include <QPushButton>
-#include <QShowEvent>
-#include <QHideEvent>
-#include <QLabel>
 
 MainWindow::MainWindow(int demoNr, QWidget *parent)
     : QMainWindow(parent),

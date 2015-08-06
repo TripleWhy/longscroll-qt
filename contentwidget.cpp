@@ -2,27 +2,37 @@
 #include "navigatorwidget.h"
 #include "imginfo.h"
 #include "contentwidgetitemfactory.h"
-#include <QElapsedTimer>
 #include <QMouseEvent>
 
-#include <QDebug>
+#define CONTENTWIDGET_MEASURE_SHOWINGRECT   0
+#define CONTENTWIDGET_MEASURE_CALCULATESIZE 0
+#define CONTENTWIDGET_MEASURE_SETIMAGES     0
+
+#define CONTENTWIDGET_DEMO_STYLESHEETS      0
+
+#if CONTENTWIDGET_MEASURE_SHOWINGRECT || CONTENTWIDGET_MEASURE_CALCULATESIZE || CONTENTWIDGET_MEASURE_SETIMAGES
+# include <QDebug>
+# include <QElapsedTimer>
+#endif
 
 // This file was written the quick way, and could surely be opitmized to perform faster. However it does not seem to be neccessary.
 
 ContentWidget::ContentWidget(QWidget * parent)
 	: NotifyableScrollContentWidget(parent)
 {
-	setStyleSheet("QWidget { background: green; } ImageItem { background: blue; } QLabel { background: red; }");
-
 	itemFactory = new ContentWidgetImageItemFactory(false, this);
 
 	navigator = new NavigatorWidget(this);
 	navigator->setVisible(false);
-	navigator->setStyleSheet("QWidget { background: darkgray; }");
 
 	connect(navigator, SIGNAL(closeRequested()), this, SLOT(hideNavigator()));
 	connect(navigator, SIGNAL(nextImageRequested()), this, SLOT(navigatorNext()));
 	connect(navigator, SIGNAL(previousImageRequested()), this, SLOT(navigatorPrev()));
+
+#if CONTENTWIDGET_DEMO_STYLESHEETS
+	setStyleSheet("QWidget { background: green; } ImageItem { background: blue; } QLabel { background: red; }");
+	navigator->setStyleSheet("QWidget { background: darkgray; }");
+#endif
 }
 
 ContentWidget::ContentWidget(int _rowHeight, int _itemWidth, bool alignRows, bool alignLastRow, bool _allowOverfill, int _navigatorHeight, QWidget * parent)
@@ -59,10 +69,12 @@ bool ContentWidget::usesShowingRect()
 
 void ContentWidget::showingRect(const QRect & rect)
 {
+#if CONTENTWIDGET_MEASURE_SHOWINGRECT
 	static quint64 tSum = 0;
 	static quint64 tCount = 0;
 	QElapsedTimer t;
 	t.start();
+#endif
 
 	setUpdatesEnabled(false);
 
@@ -78,11 +90,15 @@ void ContentWidget::showingRect(const QRect & rect)
 
 		visibleRect = rect;
 
-//		QElapsedTimer t2;
-//		t2.start();
+#if CONTENTWIDGET_MEASURE_CALCULATESIZE
+		QElapsedTimer t2;
+		t2.start();
+#endif
 		calculateSize();
-//		auto elapsed2 = t2.elapsed();
-//		qDebug() << "calculating size took" << elapsed2 << "ms";
+#if CONTENTWIDGET_MEASURE_CALCULATESIZE
+		auto elapsed2 = t2.elapsed();
+		qDebug() << "calculating size took" << elapsed2 << "ms";
+#endif
 
 		if (oldItem.index >= 0)
 		{
@@ -103,10 +119,12 @@ void ContentWidget::showingRect(const QRect & rect)
 
 	setUpdatesEnabled(true);
 
+#if CONTENTWIDGET_MEASURE_SHOWINGRECT
 	auto elapsed = t.elapsed();
 	tSum += elapsed;
 	++tCount;
 	qDebug() << "showingRect took" << elapsed << "ms" << " average:" << (tSum / tCount) << "ms";
+#endif
 }
 
 void ContentWidget::updateRows()
@@ -198,13 +216,19 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 
 QWidget *ContentWidget::createItemWidget(const ImgInfo & info, int width, int height)
 {
-	return itemFactory->createItemWidget(info, width, height);
+	QWidget * widget = itemFactory->createItemWidget(info, width, height);
+#if CONTENTWIDGET_DEMO_STYLESHEETS
+	widget->setStyleSheet("QWidget{ background: blue; } QLabel { background: red; }");
+#endif
+	return widget;
 }
 
 void ContentWidget::setImages(const QList<ImgInfo> & imgs)
 {
+#if CONTENTWIDGET_MEASURE_SETIMAGES
 	QElapsedTimer t;
 	t.start();
+#endif
 
 	images = imgs;
 	imageWidths.clear();
@@ -237,8 +261,10 @@ void ContentWidget::setImages(const QList<ImgInfo> & imgs)
 		}
 	}
 
+#if CONTENTWIDGET_MEASURE_SETIMAGES
 	int elapsed = t.elapsed();
 	qDebug() << "ContentWidget::setImages took" << elapsed << "ms";
+#endif
 }
 
 void ContentWidget::calculateSize()
@@ -493,13 +519,13 @@ void ContentWidget::mousePressEvent(QMouseEvent * event)
 		int row = rowAt(event->y(), &onNavigator);
 		if (onNavigator)
 		{
-			qDebug() << "navigator pressed";
+//			qDebug() << "navigator pressed";
 			event->ignore();
 			return;
 		}
 
 		int col = colAt(event->x(), row);
-		qDebug() << "mouse press" << row << col;
+//		qDebug() << "mouse press" << row << col;
 
 		showNavigator(row, col);
 

@@ -14,12 +14,10 @@ ImageItem::ImageItem(const ImgInfo & info, bool fit)
 	new QVBoxLayout(this);
 	layout()->setMargin(0);
 	layout()->setSpacing(0);
-	setStyleSheet("QWidget{ background: blue; } QLabel { background: red; }");
 }
 
 ImageItem::~ImageItem()
 {
-	//		qDebug("ImageItem::~ImageItem");
 	if (!imageSet)
 		loader->removeImageRequest(info.fileName, this);
 }
