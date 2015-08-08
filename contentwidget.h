@@ -5,7 +5,7 @@
 #include <QLabel>
 
 class NavigatorWidget;
-class ImgInfo;
+struct ImgInfo;
 class ContentWidgetItemFactory;
 
 #define CONTENTWIDGET_LAZY_ALIGN 1
@@ -21,6 +21,7 @@ private:
 		int x = 0;
 		int width = 0;
 	};
+	friend bool operator==(ContentWidget::ItemInfo const & lhs, ContentWidget::ItemInfo const & rhs);
 
 	struct RowInfo
 	{
@@ -31,6 +32,7 @@ private:
 		bool aligned = false;
 #endif
 	};
+	friend bool operator==(ContentWidget::RowInfo const & lhs, ContentWidget::RowInfo const & rhs);
 
 protected:
 	static constexpr int prefetchBefore = 1;
@@ -51,6 +53,14 @@ private:
 	QSize size;
 	QRect visibleRect;
 
+	ItemInfo trackingItem;
+	QPoint trackingPoint;
+	int trackingItemOffset = 0;
+	bool itemTrackingEnabled = true;
+	uchar itemTrackingX = 0;
+	uchar itemTrackingY = 0;
+	bool blockScroll = false;
+
 	int navigatorRow = 0;
 	int navigatorColumn = 0;
 	ImgInfo * navigatorImg = 0;
@@ -69,6 +79,9 @@ public:
 	~ContentWidget();
 
 	void setItemFactory(ContentWidgetItemFactory * factory);
+	//Item Tracking works better when this ContentWidget is placed inside a NotifyingScrollArea
+	void setItemTrackingEnabled(bool enabled);
+	void setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY);
 
 	virtual QSize sizeHint() const override;
 	virtual bool usesShowingRect() override;
@@ -83,17 +96,22 @@ protected:
 	// Can be overridden. Behavior can also be changed by setting a different item factory.
 	virtual QWidget * createItemWidget(ImgInfo const & info, int width, int height);
 
+private slots:
+	void updateTrackingItem();
+	void updateTrackingPoint();
+
 public:
 	void setImages(const QList<ImgInfo> & imgs);
 
 protected:
-	void calculateSize();
+	bool calculateSize(bool const calculateChanges = false);
 	void alignRow(RowInfo & row);
 
 protected:
 	virtual void setShowing(bool visible) override;
 	int rowAt(int y, bool * onNavigator = 0);
 	int colAt(int x, int row);
+	int colAt(int x, RowInfo const & row);
 	void nextImage(int & row, int & col);
 	void previousImage(int & row, int & col);
 	virtual void mousePressEvent(QMouseEvent * event) override;
@@ -113,5 +131,8 @@ signals:
 	void scrollRequest(int dx, int dy);
 	void scrollToRequest(int x, int y);
 };
+
+bool operator==(ContentWidget::ItemInfo const & lhs, ContentWidget::ItemInfo const & rhs);
+bool operator==(ContentWidget::RowInfo const & lhs, ContentWidget::RowInfo const & rhs);
 
 #endif // CONTENTWIDGET_H

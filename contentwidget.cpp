@@ -8,7 +8,9 @@
 #define CONTENTWIDGET_MEASURE_CALCULATESIZE 0
 #define CONTENTWIDGET_MEASURE_SETIMAGES     0
 
-#define CONTENTWIDGET_DEMO_STYLESHEETS      0
+#define CONTENTWIDGET_DEMO_STYLESHEETS              0
+#define CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM  0
+#define CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGPOINT 0
 
 #if CONTENTWIDGET_MEASURE_SHOWINGRECT || CONTENTWIDGET_MEASURE_CALCULATESIZE || CONTENTWIDGET_MEASURE_SETIMAGES
 # include <QDebug>
@@ -57,6 +59,25 @@ void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 	itemFactory = factory;
 }
 
+void ContentWidget::setItemTrackingEnabled(bool enabled)
+{
+	if (enabled == itemTrackingEnabled)
+		return;
+	itemTrackingEnabled = enabled;
+	trackingItem = ItemInfo();
+}
+
+void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY)
+{
+	percentX = qBound(uchar(0), percentX, uchar(100));
+	percentY = qBound(uchar(0), percentY, uchar(100));
+	if (percentX == itemTrackingX && percentY == itemTrackingY)
+		return;
+	itemTrackingX = percentX;
+	itemTrackingY = percentY;
+	trackingItem = ItemInfo();
+}
+
 QSize ContentWidget::sizeHint() const
 {
 	return size;
@@ -76,17 +97,19 @@ void ContentWidget::showingRect(const QRect & rect)
 	t.start();
 #endif
 
+	bool needsUpdate = itemTrackingEnabled && !blockScroll && rect.size() == visibleRect.size() && rect.topLeft() != visibleRect.topLeft();
+
 	setUpdatesEnabled(false);
 
 	if (rect.width() != visibleRect.width())
 	{
-		ItemInfo oldItem;
-		if (rowInfos.size() > 0)
+		if (itemTrackingEnabled)
 		{
-			auto const & items = rowInfos[rowAt(visibleRect.center().y())].items;
-			oldItem = items.at(items.size() / 2);
+			if (trackingItem.index < 0)
+				updateTrackingItem();
+			else
+				updateTrackingPoint();
 		}
-		int oldOffset = visibleRect.center().y() % (rowHeight + ySpacing);
 
 		visibleRect = rect;
 
@@ -94,19 +117,22 @@ void ContentWidget::showingRect(const QRect & rect)
 		QElapsedTimer t2;
 		t2.start();
 #endif
-		calculateSize();
+		bool changed = calculateSize(itemTrackingEnabled);
 #if CONTENTWIDGET_MEASURE_CALCULATESIZE
 		auto elapsed2 = t2.elapsed();
 		qDebug() << "calculating size took" << elapsed2 << "ms";
 #endif
 
-		if (oldItem.index >= 0)
+		// changed == true implies itemTrackingEnabled == true
+		if (changed && trackingItem.index >= 0)
 		{
 			for (int r = 0, l = rowInfos.length(); r < l; ++r)
 			{
-				if (rowInfos[r].items.last().index >= oldItem.index)
+				if (rowInfos[r].items.last().index >= trackingItem.index)
 				{
-					emit scrollToRequest(0, rowInfos[r].y + oldOffset - ((rect.height()-1)/2));	//I have no idea why, but the -1 prevents slowly scrolling up when resizing the window.
+					blockScroll = true;
+					emit scrollToRequest(0, rowInfos[r].y + trackingItemOffset - (trackingPoint.y() - rect.y()));
+					blockScroll = false;
 					break;
 				}
 			}
@@ -118,6 +144,9 @@ void ContentWidget::showingRect(const QRect & rect)
 	updateRows();
 
 	setUpdatesEnabled(true);
+
+	if (needsUpdate)
+		updateTrackingItem();
 
 #if CONTENTWIDGET_MEASURE_SHOWINGRECT
 	auto elapsed = t.elapsed();
@@ -205,6 +234,10 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			{
 				itemWidget = createItemWidget(*item.img, item.width, rowHeight);
 				itemWidgets[item.index] = itemWidget;
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
+				if (item.index == trackingItem.index)
+					itemWidget->setStyleSheet("QWidget{ background: blue; }");
+#endif
 			}
 		}
 		itemWidget->setParent(rowWidget);
@@ -220,6 +253,50 @@ QWidget *ContentWidget::createItemWidget(const ImgInfo & info, int width, int he
 	widget->setStyleSheet("QWidget{ background: blue; } QLabel { background: red; }");
 #endif
 	return widget;
+}
+
+void ContentWidget::updateTrackingItem()
+{
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
+	QWidget * trackingWidget = itemWidgets.value(trackingItem.index);
+	if (trackingWidget != 0)
+		trackingWidget->setStyleSheet(QString());
+#endif
+
+	if (rowInfos.isEmpty() > 0)
+	{
+		trackingItem = ItemInfo();
+		trackingItemOffset = 0;
+	}
+	else
+	{
+		updateTrackingPoint();
+		RowInfo const & row = rowInfos.at(rowAt(trackingPoint.y()));
+		int colIndex = colAt(trackingPoint.x(), row);
+		trackingItem = row.items.at(colIndex);
+
+		trackingItemOffset = trackingPoint.y() % (rowHeight + ySpacing);	//TODO: Not correct, when navigator is visible, I think. Does it matter?
+	}
+
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
+	trackingWidget = itemWidgets.value(trackingItem.index);
+	if (trackingWidget != 0)
+		trackingWidget->setStyleSheet("QWidget{ background: yellow; }");
+#endif
+}
+
+void ContentWidget::updateTrackingPoint()
+{
+	trackingPoint.setX(visibleRect.x() + (visibleRect.width() * itemTrackingX * 100 / (100 * 100)));
+	trackingPoint.setY(visibleRect.y() + (visibleRect.height() * itemTrackingY * 100 / (100 * 100)));
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGPOINT
+	static QFrame * w = 0;
+	delete w;
+	w = new QFrame(this);
+	w->setStyleSheet("QFrame { background: red; }");
+	w->setGeometry(trackingPoint.x() - 5, trackingPoint.y() - 5, 10, 10);
+	w->setVisible(true);
+#endif
 }
 
 void ContentWidget::setImages(const QList<ImgInfo> & imgs)
@@ -266,7 +343,7 @@ void ContentWidget::setImages(const QList<ImgInfo> & imgs)
 #endif
 }
 
-void ContentWidget::calculateSize()
+bool ContentWidget::calculateSize(const bool calculateChanges)
 {
 	QList<RowInfo> rowInfosNew;
 	rowInfosNew.reserve(rowInfos.size());
@@ -420,6 +497,11 @@ void ContentWidget::calculateSize()
 		navigatorVisible = false;
 		showNavigator(navRow, navCol, false);
 	}
+
+	if (calculateChanges)
+		return rowInfos != rowInfosNew;
+	else
+		return false;
 }
 
 void ContentWidget::alignRow(ContentWidget::RowInfo & row)
@@ -473,9 +555,13 @@ int ContentWidget::rowAt(int y, bool * onNavigator)
 
 int ContentWidget::colAt(int x, int row)
 {
-	RowInfo const & rowInfo = rowInfos.at(row);
-	for (int i = rowInfo.items.length() - 1; i >= 0; --i)
-		if (rowInfo.items.at(i).x <= x)
+	return colAt(x, rowInfos.at(row));
+}
+
+int ContentWidget::colAt(int x, const ContentWidget::RowInfo & row)
+{
+	for (int i = row.items.length() - 1; i >= 0; --i)
+		if (row.items.at(i).x <= x)
 			return i;
 	return 0;
 }
@@ -630,5 +716,20 @@ void ContentWidget::navigatorPrevNext(bool next)
 	int oldNaviY = navigator->y();
 	showNavigator(row, col);
 	if (navigator->y() != oldNaviY)
+	{
+		blockScroll = true;
 		emit scrollRequest( 0, navigator->y() - oldNaviY );
+		blockScroll = false;
+	}
+}
+
+
+bool operator==(const ContentWidget::ItemInfo & lhs, const ContentWidget::ItemInfo & rhs)
+{
+	return lhs.index == rhs.index;	//Probably not technically correct, but enugh for now.
+}
+
+bool operator==(const ContentWidget::RowInfo & lhs, const ContentWidget::RowInfo & rhs)
+{
+	return lhs.y == rhs.y && lhs.items == rhs.items;
 }
