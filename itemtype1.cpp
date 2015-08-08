@@ -10,6 +10,7 @@ ItemType1::ItemType1(const ImgInfo & info, int height, QWidget *parent) :
 
 	ui->imageWidget->setFixedSize(height, height);
 	ui->imageWidget->setPixmap(fileName);
+	ui->label_2->setText(QFileInfo(fileName).fileName());
 }
 
 ItemType1::~ItemType1()
