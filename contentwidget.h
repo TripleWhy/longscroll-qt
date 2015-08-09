@@ -118,6 +118,7 @@ protected:
 
 private:
 	void showNavigator(int const row, int const col, bool const blockUpdates = true);
+	void updateNavigator(int const row, int const col);
 
 private slots:
 	void hideNavigator();

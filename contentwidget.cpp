@@ -275,7 +275,7 @@ void ContentWidget::updateTrackingItem()
 		int colIndex = colAt(trackingPoint.x(), row);
 		trackingItem = row.items.at(colIndex);
 
-		trackingItemOffset = trackingPoint.y() % (rowHeight + ySpacing);	//TODO: Not correct, when navigator is visible, I think. Does it matter?
+		trackingItemOffset = trackingPoint.y() - row.y;
 	}
 
 #if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
@@ -419,6 +419,11 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 					navCol = 0;
 				}
 			}
+			if (navigatorVisible && rowInfosNew.size()-1 == navRow)
+			{
+				y += navigatorHeight + ySpacing;
+				row.y += navigatorHeight + ySpacing;
+			}
 		}
 	}
 	size.setWidth(visibleRect.width());
@@ -491,12 +496,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 	Q_ASSERT(rowWidgets.size() == rowInfosNew.size());
 	rowInfos.swap(rowInfosNew);
 
-
-	if (navigatorVisible)
-	{
-		navigatorVisible = false;
-		showNavigator(navRow, navCol, false);
-	}
+	updateNavigator(navRow, navCol);
 
 	if (calculateChanges)
 		return rowInfos != rowInfosNew;
@@ -628,6 +628,7 @@ void ContentWidget::showNavigator(const int row, const int col, const bool block
 	if (blockUpdates)
 		setUpdatesEnabled(false);
 
+	bool needsTrackingUpdate = itemTrackingEnabled && !navigatorVisible;
 	if (navigatorVisible)
 	{
 		for (int i = navigatorRow+1; i <= row; ++i)
@@ -656,17 +657,25 @@ void ContentWidget::showNavigator(const int row, const int col, const bool block
 		setMinimumSize(size);
 	}
 
-	navigatorRow = row;
-	navigatorColumn = col;
 	navigatorVisible = true;
 	navigatorImg = rowInfos[row].items[col].img;
-
 	navigator->setImage(*rowInfos[row].items[col].img);
+	updateNavigator(row, col);
 	navigator->setVisible(true);
-	navigator->setGeometry(0, (navigatorRow + 1) * (rowHeight + ySpacing), visibleRect.width(), navigatorHeight);
+
+	if (needsTrackingUpdate)
+		updateTrackingItem();
 
 	if (blockUpdates)
 		setUpdatesEnabled(true);
+}
+
+void ContentWidget::updateNavigator(const int row, const int col)
+{
+	navigatorRow = row;
+	navigatorColumn = col;
+
+	navigator->setGeometry(0, (navigatorRow + 1) * (rowHeight + ySpacing), visibleRect.width(), navigatorHeight);
 }
 
 void ContentWidget::hideNavigator()
