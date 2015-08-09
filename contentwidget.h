@@ -53,10 +53,13 @@ private:
 	QSize size;
 	QRect visibleRect;
 
+	bool itemTrackingEnabled = true;
+	//TODO: Implement the following two properties:
+//	bool itemTrackingHeightChangeUpdateItem = true;
+//	bool itmeTrackingHeightChangeScroll = false;
 	ItemInfo trackingItem;
 	QPoint trackingPoint;
 	int trackingItemOffset = 0;
-	bool itemTrackingEnabled = true;
 	uchar itemTrackingX = 0;
 	uchar itemTrackingY = 0;
 	bool blockScroll = false;
