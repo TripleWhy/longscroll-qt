@@ -2,7 +2,7 @@
 #define ITEMTYPE1_H
 
 #include <QWidget>
-#include "imginfo.h"
+#include <longscroll-qt/imginfo.h>
 
 namespace Ui {
 class ItemType1;

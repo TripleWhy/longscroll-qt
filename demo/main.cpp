@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
 	qDebug() << "loaded items:" << imgInfos.size();
 
-	MainWindow w(1);
+	MainWindow w(0);
 	w.setImages(imgInfos);
 	w.show();
 

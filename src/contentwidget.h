@@ -1,6 +1,7 @@
 #ifndef CONTENTWIDGET_H
 #define CONTENTWIDGET_H
 
+#include "longscroll-qt_global.h"
 #include "notifyablescrollcontentwidget.h"
 #include <QLabel>
 
@@ -9,7 +10,7 @@ struct ImgInfo;
 class ContentWidgetItemFactory;
 
 #define CONTENTWIDGET_LAZY_ALIGN 1
-class ContentWidget : public NotifyableScrollContentWidget
+class LONGSCROLLQT_EXPORT ContentWidget : public NotifyableScrollContentWidget
 {
 	Q_OBJECT
 

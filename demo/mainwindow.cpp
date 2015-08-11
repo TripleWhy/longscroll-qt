@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "contentwidget.h"
-#include "contentwidgetitemfactory.h"
+#include <longscroll-qt/contentwidget.h>
+#include <longscroll-qt/contentwidgetitemfactory.h>
+#include "itemfactories.h"
 
 MainWindow::MainWindow(int demoNr, QWidget *parent)
     : QMainWindow(parent),
@@ -22,11 +23,11 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 			break;
 		case 1:
 			cw = new ContentWidget(100, 100, false, false, false, 200);
-			cwif = new ContentWidgetImageItemFactory(true);
+			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
 		case 2:
 			cw = new ContentWidget(100, -1, true, true, false, 200);
-			cwif = new ContentWidgetImageItemFactory(true);
+			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
 		case 3:
 			cw = new ContentWidget(100, 200, false, false, false, 200);

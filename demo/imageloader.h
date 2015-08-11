@@ -26,7 +26,6 @@ private:
 
 	QQueue<QueueEntry> queue;
 	QMutex queueMutex;
-	QThread * originalThread;
 
 private:
 	static ImageLoader * inst;

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "imginfo.h"
+#include <longscroll-qt/imginfo.h>
 
 namespace Ui {
 class MainWindow;

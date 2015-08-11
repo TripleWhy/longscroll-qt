@@ -58,35 +58,35 @@
        <item>
         <widget class="QLabel" name="label_6">
          <property name="pixmap">
-          <pixmap resource="icons.qrc">:/icon1</pixmap>
+          <pixmap>:/icon1</pixmap>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_7">
          <property name="pixmap">
-          <pixmap resource="icons.qrc">:/icon2</pixmap>
+          <pixmap>:/icon2</pixmap>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_8">
          <property name="pixmap">
-          <pixmap resource="icons.qrc">:/icon3</pixmap>
+          <pixmap>:/icon3</pixmap>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_9">
          <property name="pixmap">
-          <pixmap resource="icons.qrc">:/icon4</pixmap>
+          <pixmap>:/icon4</pixmap>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_10">
          <property name="pixmap">
-          <pixmap resource="icons.qrc">:/icon5</pixmap>
+          <pixmap>:/icon5</pixmap>
          </property>
         </widget>
        </item>
@@ -120,12 +120,10 @@
   <customwidget>
    <class>ImageWidget</class>
    <extends>QWidget</extends>
-   <header>imagewidget.h</header>
+   <header location="global">longscroll-qt/imagewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

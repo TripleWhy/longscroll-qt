@@ -1,5 +1,4 @@
 #include "imageitem.h"
-#include "imageloader.h"
 #include "imagewidget.h"
 #include <QVBoxLayout>
 
@@ -8,9 +7,6 @@ ImageItem::ImageItem(const ImgInfo & info, bool fit)
       fit(fit),
       info(info)
 {
-	loader = ImageLoader::instance();
-	connect(loader, SIGNAL(imageLoaded(QString,const QObject*,QPixmap)), this, SLOT(requestFinished(QString,const QObject*,QPixmap)));
-
 	new QVBoxLayout(this);
 	layout()->setMargin(0);
 	layout()->setSpacing(0);
@@ -18,8 +14,6 @@ ImageItem::ImageItem(const ImgInfo & info, bool fit)
 
 ImageItem::~ImageItem()
 {
-	if (!imageSet)
-		loader->removeImageRequest(info.fileName, this);
 }
 
 void ImageItem::setHeight(int h)
@@ -44,24 +38,14 @@ void ImageItem::setShowing(bool visible)
 			return;
 		label = new ImageWidget();
 		label->setFit(fit);
+		QPixmap px;
+		px.load(info.fileName);
+		label->setPixmap(px);
 		layout()->addWidget(label);
-		loader->addImageRequest(info.fileName, this);
 	}
 	else
 	{
-		if (!imageSet)
-			loader->removeImageRequest(info.fileName, this);
 		delete label;
 		label = 0;
-		imageSet = false;
 	}
-}
-
-void ImageItem::requestFinished(const QString &, const QObject * receiver, const QPixmap & px)
-{
-	if (receiver != this || label == 0)
-		return;
-
-	imageSet = true;
-	label->setPixmap(px);
 }

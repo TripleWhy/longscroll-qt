@@ -1,0 +1,12 @@
+#ifndef LONGSCROLLQT_GLOBAL_H
+#define LONGSCROLLQT_GLOBAL_H
+
+#include <QtCore/QtGlobal>
+
+#if defined(LONGSCROLLQT_LIBRARY)
+#  define LONGSCROLLQT_EXPORT Q_DECL_EXPORT
+#else
+#  define LONGSCROLLQT_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // LONGSCROLLQT_GLOBAL_H

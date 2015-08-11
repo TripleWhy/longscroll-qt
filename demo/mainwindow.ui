@@ -26,7 +26,7 @@
          <x>0</x>
          <y>0</y>
          <width>324</width>
-         <height>222</height>
+         <height>212</height>
         </rect>
        </property>
       </widget>
@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>340</width>
-     <height>15</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -59,7 +59,7 @@
   <customwidget>
    <class>NotifyingScrollArea</class>
    <extends>QScrollArea</extends>
-   <header>notifyingscrollarea.h</header>
+   <header location="global">longscroll-qt/notifyingscrollarea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

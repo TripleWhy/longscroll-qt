@@ -4,8 +4,6 @@
 #include <QFrame>
 #include "imginfo.h"
 
-class ImageLoader;
-
 namespace Ui {
 class NavigatorWidget;
 }
@@ -14,8 +12,7 @@ class NavigatorWidget : public QFrame
 {
 	Q_OBJECT
 
-private:
-	ImageLoader * loader = 0;
+protected:
 	ImgInfo img;
 
 public:
@@ -23,10 +20,7 @@ public:
 	~NavigatorWidget();
 
 public:
-	void setImage(ImgInfo const & info);
-
-private slots:
-	void requestFinished(QString const & fileName, QObject const * receiver, QPixmap const & px);
+	virtual void setImage(ImgInfo const & info);
 
 signals:
 	void previousImageRequested();
