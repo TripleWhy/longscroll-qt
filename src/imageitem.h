@@ -1,7 +1,7 @@
 #ifndef IMAGEITEM_H
 #define IMAGEITEM_H
 
-#include "imginfo.h"
+#include "contentiteminfo.h"
 #include <QFrame>
 
 class ImageWidget;
@@ -14,12 +14,12 @@ protected:
 	bool fit = false;
 
 public:
-	ImgInfo info;
+	ContentItemInfo info;
 
 protected:
-	ImageItem(ImgInfo const & info, bool fit, bool loadImage, QWidget * parent);
+	ImageItem(ContentItemInfo const & info, bool fit, bool loadImage, QWidget * parent);
 public:
-	ImageItem(ImgInfo const & info, bool fit = false, QWidget * parent = 0);
+	ImageItem(ContentItemInfo const & info, bool fit = false, QWidget * parent = 0);
 	~ImageItem();
 
 protected:

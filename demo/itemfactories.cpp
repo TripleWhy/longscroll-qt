@@ -8,7 +8,7 @@ ContentWidgetLoaderImageItemFactory::ContentWidgetLoaderImageItemFactory(bool fi
 {
 }
 
-QWidget * ContentWidgetLoaderImageItemFactory::createItemWidget(const ImgInfo & info, int width, int height)
+QWidget * ContentWidgetLoaderImageItemFactory::createItemWidget(const ContentItemInfo & info, int width, int height)
 {
 	Q_UNUSED(width);
 	Q_UNUSED(height);
@@ -17,7 +17,7 @@ QWidget * ContentWidgetLoaderImageItemFactory::createItemWidget(const ImgInfo & 
 }
 
 
-QWidget * ContentWidgetImageInfoItemFactory::createItemWidget(const ImgInfo & info, int width, int height)
+QWidget * ContentWidgetImageInfoItemFactory::createItemWidget(const ContentItemInfo & info, int width, int height)
 {
 	Q_UNUSED(width);
 	ItemType1 * item = new ItemType1(info, height);

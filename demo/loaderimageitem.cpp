@@ -3,18 +3,18 @@
 #include <longscroll-qt/imagewidget.h>
 #include <QVBoxLayout>
 
-LoaderImageItem::LoaderImageItem(const ImgInfo & info, bool fit)
+LoaderImageItem::LoaderImageItem(const ContentItemInfo & info, bool fit)
     : ImageItem(info, fit, false, 0)
 {
 	loader = ImageLoader::instance();
 	connect(loader, SIGNAL(imageLoaded(QString,const QObject*,QPixmap)), this, SLOT(requestFinished(QString,const QObject*,QPixmap)));
-	loader->addImageRequest(info.fileName, this);
+	loader->addImageRequest(info.data.toString(), this);
 }
 
 LoaderImageItem::~LoaderImageItem()
 {
 	if (!imageSet)
-		loader->removeImageRequest(info.fileName, this);
+		loader->removeImageRequest(info.data.toString(), this);
 }
 
 void LoaderImageItem::requestFinished(const QString &, const QObject * receiver, const QPixmap & px)

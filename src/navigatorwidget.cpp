@@ -17,17 +17,17 @@ NavigatorWidget::~NavigatorWidget()
 	delete ui;
 }
 
-void NavigatorWidget::setImage(const ImgInfo &info)
+void NavigatorWidget::setImage(const ContentItemInfo &info)
 {
 	if (img == info)
 		return;
 
 	img = info;
 
-	ui->label_2->setText(info.fileName);
+	ui->label_2->setText(info.data.toString());
 	ui->label_3->setText(QString(tr("Size: %1 x %2").arg(info.width).arg(info.height)));
 
 	QPixmap px;
-	px.load(img.fileName);
+	px.load(img.data.toString());
 	ui->imageWidget->setPixmap(px);
 }

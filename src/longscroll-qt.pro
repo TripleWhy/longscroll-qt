@@ -39,21 +39,21 @@ HEADERS += \
     contentwidgetitemfactory.h \
     imageitem.h \
     imagewidget.h \
-    imginfo.h \
     longscroll-qt_global.h \
     navigatorwidget.h \
     notifyablescrollcontentwidget.h \
-    notifyingscrollarea.h
+    notifyingscrollarea.h \
+    contentiteminfo.h
 
 SOURCES += \
     contentwidget.cpp \
     contentwidgetitemfactory.cpp \
     imageitem.cpp \
     imagewidget.cpp \
-    imginfo.cpp \
     navigatorwidget.cpp \
     notifyablescrollcontentwidget.cpp \
-    notifyingscrollarea.cpp
+    notifyingscrollarea.cpp \
+    contentiteminfo.cpp
 
 FORMS += \
     navigatorwidget.ui

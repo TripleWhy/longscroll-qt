@@ -7,7 +7,7 @@ ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage, QObj
 {
 }
 
-QWidget * ContentWidgetImageItemFactory::createItemWidget(const ImgInfo & info, int width, int height)
+QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo & info, int width, int height)
 {
 	Q_UNUSED(width);
 	Q_UNUSED(height);

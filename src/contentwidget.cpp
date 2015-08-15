@@ -1,18 +1,18 @@
 #include "contentwidget.h"
 #include "navigatorwidget.h"
-#include "imginfo.h"
+#include "contentiteminfo.h"
 #include "contentwidgetitemfactory.h"
 #include <QMouseEvent>
 
 #define CONTENTWIDGET_MEASURE_SHOWINGRECT   0
 #define CONTENTWIDGET_MEASURE_CALCULATESIZE 0
-#define CONTENTWIDGET_MEASURE_SETIMAGES     0
+#define CONTENTWIDGET_MEASURE_SETINFOS      0
 
 #define CONTENTWIDGET_DEMO_STYLESHEETS              0
 #define CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM  0
 #define CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGPOINT 0
 
-#if CONTENTWIDGET_MEASURE_SHOWINGRECT || CONTENTWIDGET_MEASURE_CALCULATESIZE || CONTENTWIDGET_MEASURE_SETIMAGES
+#if CONTENTWIDGET_MEASURE_SHOWINGRECT || CONTENTWIDGET_MEASURE_CALCULATESIZE || CONTENTWIDGET_MEASURE_SETINFOS
 # include <QDebug>
 # include <QElapsedTimer>
 #endif
@@ -241,7 +241,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 	rowWidget->setVisible(true);
 }
 
-QWidget *ContentWidget::createItemWidget(const ImgInfo & info, int width, int height)
+QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int width, int height)
 {
 	QWidget * widget = itemFactory->createItemWidget(info, width, height);
 #if CONTENTWIDGET_DEMO_STYLESHEETS
@@ -294,22 +294,22 @@ void ContentWidget::updateTrackingPoint()
 #endif
 }
 
-void ContentWidget::setImages(const QList<ImgInfo> & imgs)
+void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 {
-#if CONTENTWIDGET_MEASURE_SETIMAGES
+#if CONTENTWIDGET_MEASURE_SETINFOS
 	QElapsedTimer t;
 	t.start();
 #endif
 
-	images = imgs;
+	itemInfos = infos;
 	imageWidths.clear();
-	imageWidths.reserve(images.size());
+	imageWidths.reserve(itemInfos.size());
 	qDeleteAll(itemWidgets);
 	itemWidgets.clear();
-	itemWidgets.reserve(images.size());
+	itemWidgets.reserve(itemInfos.size());
 	if (itemWidth == 0)
 	{
-		for (ImgInfo const & img : imgs)
+		for (ContentItemInfo const & img : infos)
 		{
 			imageWidths.append(img.widthForHeight(rowHeight));
 			itemWidgets.append(0);
@@ -317,7 +317,7 @@ void ContentWidget::setImages(const QList<ImgInfo> & imgs)
 	}
 	else if (itemWidth < 0)
 	{
-		for (int i = 0; i < images.size(); ++i)
+		for (int i = 0; i < itemInfos.size(); ++i)
 		{
 			imageWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
 			itemWidgets.append(0);
@@ -325,16 +325,16 @@ void ContentWidget::setImages(const QList<ImgInfo> & imgs)
 	}
 	else
 	{
-		for (int i = 0; i < images.size(); ++i)
+		for (int i = 0; i < itemInfos.size(); ++i)
 		{
 			imageWidths.append(itemWidth);
 			itemWidgets.append(0);
 		}
 	}
 
-#if CONTENTWIDGET_MEASURE_SETIMAGES
+#if CONTENTWIDGET_MEASURE_SETINFOS
 	int elapsed = t.elapsed();
-	qDebug() << "ContentWidget::setImages took" << elapsed << "ms";
+	qDebug() << "ContentWidget::setItemInfos took" << elapsed << "ms";
 #endif
 }
 
@@ -346,13 +346,13 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 	int rowWidth = 0;
 	int y = 0;
 	int navRow = -1, navCol = -1;
-	for (int i = 0, l = images.size(); i < l; ++i)
+	for (int i = 0, l = itemInfos.size(); i < l; ++i)
 	{
 		int width = imageWidths[i];
 
 		ItemInfo item;
 		item.index = i;
-		item.img = &images[i];
+		item.img = &itemInfos[i];
 		item.width = width;
 
 		if (navigatorVisible && navigatorImg == item.img)

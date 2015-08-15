@@ -48,8 +48,8 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::setImages(const QList<ImgInfo> & imgs)
+void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos)
 {
 	ContentWidget * test = ui->scrollAreaWidgetContents->findChild<ContentWidget *>();
-	test->setImages(imgs);
+	test->setItemInfos(infos);
 }

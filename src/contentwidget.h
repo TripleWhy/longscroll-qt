@@ -5,7 +5,7 @@
 #include "notifyablescrollcontentwidget.h"
 
 class NavigatorWidget;
-struct ImgInfo;
+struct ContentItemInfo;
 class ContentWidgetItemFactory;
 
 #define CONTENTWIDGET_LAZY_ALIGN 1
@@ -17,7 +17,7 @@ private:
 	struct ItemInfo
 	{
 		int index = -1;
-		ImgInfo * img = 0;
+		ContentItemInfo * img = 0;
 		int x = 0;
 		int width = 0;
 	};
@@ -66,11 +66,11 @@ private:
 
 	int navigatorRow = 0;
 	int navigatorColumn = 0;
-	ImgInfo * navigatorImg = 0;
+	ContentItemInfo * navigatorImg = 0;
 	bool navigatorVisible = false;
 	NavigatorWidget * navigator = 0;
 
-	QList<ImgInfo> images;
+	QList<ContentItemInfo> itemInfos;
 	QList<int> imageWidths;
 	QList<RowInfo> rowInfos;
 	QList<QWidget *> rowWidgets;
@@ -96,14 +96,14 @@ private:
 
 protected:
 	// Can be overridden. Behavior can also be changed by setting a different item factory.
-	virtual QWidget * createItemWidget(ImgInfo const & info, int width, int height);
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int width, int height);
 
 private slots:
 	void updateTrackingItem();
 	void updateTrackingPoint();
 
 public:
-	void setImages(const QList<ImgInfo> & imgs);
+	void setItemInfos(const QList<ContentItemInfo> & infos);
 
 protected:
 	bool calculateSize(bool const calculateChanges = false);

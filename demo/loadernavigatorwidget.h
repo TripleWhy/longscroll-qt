@@ -11,7 +11,7 @@ class LoaderNavigatorWidget : public NavigatorWidget
 public:
 	using NavigatorWidget::NavigatorWidget;
 
-	virtual void setImage(ImgInfo const & info) override;
+	virtual void setImage(ContentItemInfo const & info) override;
 
 private slots:
 	void requestFinished(QString const & fileName, QObject const * receiver, QPixmap const & px);

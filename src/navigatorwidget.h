@@ -2,7 +2,7 @@
 #define NAVIGATORWIDGET_H
 
 #include <QFrame>
-#include "imginfo.h"
+#include "contentiteminfo.h"
 
 namespace Ui {
 class NavigatorWidget;
@@ -13,14 +13,14 @@ class NavigatorWidget : public QFrame
 	Q_OBJECT
 
 protected:
-	ImgInfo img;
+	ContentItemInfo img;
 
 public:
 	explicit NavigatorWidget(QWidget *parent = 0);
 	~NavigatorWidget();
 
 public:
-	virtual void setImage(ImgInfo const & info);
+	virtual void setImage(ContentItemInfo const & info);
 
 signals:
 	void previousImageRequested();

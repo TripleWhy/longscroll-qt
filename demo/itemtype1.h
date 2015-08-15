@@ -2,7 +2,7 @@
 #define ITEMTYPE1_H
 
 #include <QWidget>
-#include <longscroll-qt/imginfo.h>
+#include <longscroll-qt/contentiteminfo.h>
 
 namespace Ui {
 class ItemType1;
@@ -16,7 +16,7 @@ private:
 	QString fileName;
 
 public:
-	explicit ItemType1(ImgInfo const & info, int height, QWidget *parent = 0);
+	explicit ItemType1(ContentItemInfo const & info, int height, QWidget *parent = 0);
 	~ItemType1();
 
 private:

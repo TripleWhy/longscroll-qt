@@ -1,9 +1,10 @@
 #include "itemtype1.h"
 #include "ui_itemtype1.h"
+#include <QFileInfo>
 
-ItemType1::ItemType1(const ImgInfo & info, int height, QWidget *parent) :
+ItemType1::ItemType1(const ContentItemInfo & info, int height, QWidget *parent) :
 	QWidget(parent),
-	fileName(info.fileName),
+	fileName(info.data.toString()),
 	ui(new Ui::ItemType1)
 {
 	ui->setupUi(this);

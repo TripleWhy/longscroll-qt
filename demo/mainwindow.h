@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <longscroll-qt/imginfo.h>
+#include <longscroll-qt/contentiteminfo.h>
 
 namespace Ui {
 class MainWindow;
@@ -16,7 +16,7 @@ public:
 	explicit MainWindow(int demoNr = 0, QWidget *parent = 0);
 	~MainWindow();
 
-	void setImages(QList<ImgInfo> const & imgs);
+	void setItemInfos(QList<ContentItemInfo> const & infos);
 
 private:
 	Ui::MainWindow *ui;

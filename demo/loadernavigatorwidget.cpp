@@ -1,6 +1,6 @@
 #include "loadernavigatorwidget.h"
 
-void LoaderNavigatorWidget::setImage(const ImgInfo & info)
+void LoaderNavigatorWidget::setImage(const ContentItemInfo & info)
 {
 	if (img == info)
 		return;
@@ -16,7 +16,7 @@ void LoaderNavigatorWidget::setImage(const ImgInfo & info)
 //	ui->label_2->setText(info.fileName);
 //	ui->label_3->setText(QString(tr("Size: %1 x %2").arg(info.width).arg(info.height)));
 
-	loader->addImageRequest(info.fileName, this);
+	loader->addImageRequest(info.data.toString(), this);
 }
 
 void LoaderNavigatorWidget::requestFinished(const QString & /*fileName*/, const QObject * receiver, const QPixmap & px)

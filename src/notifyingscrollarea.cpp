@@ -52,7 +52,7 @@ void NotifyingScrollArea::findVisible()
 	if (wid == 0)
 		return;
 	QRegion const & region = wid->visibleRegion();
-	QList<NotifyableScrollContentWidget *> const & widgets = wid->findChildren<NotifyableScrollContentWidget *>(QString(), Qt::FindDirectChildrenOnly);
+	QList<NotifyableScrollContentWidget *> const & widgets = wid->findChildren<NotifyableScrollContentWidget *>(QString(), Qt::FindDirectChildrenOnly); //TODO: Can this be optimized, so that we don't have to call findChildren every time?
 	for (NotifyableScrollContentWidget * it : widgets)
 	{
 		if (region.contains(it->geometry()))

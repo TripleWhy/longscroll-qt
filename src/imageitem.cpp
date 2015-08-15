@@ -2,7 +2,7 @@
 #include "imagewidget.h"
 #include <QVBoxLayout>
 
-ImageItem::ImageItem(const ImgInfo & info, bool fit, bool doLoadImage, QWidget * parent)
+ImageItem::ImageItem(const ContentItemInfo & info, bool fit, bool doLoadImage, QWidget * parent)
     : QFrame(parent),
       fit(fit),
       info(info)
@@ -19,7 +19,7 @@ ImageItem::ImageItem(const ImgInfo & info, bool fit, bool doLoadImage, QWidget *
 		loadImage();
 }
 
-ImageItem::ImageItem(const ImgInfo & info, bool fit, QWidget * parent)
+ImageItem::ImageItem(const ContentItemInfo & info, bool fit, QWidget * parent)
     : ImageItem(info, fit, true, parent)
 {
 }
@@ -31,7 +31,7 @@ ImageItem::~ImageItem()
 void ImageItem::loadImage()
 {
 	QPixmap px;
-	px.load(info.fileName);
+	px.load(info.data.toString());
 	label->setPixmap(px);
 }
 
