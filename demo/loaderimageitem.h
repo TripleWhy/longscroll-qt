@@ -1,11 +1,11 @@
 #ifndef LOADERIMAGEITEM_H
 #define LOADERIMAGEITEM_H
 
-#include <longscroll-qt/imageitem.h>
+#include <longscroll-qt/imageitemwidget.h>
 
 class ImageLoader;
 
-class LoaderImageItem : public ImageItem
+class LoaderImageItem : public ImageItemWidget
 {
 	Q_OBJECT
 

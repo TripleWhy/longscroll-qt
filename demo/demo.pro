@@ -8,13 +8,11 @@ QMAKE_CXXFLAGS_RELEASE += -Ofast
 
 
 include($$PWD/../src/longscroll-qt_dst-dir.pri)
-message($$LONGSCROLLQT_DST_DIR)
 DEPENDPATH += $$LONGSCROLLQT_DST_DIR/include
 INCLUDEPATH += $$LONGSCROLLQT_DST_DIR/include
 
 CONFIG(release, debug|release): LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -llongscroll-qt
 CONFIG(debug, debug|release):   LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -llongscroll-qtd
-message($$LIBS)
 
 HEADERS += \
     itemtype1.h \

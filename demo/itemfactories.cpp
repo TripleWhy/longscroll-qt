@@ -12,7 +12,7 @@ QWidget * ContentWidgetLoaderImageItemFactory::createItemWidget(const ContentIte
 {
 	Q_UNUSED(width);
 	Q_UNUSED(height);
-	ImageItem * item = new LoaderImageItem(info, imageFit);
+	ImageItemWidget * item = new LoaderImageItem(info, imageFit);
 	return item;
 }
 

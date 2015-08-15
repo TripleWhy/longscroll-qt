@@ -4,7 +4,7 @@
 #include <QVBoxLayout>
 
 LoaderImageItem::LoaderImageItem(const ContentItemInfo & info, bool fit)
-    : ImageItem(info, fit, false, 0)
+    : ImageItemWidget(info, fit, false, 0)
 {
 	loader = ImageLoader::instance();
 	connect(loader, SIGNAL(imageLoaded(QString,const QObject*,QPixmap)), this, SLOT(requestFinished(QString,const QObject*,QPixmap)));

@@ -1,5 +1,5 @@
 #include "contentwidgetitemfactory.h"
-#include "imageitem.h"
+#include "imageitemwidget.h"
 
 ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage, QObject * parent)
     : ContentWidgetItemFactory(parent),
@@ -11,6 +11,6 @@ QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo 
 {
 	Q_UNUSED(width);
 	Q_UNUSED(height);
-	ImageItem * item = new ImageItem(info, imageFit);
+	ImageItemWidget * item = new ImageItemWidget(info, imageFit);
 	return item;
 }

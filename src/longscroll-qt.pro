@@ -12,6 +12,7 @@ CONFIG += dll
 
 CONFIG += c++11
 QMAKE_CXXFLAGS_RELEASE += -Ofast
+QMAKE_CXXFLAGS_WARN_ON += -Wextra -Wconversion -Werror=return-type   -Wpedantic -Wcast-qual -Wcast-align -Wwrite-strings
 
 DEFINES += LONGSCROLLQT_LIBRARY
 
@@ -37,23 +38,23 @@ INSTALLS += libraryFiles
 HEADERS += \
     contentwidget.h \
     contentwidgetitemfactory.h \
-    imageitem.h \
     imagewidget.h \
     longscroll-qt_global.h \
     navigatorwidget.h \
     notifyablescrollcontentwidget.h \
     notifyingscrollarea.h \
-    contentiteminfo.h
+    contentiteminfo.h \
+    imageitemwidget.h
 
 SOURCES += \
     contentwidget.cpp \
     contentwidgetitemfactory.cpp \
-    imageitem.cpp \
     imagewidget.cpp \
     navigatorwidget.cpp \
     notifyablescrollcontentwidget.cpp \
     notifyingscrollarea.cpp \
-    contentiteminfo.cpp
+    contentiteminfo.cpp \
+    imageitemwidget.cpp
 
 FORMS += \
     navigatorwidget.ui
