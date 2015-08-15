@@ -43,8 +43,7 @@ HEADERS += \
     longscroll-qt_global.h \
     navigatorwidget.h \
     notifyablescrollcontentwidget.h \
-    notifyingscrollarea.h \
-    scrollshwablewidget.h
+    notifyingscrollarea.h
 
 SOURCES += \
     contentwidget.cpp \
@@ -54,8 +53,7 @@ SOURCES += \
     imginfo.cpp \
     navigatorwidget.cpp \
     notifyablescrollcontentwidget.cpp \
-    notifyingscrollarea.cpp \
-    scrollshwablewidget.cpp
+    notifyingscrollarea.cpp
 
 FORMS += \
     navigatorwidget.ui
