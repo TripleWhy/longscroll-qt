@@ -1,12 +1,12 @@
 #ifndef IMAGEITEM_H
 #define IMAGEITEM_H
 
-#include "notifyablescrollcontentwidget.h"
 #include "imginfo.h"
+#include <QFrame>
 
 class ImageWidget;
 
-class ImageItem : public NotifyableScrollContentWidget
+class ImageItem : public QFrame
 {
 protected:
 	ImageWidget * label = 0;
@@ -16,14 +16,18 @@ protected:
 public:
 	ImgInfo info;
 
+protected:
+	ImageItem(ImgInfo const & info, bool fit, bool loadImage, QWidget * parent);
 public:
-	ImageItem(ImgInfo const & info, bool fit = false);
+	ImageItem(ImgInfo const & info, bool fit = false, QWidget * parent = 0);
 	~ImageItem();
-	void setHeight(int h);
-	virtual QSize sizeHint() const override;
 
 protected:
-	virtual void setShowing(bool visible) override;
+	void loadImage();
+
+public:
+	void setHeight(int h);
+	virtual QSize sizeHint() const override;
 };
 
 #endif // IMAGEITEM_H

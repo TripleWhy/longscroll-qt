@@ -55,9 +55,7 @@ void NotifyingScrollArea::findVisible()
 	QList<NotifyableScrollContentWidget *> const & widgets = wid->findChildren<NotifyableScrollContentWidget *>(QString(), Qt::FindDirectChildrenOnly);
 	for (NotifyableScrollContentWidget * it : widgets)
 	{
-		bool show = region.contains(it->geometry());
-		it->showing( show );
-		if (show && it->usesShowingRect())
+		if (region.contains(it->geometry()))
 		{
 			QRect && r = region.boundingRect().intersected(it->geometry());
 			r.setTopLeft( it->mapFromParent(r.topLeft()) );

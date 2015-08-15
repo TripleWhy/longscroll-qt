@@ -12,6 +12,5 @@ QWidget * ContentWidgetImageItemFactory::createItemWidget(const ImgInfo & info, 
 	Q_UNUSED(width);
 	Q_UNUSED(height);
 	ImageItem * item = new ImageItem(info, imageFit);
-	item->showing(true);
 	return item;
 }

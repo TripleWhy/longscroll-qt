@@ -3,7 +3,6 @@
 
 #include "longscroll-qt_global.h"
 #include "notifyablescrollcontentwidget.h"
-#include <QLabel>
 
 class NavigatorWidget;
 struct ImgInfo;
@@ -88,7 +87,6 @@ public:
 	void setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY);
 
 	virtual QSize sizeHint() const override;
-	virtual bool usesShowingRect() override;
 	virtual void showingRect(QRect const & rect) override;
 
 private:
@@ -112,7 +110,6 @@ protected:
 	void alignRow(RowInfo & row);
 
 protected:
-	virtual void setShowing(bool visible) override;
 	int rowAt(int y, bool * onNavigator = 0);
 	int colAt(int x, int row);
 	int colAt(int x, RowInfo const & row);

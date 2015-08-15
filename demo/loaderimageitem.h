@@ -17,9 +17,6 @@ public:
 	LoaderImageItem(ImgInfo const & info, bool fit = false);
 	~LoaderImageItem();
 
-protected:
-	virtual void setShowing(bool visible) override;
-
 private slots:
 	void requestFinished(QString const & /*fileName*/, QObject const * receiver, QPixmap const & px);
 };

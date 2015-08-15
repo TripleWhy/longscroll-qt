@@ -83,11 +83,6 @@ QSize ContentWidget::sizeHint() const
 	return size;
 }
 
-bool ContentWidget::usesShowingRect()
-{
-	return true;
-}
-
 void ContentWidget::showingRect(const QRect & rect)
 {
 #if CONTENTWIDGET_MEASURE_SHOWINGRECT
@@ -527,12 +522,6 @@ void ContentWidget::alignRow(ContentWidget::RowInfo & row)
 #if CONTENTWIDGET_LAZY_ALIGN
 	row.aligned = true;
 #endif
-}
-
-void ContentWidget::setShowing(bool visible)
-{
-	if (!visible)
-		showingRect(QRect());
 }
 
 int ContentWidget::rowAt(int y, bool * onNavigator)

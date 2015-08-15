@@ -2,18 +2,37 @@
 #include "imagewidget.h"
 #include <QVBoxLayout>
 
-ImageItem::ImageItem(const ImgInfo & info, bool fit)
-    : NotifyableScrollContentWidget(),
+ImageItem::ImageItem(const ImgInfo & info, bool fit, bool doLoadImage, QWidget * parent)
+    : QFrame(parent),
       fit(fit),
       info(info)
 {
 	new QVBoxLayout(this);
 	layout()->setMargin(0);
 	layout()->setSpacing(0);
+
+	label = new ImageWidget();
+	label->setFit(fit);
+	layout()->addWidget(label);
+
+	if (doLoadImage)
+		loadImage();
+}
+
+ImageItem::ImageItem(const ImgInfo & info, bool fit, QWidget * parent)
+    : ImageItem(info, fit, true, parent)
+{
 }
 
 ImageItem::~ImageItem()
 {
+}
+
+void ImageItem::loadImage()
+{
+	QPixmap px;
+	px.load(info.fileName);
+	label->setPixmap(px);
 }
 
 void ImageItem::setHeight(int h)
@@ -28,24 +47,4 @@ void ImageItem::setHeight(int h)
 QSize ImageItem::sizeHint() const
 {
 	return size;
-}
-
-void ImageItem::setShowing(bool visible)
-{
-	if (visible)
-	{
-		if (label != 0)
-			return;
-		label = new ImageWidget();
-		label->setFit(fit);
-		QPixmap px;
-		px.load(info.fileName);
-		label->setPixmap(px);
-		layout()->addWidget(label);
-	}
-	else
-	{
-		delete label;
-		label = 0;
-	}
 }

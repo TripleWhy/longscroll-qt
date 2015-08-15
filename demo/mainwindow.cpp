@@ -20,6 +20,7 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 		default:
 		case 0:
 			cw = new ContentWidget();
+			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 		case 1:
 			cw = new ContentWidget(100, 100, false, false, false, 200);
