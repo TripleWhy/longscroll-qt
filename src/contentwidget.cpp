@@ -17,8 +17,6 @@
 # include <QElapsedTimer>
 #endif
 
-// This file was written the quick way, and could surely be opitmized to perform faster. However it does not seem to be neccessary.
-
 ContentWidget::ContentWidget(QWidget * parent)
 	: NotifyableScrollContentWidget(parent)
 {
@@ -349,7 +347,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	}
 
 #if CONTENTWIDGET_MEASURE_SETINFOS
-	int elapsed = t.elapsed();
+	qint64 elapsed = t.elapsed();
 	qDebug() << "ContentWidget::setItemInfos took" << elapsed << "ms";
 #endif
 }
