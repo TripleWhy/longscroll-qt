@@ -15,21 +15,17 @@ CONFIG(release, debug|release): LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -llongscrol
 CONFIG(debug, debug|release):   LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -llongscroll-qtd
 
 HEADERS += \
-    itemtype1.h \
     mainwindow.h \
     itemfactories.h \
     imageloader.h \
-    loaderimageitem.h \
-    loadernavigatorwidget.h
+    loaderimageitem.h
 
 SOURCES += \
-    itemtype1.cpp \
     main.cpp \
     mainwindow.cpp \
     itemfactories.cpp \
     imageloader.cpp \
-    loaderimageitem.cpp \
-    loadernavigatorwidget.cpp
+    loaderimageitem.cpp
 
 FORMS += \
     itemtype1.ui \

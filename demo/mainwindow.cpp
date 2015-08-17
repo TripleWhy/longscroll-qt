@@ -32,7 +32,7 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 			break;
 		case 3:
 			cw = new ContentWidget(100, 200, false, false, false, 200);
-			cwif = new ContentWidgetImageInfoItemFactory();
+			cwif = new ContentWidgetImageInfoFactory();
 			break;
 	}
 	if (cwif != 0)

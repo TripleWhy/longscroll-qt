@@ -20,8 +20,41 @@ CONFIG(release, debug|release): RD = release
 CONFIG(debug, debug|release):   RD = debug
 include( longscroll-qt_dst-dir.pri )
 
+
+PUBLIC_HEADERS += \
+    contentwidget.h \
+    contentwidgetitemfactory.h \
+    imagewidget.h \
+    longscroll-qt_global.h \
+    navigatorwidget.h \
+    notifyablescrollcontentwidget.h \
+    notifyingscrollarea.h \
+    contentiteminfo.h \
+    imageitemwidget.h \
+    imageinfowidget.h
+
+PRIVATE_HEADERS += \
+
+HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
+
+SOURCES += \
+    contentwidget.cpp \
+    contentwidgetitemfactory.cpp \
+    imagewidget.cpp \
+    navigatorwidget.cpp \
+    notifyablescrollcontentwidget.cpp \
+    notifyingscrollarea.cpp \
+    contentiteminfo.cpp \
+    imageitemwidget.cpp \
+    imageinfowidget.cpp
+
+FORMS += \
+    navigatorwidget.ui \
+    imageinfowidget.ui
+
+
 headersDataFiles.path = $$LONGSCROLLQT_DST_DIR/include/longscroll-qt
-headersDataFiles.files = $$PWD/*.h
+headersDataFiles.files = $$PUBLIC_HEADERS
 
 linux: libraryFiles.path = $$LONGSCROLLQT_DST_DIR/lib
 win32 {
@@ -32,32 +65,3 @@ win32 {
 
 INSTALLS += headersDataFiles
 INSTALLS += libraryFiles
-
-
-
-HEADERS += \
-    contentwidget.h \
-    contentwidgetitemfactory.h \
-    imagewidget.h \
-    longscroll-qt_global.h \
-    navigatorwidget.h \
-    notifyablescrollcontentwidget.h \
-    notifyingscrollarea.h \
-    contentiteminfo.h \
-    imageitemwidget.h
-
-SOURCES += \
-    contentwidget.cpp \
-    contentwidgetitemfactory.cpp \
-    imagewidget.cpp \
-    navigatorwidget.cpp \
-    notifyablescrollcontentwidget.cpp \
-    notifyingscrollarea.cpp \
-    contentiteminfo.cpp \
-    imageitemwidget.cpp
-
-FORMS += \
-    navigatorwidget.ui
-
-OTHER_FILES += \
-    longscroll-qt_dst-dir.pri

@@ -21,4 +21,13 @@ public:
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int width, int height) override;
 };
 
+class ContentWidgetImageInfoFactory : public ContentWidgetItemFactory
+{
+private:
+	bool imageFit;
+public:
+	using ContentWidgetItemFactory::ContentWidgetItemFactory;
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int width, int height) override;
+};
+
 #endif // CONTENTWIDGETITEMFACTORY_H

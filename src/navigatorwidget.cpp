@@ -1,33 +1,46 @@
 #include "navigatorwidget.h"
 #include "ui_navigatorwidget.h"
+#include "imageinfowidget.h"
 
-NavigatorWidget::NavigatorWidget(QWidget *parent) :
-    QFrame(parent),
-    ui(new Ui::NavigatorWidget)
+void NavigatorWidget::setItemInfo(const ContentItemInfo & info)
+{
+	if (itemInfo == info)
+		return;
+	itemInfo = info;
+}
+
+AbstractNavigatorWidget::AbstractNavigatorWidget(QWidget *parent) :
+    NavigatorWidget(parent),
+    ui(new Ui::AbstractNavigatorWidget)
 {
 	ui->setupUi(this);
+
+	closeButton = ui->closeButton;
+	nextButton = ui->nextButton;
+	prevButton = ui->prevButton;
+	infoWidget = ui->infoWidget;
+	mainLayout = ui->mainLayout;
 
 	connect(ui->prevButton, SIGNAL(clicked()), this, SIGNAL(previousImageRequested()));
 	connect(ui->nextButton, SIGNAL(clicked()), this, SIGNAL(nextImageRequested()));
 	connect(ui->closeButton, SIGNAL(clicked()), this, SIGNAL(closeRequested()));
 }
 
-NavigatorWidget::~NavigatorWidget()
+AbstractNavigatorWidget::~AbstractNavigatorWidget()
 {
 	delete ui;
 }
 
-void NavigatorWidget::setImage(const ContentItemInfo &info)
+
+ImageNavigatorWidget::ImageNavigatorWidget(QWidget * parent)
+    : AbstractNavigatorWidget(parent)
 {
-	if (img == info)
-		return;
+	imgContent = new ImageInfoWidget();
+	infoWidget->layout()->addWidget(imgContent);
+}
 
-	img = info;
-
-	ui->label_2->setText(info.data.toString());
-	ui->label_3->setText(QString(tr("Size: %1 x %2").arg(info.width).arg(info.height)));
-
-	QPixmap px;
-	px.load(img.data.toString());
-	ui->imageWidget->setPixmap(px);
+void ImageNavigatorWidget::setItemInfo(const ContentItemInfo & info)
+{
+	AbstractNavigatorWidget::setItemInfo(info);
+	imgContent->setItemInfo(info);
 }

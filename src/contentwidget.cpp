@@ -24,12 +24,8 @@ ContentWidget::ContentWidget(QWidget * parent)
 {
 	itemFactory = new ContentWidgetImageItemFactory(false, this);
 
-	navigator = new NavigatorWidget(this);
+	setNavigatorWidget(new ImageNavigatorWidget(this));
 	navigator->setVisible(false);
-
-	connect(navigator, SIGNAL(closeRequested()), this, SLOT(hideNavigator()));
-	connect(navigator, SIGNAL(nextImageRequested()), this, SLOT(navigatorNext()));
-	connect(navigator, SIGNAL(previousImageRequested()), this, SLOT(navigatorPrev()));
 
 #if CONTENTWIDGET_DEMO_STYLESHEETS
 	setStyleSheet("QWidget { background: green; } ImageItem { background: blue; } QLabel { background: red; }");
@@ -57,6 +53,26 @@ void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 	delete itemFactory;
 	factory->setParent(this);
 	itemFactory = factory;
+}
+
+void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
+{
+	if (navigator == nav)
+		return;
+
+	nav->setParent(this);
+	if (navigator != 0)
+	{
+		nav->setGeometry(navigator->geometry());
+		nav->setVisible(navigator->isVisible());
+		navigator->setVisible(false);
+		navigator->deleteLater();
+	}
+	navigator = nav;
+
+	connect(navigator, SIGNAL(closeRequested()), this, SLOT(hideNavigator()));
+	connect(navigator, SIGNAL(nextImageRequested()), this, SLOT(navigatorNext()));
+	connect(navigator, SIGNAL(previousImageRequested()), this, SLOT(navigatorPrev()));
 }
 
 void ContentWidget::setItemTrackingEnabled(bool enabled)
@@ -491,7 +507,8 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 	Q_ASSERT(rowWidgets.size() == rowInfosNew.size());
 	rowInfos.swap(rowInfosNew);
 
-	updateNavigator(navRow, navCol);
+	if (navigatorVisible)
+		updateNavigator(navRow, navCol);
 
 	if (calculateChanges)
 		return rowInfos != rowInfosNew;
@@ -648,7 +665,7 @@ void ContentWidget::showNavigator(const int row, const int col, const bool block
 
 	navigatorVisible = true;
 	navigatorImg = rowInfos[row].items[col].img;
-	navigator->setImage(*rowInfos[row].items[col].img);
+	navigator->setItemInfo(*rowInfos[row].items[col].img);
 	updateNavigator(row, col);
 	navigator->setVisible(true);
 

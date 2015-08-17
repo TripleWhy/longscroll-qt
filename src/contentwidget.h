@@ -82,7 +82,7 @@ public:
 	~ContentWidget();
 
 	void setItemFactory(ContentWidgetItemFactory * factory);
-	//Item Tracking works better when this ContentWidget is placed inside a NotifyingScrollArea
+	void setNavigatorWidget(NavigatorWidget * nav);
 	void setItemTrackingEnabled(bool enabled);
 	void setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY);
 
