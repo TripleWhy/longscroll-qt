@@ -8,7 +8,7 @@ class NavigatorWidget;
 struct ContentItemInfo;
 class ContentWidgetItemFactory;
 
-#define CONTENTWIDGET_LAZY_ALIGN 1
+#define CONTENTWIDGET_VARIABLE_ROW_HEIGHT 1
 class LONGSCROLLQT_EXPORT ContentWidget : public NotifyableScrollContentWidget
 {
 	Q_OBJECT
@@ -28,8 +28,9 @@ private:
 		QList<ItemInfo> items;
 		int y = 0;
 		bool displaying = false;
-#if CONTENTWIDGET_LAZY_ALIGN
 		bool aligned = false;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+		int height;
 #endif
 	};
 	friend bool operator==(ContentWidget::RowInfo const & lhs, ContentWidget::RowInfo const & rhs);
@@ -47,6 +48,9 @@ protected:
 	bool align = true;
 	bool alignLast = false;
 	int navigatorHeight = 500;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	bool scaleRows = false;
+#endif
 	ContentWidgetItemFactory * itemFactory;
 
 private:
@@ -108,6 +112,9 @@ public:
 protected:
 	bool calculateSize(bool const calculateChanges = false);
 	void alignRow(RowInfo & row);
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	void scaleRow(RowInfo & row);
+#endif
 
 protected:
 	int rowAt(int y, bool * onNavigator = 0);

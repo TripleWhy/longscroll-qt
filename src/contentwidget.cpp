@@ -193,10 +193,8 @@ void ContentWidget::updateRows()
 		if (row.displaying)
 			continue;
 		row.displaying = true;
-#if CONTENTWIDGET_LAZY_ALIGN
 		if (!row.aligned)
 			alignRow(row);
-#endif
 		showRow(row, i);
 	}
 }
@@ -222,7 +220,12 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 		rowWidget = new QWidget(this);
 		rowWidgets[rowIndex] = rowWidget;
 	}
-	rowWidget->setGeometry(0, rowInfo.y, visibleRect.width(), rowHeight);
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	int const & rowH = rowInfo.height;
+#else
+	int const & rowH = rowHeight;
+#endif
+	rowWidget->setGeometry(0, rowInfo.y, visibleRect.width(), rowH);
 
 	for (int i = 0; i < rowInfo.items.size(); ++i)
 	{
@@ -241,7 +244,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			}
 			else
 			{
-				itemWidget = createItemWidget(*item.img, item.width, rowHeight);
+				itemWidget = createItemWidget(*item.img, item.width, rowH);
 				itemWidgets[item.index] = itemWidget;
 #if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
 				if (item.index == trackingItem.index)
@@ -250,7 +253,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			}
 		}
 		itemWidget->setParent(rowWidget);
-		itemWidget->setGeometry(item.x, 0, item.width, rowHeight);
+		itemWidget->setGeometry(item.x, 0, item.width, rowH);
 	}
 	rowWidget->setVisible(true);
 }
@@ -393,13 +396,15 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 			{
 				item.x = rowWidth + xSpacing;
 				row.items.append(item);
-#if CONTENTWIDGET_LAZY_ALIGN
 				row.aligned = !align;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+				row.height = rowHeight;
+				if (scaleRows)
+					scaleRow(row);
+				y += row.height + ySpacing;
 #else
-				if (align)
-					alignRow(row);
-#endif
 				y += rowHeight + ySpacing;
+#endif
 				rowInfosNew.append(row);
 				row = RowInfo();
 				row.y = y;
@@ -407,13 +412,15 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 			}
 			else	//underfill
 			{
-#if CONTENTWIDGET_LAZY_ALIGN
 				row.aligned = !align;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+				row.height = rowHeight;
+				if (scaleRows)
+					scaleRow(row);
+				y += row.height + ySpacing;
 #else
-				if (align)
-					alignRow(row);
-#endif
 				y += rowHeight + ySpacing;
+#endif
 				rowInfosNew.append(row);
 				row = RowInfo();
 				row.y = y;
@@ -438,14 +445,16 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 	size.setWidth(visibleRect.width());
 	if (!row.items.isEmpty())
 	{
-#if CONTENTWIDGET_LAZY_ALIGN
 		row.aligned = !alignLast;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+		row.height = rowHeight;
+		if (scaleRows && alignLast)
+			scaleRow(row);
+		size.setHeight(y + row.height);
 #else
-		if (alignLast)
-			alignRow(row);
+		size.setHeight(y + rowHeight);
 #endif
 		rowInfosNew.append(row);
-		size.setHeight(y + rowHeight);
 	}
 	else
 	{
@@ -521,37 +530,84 @@ void ContentWidget::alignRow(ContentWidget::RowInfo & row)
 	int sumWidth = 0;
 	for (int i = 0; i < n; ++i)
 		sumWidth += row.items[i].width;
+
 	//TODO: is the same result possible using integers?
+	double const r = double(width) / double(sumWidth);
 	double x = 0;
 	int ix = 0;
 	for (int i = 0; i < n; ++i)
 	{
 		ItemInfo & item = row.items[i];
-		double w = double(row.items[i].width) * width / double(sumWidth);
+		double w = double(row.items[i].width) * r;
 		item.x = ix;
 		item.width = qRound(w + (x - ix));
 		ix += item.width + xSpacing;
 		x += w + xSpacing;
 	}
 	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
-#if CONTENTWIDGET_LAZY_ALIGN
 	row.aligned = true;
-#endif
 }
+
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+void ContentWidget::scaleRow(ContentWidget::RowInfo & row)
+{
+	int const n = row.items.size();
+	double const width = double(visibleRect.width() - xSpacing * (row.items.size() - 1));
+	int sumWidth = 0;
+	for (int i = 0; i < n; ++i)
+		sumWidth += row.items[i].width;
+
+	double const r = double(width) / double(sumWidth);
+	double x = 0;
+	int ix = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		ItemInfo & item = row.items[i];
+		double w = double(row.items[i].width) * r;
+		item.x = ix;
+		item.width = qRound(w + (x - ix));
+		ix += item.width + xSpacing;
+		x += w + xSpacing;
+	}
+	row.height = qRound(row.height * r);
+	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
+	row.aligned = true;
+}
+#endif
 
 int ContentWidget::rowAt(int y, bool * onNavigator)
 {
 	if (onNavigator != 0)
 		*onNavigator = false;
 	int row = y / (rowHeight + ySpacing);
-	if (navigatorVisible && row > navigatorRow)
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	if (scaleRows)
 	{
-		row = (y - navigatorHeight) / (rowHeight + ySpacing);
-		if (row <= navigatorRow)
+		int const size = rowInfos.size();
+		while (row < size && rowInfos[row].y < y)
+			row++;
+		while (row >= size || rowInfos[row].y > y)
+			row--;
+
+		if (onNavigator != 0)
 		{
-			if (onNavigator != 0)
+			RowInfo const & rowInfo = rowInfos[row];
+			if (y > rowInfo.y + rowInfo.height)
 				*onNavigator = true;
-			row = navigatorRow;
+		}
+	}
+	else
+#endif
+	{
+		if (navigatorVisible && row > navigatorRow)
+		{
+			row = (y - navigatorHeight - ySpacing) / (rowHeight + ySpacing);
+			if (row <= navigatorRow)
+			{
+				if (onNavigator != 0)
+					*onNavigator = true;
+				row = navigatorRow;
+			}
 		}
 	}
 	return row;
@@ -679,7 +735,14 @@ void ContentWidget::updateNavigator(const int row, const int col)
 	navigatorRow = row;
 	navigatorColumn = col;
 
-	navigator->setGeometry(0, (navigatorRow + 1) * (rowHeight + ySpacing), visibleRect.width(), navigatorHeight);
+	RowInfo const & rowInfo = rowInfos.at(row);
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	int const & rowH = rowInfo.height;
+#else
+	int const & rowH = rowHeight;
+#endif
+	int const y = rowInfo.y + rowH + ySpacing;
+	navigator->setGeometry(0, y, visibleRect.width(), navigatorHeight);
 }
 
 void ContentWidget::hideNavigator()
