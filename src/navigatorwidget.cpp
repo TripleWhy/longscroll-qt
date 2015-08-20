@@ -21,6 +21,10 @@ AbstractNavigatorWidget::AbstractNavigatorWidget(QWidget *parent) :
 	infoWidget = ui->infoWidget;
 	mainLayout = ui->mainLayout;
 
+	ui->prevButton->setShortcut(QKeySequence("Left"));
+	ui->nextButton->setShortcut(QKeySequence("Right"));
+	ui->closeButton->setShortcut(QKeySequence("Esc"));
+
 	connect(ui->prevButton, SIGNAL(clicked()), this, SIGNAL(previousImageRequested()));
 	connect(ui->nextButton, SIGNAL(clicked()), this, SIGNAL(nextImageRequested()));
 	connect(ui->closeButton, SIGNAL(clicked()), this, SIGNAL(closeRequested()));
