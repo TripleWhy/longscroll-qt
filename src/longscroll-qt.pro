@@ -11,8 +11,13 @@ VERSION = 2.0.0
 CONFIG += dll
 
 CONFIG += c++11
-QMAKE_CXXFLAGS_RELEASE += -Ofast
-QMAKE_CXXFLAGS_WARN_ON += -Wextra -Wconversion -Werror=return-type   -Wpedantic -Wcast-qual -Wcast-align -Wwrite-strings
+*-g++*|*-clang*|*-icc* {
+	QMAKE_CXXFLAGS_RELEASE += -Ofast
+	QMAKE_CXXFLAGS_WARN_ON += -Wextra -Wconversion -Werror=return-type   -Wpedantic -Wcast-qual -Wcast-align -Wwrite-strings
+} else:*-msvc* {
+	QMAKE_CXXFLAGS_RELEASE += /O2
+}
+
 
 DEFINES += LONGSCROLLQT_LIBRARY
 
