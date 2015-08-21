@@ -1,5 +1,6 @@
 #include "contentiteminfo.h"
 #include <QFileInfo>
+#include <QSize>
 
 ContentItemInfo::ContentItemInfo()
 {
@@ -12,6 +13,11 @@ ContentItemInfo::ContentItemInfo(QVariant const & data, int width, int height)
 {
 	if (width != 0 && height != 0)
 		r = double(width) / double(height);
+}
+
+ContentItemInfo::ContentItemInfo(const QVariant & data, const QSize & size)
+    : ContentItemInfo(data, size.width(), size.height())
+{
 }
 
 int ContentItemInfo::widthForHeight(int height) const
@@ -30,10 +36,21 @@ bool operator==(const ContentItemInfo & lhs, const ContentItemInfo & rhs)
 	return lhs.data == rhs.data;
 }
 
-
 bool operator!=(const ContentItemInfo & lhs, const ContentItemInfo & rhs)
 {
 	return !(lhs == rhs);
+}
+
+QDataStream &operator<<(QDataStream & ds, const ContentItemInfo & ci)
+{
+	ds << ci.valid << ci.width << ci.height << ci.r << ci.data;
+	return ds;
+}
+
+QDataStream &operator>>(QDataStream & ds, ContentItemInfo & ci)
+{
+	ds >> ci.valid >> ci.width >> ci.height >> ci.r >> ci.data;
+	return ds;
 }
 
 
