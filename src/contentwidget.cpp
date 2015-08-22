@@ -58,6 +58,13 @@ void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
 	if (navigator == nav)
 		return;
 
+	bool updatesBlocked = false;
+	if (navigator != 0 && navigator->isVisible() && updatesEnabled())
+	{
+		updatesBlocked = true;
+		setUpdatesEnabled(false);
+	}
+
 	nav->setParent(this);
 	if (navigator != 0)
 	{
@@ -71,6 +78,9 @@ void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
 	connect(navigator, SIGNAL(closeRequested()), this, SLOT(hideNavigator()));
 	connect(navigator, SIGNAL(nextImageRequested()), this, SLOT(navigatorNext()));
 	connect(navigator, SIGNAL(previousImageRequested()), this, SLOT(navigatorPrev()));
+
+	if (updatesBlocked)
+		setUpdatesEnabled(true);
 }
 
 void ContentWidget::setItemTrackingEnabled(bool enabled)
