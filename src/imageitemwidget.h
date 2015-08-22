@@ -1,12 +1,13 @@
 #ifndef IMAGEITEMWIDGET_H
 #define IMAGEITEMWIDGET_H
 
+#include "longscroll-qt_global.h"
 #include "contentiteminfo.h"
 #include <QFrame>
 
 class ImageWidget;
 
-class ImageItemWidget : public QFrame
+class LONGSCROLLQT_EXPORT ImageItemWidget : public QFrame
 {
 protected:
 	ImageWidget * label = 0;

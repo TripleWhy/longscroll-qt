@@ -1,10 +1,13 @@
 #ifndef NAVIGATORWIDGET_H
 #define NAVIGATORWIDGET_H
 
-#include <QFrame>
+#include "longscroll-qt_global.h"
 #include "contentiteminfo.h"
+#include <QFrame>
 
-class NavigatorWidget : public QFrame
+class ImageInfoWidget;
+
+class LONGSCROLLQT_EXPORT NavigatorWidget : public QFrame
 {
 	Q_OBJECT
 public:
@@ -28,11 +31,11 @@ class AbstractNavigatorWidget;
 class QToolButton;
 class QGridLayout;
 
-class AbstractNavigatorWidget : public NavigatorWidget
+class LONGSCROLLQT_EXPORT AbstractNavigatorWidget : public NavigatorWidget
 {
 	Q_OBJECT
 public:
-	explicit AbstractNavigatorWidget(QWidget *parent = 0);
+	explicit AbstractNavigatorWidget(QWidget *parent = 0, Qt::WindowFlags f = 0);
 	~AbstractNavigatorWidget();
 
 protected:
@@ -47,13 +50,11 @@ private:
 };
 
 
-class ImageInfoWidget;
-
-class ImageNavigatorWidget : public AbstractNavigatorWidget
+class LONGSCROLLQT_EXPORT ImageNavigatorWidget : public AbstractNavigatorWidget
 {
 	Q_OBJECT
 public:
-	explicit ImageNavigatorWidget(QWidget *parent = 0);
+	explicit ImageNavigatorWidget(QWidget *parent = 0, Qt::WindowFlags f = 0);
 
 	virtual void setItemInfo(ContentItemInfo const & info) override;
 

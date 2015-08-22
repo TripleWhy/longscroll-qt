@@ -1,9 +1,10 @@
 #ifndef CONTENTITEMINFO_H
 #define CONTENTITEMINFO_H
 
+#include "longscroll-qt_global.h"
 #include <QVariant>
 
-struct ContentItemInfo
+struct LONGSCROLLQT_EXPORT ContentItemInfo
 {
 	bool valid = true;
 	int width = 0;
@@ -18,12 +19,12 @@ struct ContentItemInfo
 	int widthForHeight(int height) const;
 	int heightForWidth(int width) const;
 };
-bool operator==(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
-bool operator!=(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
-QDataStream &operator<<(QDataStream & ds, ContentItemInfo const & ci);
-QDataStream &operator>>(QDataStream & ds, ContentItemInfo & ci);
+LONGSCROLLQT_EXPORT bool operator==(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
+LONGSCROLLQT_EXPORT bool operator!=(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
+LONGSCROLLQT_EXPORT QDataStream &operator<<(QDataStream & ds, ContentItemInfo const & ci);
+LONGSCROLLQT_EXPORT QDataStream &operator>>(QDataStream & ds, ContentItemInfo & ci);
 
-struct ImageContentItemInfo : public ContentItemInfo
+struct LONGSCROLLQT_EXPORT ImageContentItemInfo : public ContentItemInfo
 {
 	ImageContentItemInfo();
 	ImageContentItemInfo(QString const & getFileName, int width, int height);

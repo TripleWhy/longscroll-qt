@@ -1,10 +1,12 @@
 #ifndef IMAGEWIDGET_H
 #define IMAGEWIDGET_H
 
+#include "longscroll-qt_global.h"
 #include <QFrame>
+
 class QLabel;
 
-class ImageWidget : public QFrame
+class LONGSCROLLQT_EXPORT ImageWidget : public QFrame
 {
 	Q_OBJECT
 

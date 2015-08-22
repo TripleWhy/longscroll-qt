@@ -1,9 +1,10 @@
 #ifndef NOTIFYINGSCROLLAREA_H
 #define NOTIFYINGSCROLLAREA_H
 
+#include "longscroll-qt_global.h"
 #include <QScrollArea>
 
-class NotifyingScrollArea : public QScrollArea
+class LONGSCROLLQT_EXPORT NotifyingScrollArea : public QScrollArea
 {
 	Q_OBJECT
 public:

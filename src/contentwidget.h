@@ -141,7 +141,4 @@ signals:
 	void scrollToRequest(int x, int y);
 };
 
-bool operator==(ContentWidget::ItemInfo const & lhs, ContentWidget::ItemInfo const & rhs);
-bool operator==(ContentWidget::RowInfo const & lhs, ContentWidget::RowInfo const & rhs);
-
 #endif // CONTENTWIDGET_H

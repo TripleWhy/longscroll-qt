@@ -1,9 +1,10 @@
 #ifndef NOTIFYABLESCROLLCONTENT_H
 #define NOTIFYABLESCROLLCONTENT_H
 
+#include "longscroll-qt_global.h"
 #include <QFrame>
 
-class NotifyableScrollContentWidget : public QFrame
+class LONGSCROLLQT_EXPORT NotifyableScrollContentWidget : public QFrame
 {
 public:
 	using QFrame::QFrame;

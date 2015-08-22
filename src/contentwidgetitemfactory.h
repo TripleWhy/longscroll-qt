@@ -1,18 +1,19 @@
 #ifndef CONTENTWIDGETITEMFACTORY_H
 #define CONTENTWIDGETITEMFACTORY_H
 
+#include "longscroll-qt_global.h"
 #include "contentiteminfo.h"
 #include <QObject>
 #include <QWidget>
 
-class ContentWidgetItemFactory : public QObject
+class LONGSCROLLQT_EXPORT ContentWidgetItemFactory : public QObject
 {
 public:
 	using QObject::QObject;
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int width, int height) = 0;
 };
 
-class ContentWidgetImageItemFactory : public ContentWidgetItemFactory
+class LONGSCROLLQT_EXPORT ContentWidgetImageItemFactory : public ContentWidgetItemFactory
 {
 private:
 	bool imageFit;
@@ -21,7 +22,7 @@ public:
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int width, int height) override;
 };
 
-class ContentWidgetImageInfoFactory : public ContentWidgetItemFactory
+class LONGSCROLLQT_EXPORT ContentWidgetImageInfoFactory : public ContentWidgetItemFactory
 {
 private:
 	bool imageFit;

@@ -9,8 +9,8 @@ void NavigatorWidget::setItemInfo(const ContentItemInfo & info)
 	itemInfo = info;
 }
 
-AbstractNavigatorWidget::AbstractNavigatorWidget(QWidget *parent) :
-    NavigatorWidget(parent),
+AbstractNavigatorWidget::AbstractNavigatorWidget(QWidget *parent, Qt::WindowFlags f) :
+    NavigatorWidget(parent, f),
     ui(new Ui::AbstractNavigatorWidget)
 {
 	ui->setupUi(this);
@@ -36,8 +36,8 @@ AbstractNavigatorWidget::~AbstractNavigatorWidget()
 }
 
 
-ImageNavigatorWidget::ImageNavigatorWidget(QWidget * parent)
-    : AbstractNavigatorWidget(parent)
+ImageNavigatorWidget::ImageNavigatorWidget(QWidget * parent, Qt::WindowFlags f)
+    : AbstractNavigatorWidget(parent, f)
 {
 	imgContent = new ImageInfoWidget();
 	infoWidget->layout()->addWidget(imgContent);
