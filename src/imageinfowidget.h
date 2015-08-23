@@ -9,6 +9,8 @@ namespace Ui {
 class ImageInfoWidget;
 }
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 class LONGSCROLLQT_EXPORT ImageInfoWidget : public QFrame
 {
 	Q_OBJECT
@@ -21,7 +23,9 @@ public:
 	void setItemInfo(ContentItemInfo const & info);
 
 private:
-	Ui::ImageInfoWidget *ui;
+	::Ui::ImageInfoWidget *ui;
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // IMAGEINFOWIDGET_H

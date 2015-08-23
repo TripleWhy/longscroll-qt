@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="ImageWidget" name="imageWidget"/>
+    <widget class="LONGSCROLLQT_NAMESPACE::ImageWidget" name="imageWidget"/>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -123,7 +123,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ImageWidget</class>
+   <class>LONGSCROLLQT_NAMESPACE::ImageWidget</class>
    <extends>QFrame</extends>
    <header>imagewidget.h</header>
    <container>1</container>

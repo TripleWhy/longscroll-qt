@@ -4,6 +4,8 @@
 #include "longscroll-qt_global.h"
 #include "notifyablescrollcontentwidget.h"
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 class NavigatorWidget;
 struct ContentItemInfo;
 class ContentWidgetItemFactory;
@@ -140,5 +142,7 @@ signals:
 	void scrollRequest(int dx, int dy);
 	void scrollToRequest(int x, int y);
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // CONTENTWIDGET_H

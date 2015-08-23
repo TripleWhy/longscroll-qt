@@ -1,1 +1,5 @@
 #include "notifyablescrollcontentwidget.h"
+
+LONGSCROLLQT_NAMESPACE_BEGIN
+
+LONGSCROLLQT_NAMESPACE_END

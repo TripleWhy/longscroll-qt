@@ -6,6 +6,8 @@
 
 class QLabel;
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 class LONGSCROLLQT_EXPORT ImageWidget : public QFrame
 {
 	Q_OBJECT
@@ -33,5 +35,7 @@ public slots:
 	void setPixmap(QPixmap const & px);
 	void setFit(bool fit);
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // IMAGEWIDGET_H

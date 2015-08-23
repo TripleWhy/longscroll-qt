@@ -2,6 +2,8 @@
 #include "ui_navigatorwidget.h"
 #include "imageinfowidget.h"
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 void NavigatorWidget::setItemInfo(const ContentItemInfo & info)
 {
 	if (itemInfo == info)
@@ -48,3 +50,5 @@ void ImageNavigatorWidget::setItemInfo(const ContentItemInfo & info)
 	AbstractNavigatorWidget::setItemInfo(info);
 	imgContent->setItemInfo(info);
 }
+
+LONGSCROLLQT_NAMESPACE_END

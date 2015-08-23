@@ -5,6 +5,8 @@
 
 class ImageLoader;
 
+using namespace longscroll;
+
 class LoaderImageItem : public ImageItemWidget
 {
 	Q_OBJECT

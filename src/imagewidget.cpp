@@ -3,6 +3,8 @@
 #include <QResizeEvent>
 #include <QLabel>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 ImageWidget::ImageWidget(QWidget *parent) : QFrame(parent)
 {
 	imgLabel = new QLabel(this);
@@ -81,3 +83,5 @@ void ImageWidget::setFit(bool _fit)
 	fit = _fit;
 	relayout(size());
 }
+
+LONGSCROLLQT_NAMESPACE_END

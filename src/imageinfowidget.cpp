@@ -3,6 +3,8 @@
 #include <QImageReader>
 #include <QFileInfo>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 ImageInfoWidget::ImageInfoWidget(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::ImageInfoWidget)
@@ -65,3 +67,5 @@ void ImageInfoWidget::setItemInfo(const ContentItemInfo & info)
 	ui->errorLabel->setText(ir.errorString());
 	ui->errorLabel->setVisible(img.isNull());
 }
+
+LONGSCROLLQT_NAMESPACE_END

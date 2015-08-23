@@ -2,6 +2,8 @@
 #include "notifyablescrollcontentwidget.h"
 #include <QScrollBar>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 void NotifyingScrollArea::scrollBy(int dx, int dy)
 {
 	if (dx != 0)
@@ -57,3 +59,5 @@ void NotifyingScrollArea::findVisible()
 		}
 	}
 }
+
+LONGSCROLLQT_NAMESPACE_END

@@ -2,6 +2,8 @@
 #include "imagewidget.h"
 #include <QVBoxLayout>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, bool fit, bool doLoadImage, QWidget * parent)
     : QFrame(parent),
       fit(fit),
@@ -34,3 +36,5 @@ void ImageItemWidget::loadImage()
 	px.load(info.data.toString());
 	label->setPixmap(px);
 }
+
+LONGSCROLLQT_NAMESPACE_END

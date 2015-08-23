@@ -5,6 +5,8 @@
 #include "contentiteminfo.h"
 #include <QFrame>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 class ImageWidget;
 
 class LONGSCROLLQT_EXPORT ImageItemWidget : public QFrame
@@ -25,5 +27,7 @@ public:
 protected:
 	void loadImage();
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // IMAGEITEMWIDGET_H

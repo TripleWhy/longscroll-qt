@@ -2,6 +2,8 @@
 #include <QFileInfo>
 #include <QSize>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 ContentItemInfo::ContentItemInfo()
 {
 }
@@ -29,7 +31,6 @@ int ContentItemInfo::heightForWidth(int width) const
 {
 	return qRound(width / r);
 }
-
 
 bool operator==(const ContentItemInfo & lhs, const ContentItemInfo & rhs)
 {
@@ -78,3 +79,5 @@ void ImageContentItemInfo::setFileName(const QString & fileName)
 	valid = fi.exists(fileName);
 	data = fileName;
 }
+
+LONGSCROLLQT_NAMESPACE_END

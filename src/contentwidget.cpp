@@ -17,6 +17,8 @@
 # include <QElapsedTimer>
 #endif
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 ContentWidget::ContentWidget(QWidget * parent)
 	: NotifyableScrollContentWidget(parent)
 {
@@ -819,3 +821,5 @@ bool operator==(const ContentWidget::RowInfo & lhs, const ContentWidget::RowInfo
 {
 	return lhs.y == rhs.y && lhs.items == rhs.items;
 }
+
+LONGSCROLLQT_NAMESPACE_END

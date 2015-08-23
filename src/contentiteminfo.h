@@ -4,6 +4,8 @@
 #include "longscroll-qt_global.h"
 #include <QVariant>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 struct LONGSCROLLQT_EXPORT ContentItemInfo
 {
 	bool valid = true;
@@ -31,5 +33,7 @@ struct LONGSCROLLQT_EXPORT ImageContentItemInfo : public ContentItemInfo
 	QString const getFileName() const;
 	void setFileName(QString const & fileName);
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // CONTENTITEMINFO_H

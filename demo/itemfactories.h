@@ -3,6 +3,8 @@
 
 #include <longscroll-qt/contentwidgetitemfactory.h>
 
+using namespace longscroll;
+
 class ContentWidgetLoaderImageItemFactory : public ContentWidgetItemFactory
 {
 private:

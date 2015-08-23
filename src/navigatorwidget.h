@@ -5,6 +5,8 @@
 #include "contentiteminfo.h"
 #include <QFrame>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 class ImageInfoWidget;
 
 class LONGSCROLLQT_EXPORT NavigatorWidget : public QFrame
@@ -23,6 +25,9 @@ protected:
 	ContentItemInfo itemInfo;
 };
 
+LONGSCROLLQT_NAMESPACE_END
+
+
 
 namespace Ui {
 class AbstractNavigatorWidget;
@@ -30,6 +35,8 @@ class AbstractNavigatorWidget;
 
 class QToolButton;
 class QGridLayout;
+
+LONGSCROLLQT_NAMESPACE_BEGIN
 
 class LONGSCROLLQT_EXPORT AbstractNavigatorWidget : public NavigatorWidget
 {
@@ -61,5 +68,7 @@ public:
 private:
 	ImageInfoWidget * imgContent;
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // NAVIGATORWIDGET_H

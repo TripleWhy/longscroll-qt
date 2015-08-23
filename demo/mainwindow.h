@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <longscroll-qt/contentiteminfo.h>
 
+using namespace longscroll;
+
 namespace Ui {
 class MainWindow;
 }

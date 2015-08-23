@@ -4,6 +4,8 @@
 #include "longscroll-qt_global.h"
 #include <QScrollArea>
 
+LONGSCROLLQT_NAMESPACE_BEGIN
+
 class LONGSCROLLQT_EXPORT NotifyingScrollArea : public QScrollArea
 {
 	Q_OBJECT
@@ -21,5 +23,7 @@ protected:
 	virtual void hideEvent(QHideEvent * event) override;
 	void findVisible();
 };
+
+LONGSCROLLQT_NAMESPACE_END
 
 #endif // NOTIFYINGSCROLLAREA_H
