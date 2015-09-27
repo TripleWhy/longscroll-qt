@@ -60,13 +60,7 @@ FORMS += \
 
 headersDataFiles.path = $$LONGSCROLLQT_DST_DIR/include/longscroll-qt
 headersDataFiles.files = $$PUBLIC_HEADERS
-
-linux: libraryFiles.path = $$LONGSCROLLQT_DST_DIR/lib
-win32 {
-	libraryFiles.files = $$OUT_PWD/$$RD/*.a $$OUT_PWD/$$RD/*.prl $$OUT_PWD/$$RD/*.lib
-} else {
-	libraryFiles.files = $$OUT_PWD/*.so $$OUT_PWD/*.so.*
-}
-
 INSTALLS += headersDataFiles
-INSTALLS += libraryFiles
+
+target.path = $$LONGSCROLLQT_DST_DIR/lib
+INSTALLS += target
