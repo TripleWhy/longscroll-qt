@@ -138,6 +138,10 @@ private slots:
 private:
 	void navigatorPrevNext(bool next);
 
+public:
+	int findRow(int itemIndex);
+	void findRowCol(int & row, int & col, int itemIndex);
+
 signals:
 	void scrollRequest(int dx, int dy);
 	void scrollToRequest(int x, int y);

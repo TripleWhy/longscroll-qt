@@ -147,16 +147,10 @@ void ContentWidget::showingRect(const QRect & rect)
 		// changed == true implies itemTrackingEnabled == true
 		if (changed && trackingItem.index >= 0)
 		{
-			for (int r = 0, l = rowInfos.length(); r < l; ++r)
-			{
-				if (rowInfos[r].items.last().index >= trackingItem.index)
-				{
-					blockScroll = true;
-					emit scrollToRequest(0, rowInfos[r].y + trackingItemOffset - (trackingPoint.y() - rect.y()));
-					blockScroll = false;
-					break;
-				}
-			}
+			int const r = findRow(trackingItem.index);
+			blockScroll = true;
+			emit scrollToRequest(0, rowInfos[r].y + trackingItemOffset - (trackingPoint.y() - rect.y()));
+			blockScroll = false;
 		}
 	}
 	else
@@ -809,6 +803,21 @@ void ContentWidget::navigatorPrevNext(bool next)
 		emit scrollRequest( 0, navigator->y() - oldNaviY );
 		blockScroll = false;
 	}
+}
+
+int ContentWidget::findRow(int itemIndex)
+{
+	int const row = std::lower_bound(rowInfos.begin(), rowInfos.end(), itemIndex, [](RowInfo const & ri, int index){ return ri.items.last().index < index; }) - rowInfos.begin();
+	Q_ASSERT(rowInfos[row].items.first().index <= itemIndex);
+	Q_ASSERT(rowInfos[row].items.last().index >= itemIndex);
+	return row;
+}
+
+void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
+{
+	row = findRow(itemIndex);
+	col = itemIndex - rowInfos[row].items.first().index;
+	Q_ASSERT(rowInfos[row].items[col].index == itemIndex);
 }
 
 
