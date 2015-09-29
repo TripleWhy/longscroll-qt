@@ -325,11 +325,12 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 #endif
 
 	itemInfos = infos;
+	int const size = itemInfos.size();
 	imageWidths.clear();
-	imageWidths.reserve(itemInfos.size());
+	imageWidths.reserve(size);
 	qDeleteAll(itemWidgets);
 	itemWidgets.clear();
-	itemWidgets.reserve(itemInfos.size());
+	itemWidgets.reserve(size);
 	if (itemWidth == 0)
 	{
 		for (ContentItemInfo const & img : infos)
@@ -340,7 +341,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	}
 	else if (itemWidth < 0)
 	{
-		for (int i = 0; i < itemInfos.size(); ++i)
+		for (int i = 0; i < size; ++i)
 		{
 			imageWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
 			itemWidgets.append(0);
@@ -348,7 +349,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	}
 	else
 	{
-		for (int i = 0; i < itemInfos.size(); ++i)
+		for (int i = 0; i < size; ++i)
 		{
 			imageWidths.append(itemWidth);
 			itemWidgets.append(0);
