@@ -82,6 +82,14 @@ private:
 	QList<QWidget *> rowWidgets;
 	QList<QWidget *> itemWidgets;
 
+	bool handleMouseEvents = true;
+	bool dragEnabled = false;
+	QPoint mousePressPoint;
+	int mousePressRow = -1;
+	int mousePressCol = -1;
+	ItemInfo * mousePressItem = 0;
+	signed char mouseState = 0;	//0: none, 1: pressed, 3: dragging, -1: navigator pressed, -2: double clicked
+
 public:
 	ContentWidget(QWidget * parent = 0);
 	ContentWidget(int rowHeight, int itemWidth = 0, bool alignRows = true, bool alignLastRow = false, bool allowOverfill = true, int navigatorHeight = 500, QWidget *parent = 0);
@@ -125,9 +133,16 @@ protected:
 	void nextImage(int & row, int & col);
 	void previousImage(int & row, int & col);
 	virtual void mousePressEvent(QMouseEvent * event) override;
+	virtual void mouseMoveEvent(QMouseEvent * event) override;
+	virtual void mouseReleaseEvent(QMouseEvent * event) override;
+	virtual void mouseDoubleClickEvent(QMouseEvent * event) override;
+	virtual void startDrag(int row, int col, int itemIndex);
 
+public slots:
+	void showNavigator(int itemIndex);
+	void showNavigator(int const row, int const col);
 private:
-	void showNavigator(int const row, int const col, bool const blockUpdates = true);
+	void showNavigator(int const row, int const col, bool const blockUpdates);
 	void updateNavigator(int const row, int const col);
 
 private slots:
@@ -145,6 +160,10 @@ public:
 signals:
 	void scrollRequest(int dx, int dy);
 	void scrollToRequest(int x, int y);
+	void itemPressed(int row, int col, int itemIndex, Qt::MouseButtons buttons);
+	void itemReleased(int row, int col, int itemIndex, Qt::MouseButtons buttons);
+	void itemClicked(int row, int col, int itemIndex);
+	void itemDoubleClicked(int row, int col, int itemIndex);
 };
 
 LONGSCROLLQT_NAMESPACE_END

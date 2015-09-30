@@ -3,6 +3,7 @@
 #include "contentiteminfo.h"
 #include "contentwidgetitemfactory.h"
 #include <QMouseEvent>
+#include <QApplication>
 
 #define CONTENTWIDGET_MEASURE_SHOWINGRECT   0
 #define CONTENTWIDGET_MEASURE_CALCULATESIZE 0
@@ -31,6 +32,8 @@ ContentWidget::ContentWidget(QWidget * parent)
 	setStyleSheet("QWidget { background: green; } ImageItem { background: blue; } QLabel { background: red; }");
 	navigator->setStyleSheet("QWidget { background: darkgray; }");
 #endif
+
+	connect(this, SIGNAL(itemPressed(int,int,int,Qt::MouseButtons)), this, SLOT(showNavigator(int,int)));
 }
 
 ContentWidget::ContentWidget(int _rowHeight, int _itemWidth, bool alignRows, bool alignLastRow, bool _allowOverfill, int _navigatorHeight, QWidget * parent)
@@ -667,24 +670,114 @@ void ContentWidget::previousImage(int & row, int & col)
 
 void ContentWidget::mousePressEvent(QMouseEvent * event)
 {
+	if (!handleMouseEvents)
+	{
+		event->ignore();
+		return;
+	}
+	event->accept();
+	mouseState = 0;
+	bool onNavigator;
+	int row = rowAt(event->y(), &onNavigator);
+	if (onNavigator)
+	{
+		mouseState = -1;
+		return;
+	}
+	
+	int col = colAt(event->x(), row);
+	mouseState = 1;
+	ItemInfo * item = &rowInfos[row].items[col];
+
 	if (event->buttons() == Qt::LeftButton)
 	{
-		bool onNavigator;
-		int row = rowAt(event->y(), &onNavigator);
-		if (onNavigator)
-		{
-//			qDebug() << "navigator pressed";
-			event->ignore();
-			return;
-		}
-
-		int col = colAt(event->x(), row);
-//		qDebug() << "mouse press" << row << col;
-
-		showNavigator(row, col);
-
-		event->accept();
+		mousePressPoint = event->pos();
+		mousePressRow = row;
+		mousePressCol = col;
+		mousePressItem = item;
 	}
+	else
+	{
+		mousePressPoint = QPoint(-1, -1);
+		mousePressRow = -1;
+		mousePressCol = -1;
+		mousePressItem = 0;
+	}
+
+	emit itemPressed(row, col, item->index, event->buttons());
+}
+
+void ContentWidget::mouseMoveEvent(QMouseEvent * event)
+{
+	if (!handleMouseEvents)
+	{
+		event->ignore();
+		return;
+	}
+	event->accept();
+	if (event->buttons() == Qt::LeftButton
+	        && mouseState == 1
+	        && (mousePressPoint - event->pos()).manhattanLength() >= QApplication::startDragDistance())
+	{
+		mouseState = 2;
+		if (dragEnabled)
+			startDrag(mousePressRow, mousePressCol, mousePressItem->index);
+	}
+}
+
+void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
+{
+	if (!handleMouseEvents)
+	{
+		event->ignore();
+		return;
+	}
+
+	event->accept();
+
+	bool onNavigator;
+	int row = rowAt(event->y(), &onNavigator);
+	if (onNavigator)
+	{
+		mouseState = -1;
+		return;
+	}
+	int col = colAt(event->x(), row);
+	ItemInfo * item = &rowInfos[row].items[col];
+	emit itemReleased(row, col, item->index, event->buttons());
+
+	if (event->buttons() == Qt::NoButton && mouseState == 1 &&
+	        row == mousePressRow && col == mousePressCol && item == mousePressItem)
+		emit itemClicked(row, col, item->index);
+}
+
+void ContentWidget::mouseDoubleClickEvent(QMouseEvent * event)
+{
+	event->accept();
+	mouseState = -2;
+	bool onNavigator;
+	int row = rowAt(event->y(), &onNavigator);
+	if (onNavigator)
+		return;
+	int col = colAt(event->x(), row);
+	int itemIndex = rowInfos[row].items[col].index;
+	emit itemDoubleClicked(row, col, itemIndex);
+}
+
+void ContentWidget::startDrag(int /*row*/, int /*col*/, int /*itemIndex*/)
+{
+}
+
+void ContentWidget::showNavigator(int itemIndex)
+{
+	int row, col;
+	findRowCol(row, col, itemIndex);
+	showNavigator(row, col);
+}
+
+void ContentWidget::showNavigator(const int row, const int col)
+{
+	showNavigator(row, col, true);
 }
 
 void ContentWidget::showNavigator(const int row, const int col, const bool blockUpdates)
