@@ -58,8 +58,9 @@ int main(int argc, char *argv[])
 		if (!dir.exists())
 			continue;
 
-		qDebug() << "loading images from" << dir.absolutePath() << "...";
+		qDebug() << "loading file list for" << dir.absolutePath() << "...";
 		QFileInfoList const & files = dir.entryInfoList(fileNamefilters, QDir::Files | QDir::Readable);
+		qDebug() << "loading images from" << dir.absolutePath() << "...";
 		for (QFileInfo const & file : files)
 		{
 			QString const & fileName = file.absoluteFilePath();
