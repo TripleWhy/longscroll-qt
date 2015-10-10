@@ -253,7 +253,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			}
 			else
 			{
-				itemWidget = createItemWidget(*item.img, item.width, rowH);
+				itemWidget = createItemWidget(*item.item, item.width, rowH);
 				itemWidgets[item.index] = itemWidget;
 #if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
 				if (item.index == trackingItem.index)
@@ -379,10 +379,10 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 
 		ItemInfo item;
 		item.index = i;
-		item.img = &itemInfos[i];
+		item.item = &itemInfos[i];
 		item.width = width;
 
-		if (navigatorVisible && navigatorImg == item.img)
+		if (navigatorVisible && navigatorImg == item.item)
 		{
 			navRow = rowInfosNew.size();
 			navCol = row.items.size();
@@ -439,7 +439,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 				row.items.append(item);
 				rowWidth = width;
 
-				if (navigatorVisible && navigatorImg == item.img)
+				if (navigatorVisible && navigatorImg == item.item)
 				{
 					++navRow;
 					navCol = 0;
@@ -486,7 +486,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 		{
 			for (int j = 0, m = items1.size(); j < m; ++j)
 			{
-				if (items1[j].img != items2[j].img)
+				if (items1[j].item != items2[j].item)
 					equal = false;
 			}
 		}
@@ -818,8 +818,8 @@ void ContentWidget::showNavigator(const int row, const int col, const bool block
 	}
 
 	navigatorVisible = true;
-	navigatorImg = rowInfos[row].items[col].img;
-	navigator->setItemInfo(*rowInfos[row].items[col].img);
+	navigatorImg = rowInfos[row].items[col].item;
+	navigator->setItemInfo(*rowInfos[row].items[col].item);
 	updateNavigator(row, col);
 	navigator->setVisible(true);
 

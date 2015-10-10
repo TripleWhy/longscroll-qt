@@ -43,7 +43,7 @@ static QString fileSizeDisplayString(qint64 size)
 
 void ImageInfoWidget::setItemInfo(const ContentItemInfo & info)
 {
-	QFileInfo fi(info.data.toString());
+	QFileInfo fi(info.getData().toString());
 	QString const & fileName = fi.absoluteFilePath();
 	QImageReader ir(fileName);
 

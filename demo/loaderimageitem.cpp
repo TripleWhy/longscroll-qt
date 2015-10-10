@@ -8,13 +8,13 @@ LoaderImageItem::LoaderImageItem(const ContentItemInfo & info, bool fit)
 {
 	loader = ImageLoader::instance();
 	connect(loader, SIGNAL(imageLoaded(QString,const QObject*,QPixmap)), this, SLOT(requestFinished(QString,const QObject*,QPixmap)));
-	loader->addImageRequest(info.data.toString(), this);
+	loader->addImageRequest(info.getData().toString(), this);
 }
 
 LoaderImageItem::~LoaderImageItem()
 {
 	if (!imageSet)
-		loader->removeImageRequest(info.data.toString(), this);
+		loader->removeImageRequest(info.getData().toString(), this);
 }
 
 void LoaderImageItem::requestFinished(const QString &, const QObject * receiver, const QPixmap & px)

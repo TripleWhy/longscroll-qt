@@ -33,7 +33,7 @@ ImageItemWidget::~ImageItemWidget()
 void ImageItemWidget::loadImage()
 {
 	QPixmap px;
-	px.load(info.data.toString());
+	px.load(info.getData().toString());
 	label->setPixmap(px);
 }
 

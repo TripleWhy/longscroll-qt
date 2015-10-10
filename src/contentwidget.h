@@ -19,7 +19,7 @@ private:
 	struct ItemInfo
 	{
 		int index = -1;
-		ContentItemInfo * img = 0;
+		ContentItemInfo * item = 0;
 		int x = 0;
 		int width = 0;
 	};
