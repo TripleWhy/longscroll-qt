@@ -3,8 +3,8 @@
 #include <longscroll-qt/imagewidget.h>
 #include <QVBoxLayout>
 
-LoaderImageItem::LoaderImageItem(const ContentItemInfo & info, bool fit)
-    : ImageItemWidget(info, fit, false, 0)
+LoaderImageItem::LoaderImageItem(const ContentItemInfo & info, int itemIndex, bool fit, ContentWidget * cw)
+    : ImageItemWidget(info, itemIndex, fit, false, cw, 0)
 {
 	loader = ImageLoader::instance();
 	connect(loader, SIGNAL(imageLoaded(QString,const QObject*,QPixmap)), this, SLOT(requestFinished(QString,const QObject*,QPixmap)));

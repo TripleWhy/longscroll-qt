@@ -3,6 +3,7 @@
 
 #include "longscroll-qt_global.h"
 #include "notifyablescrollcontentwidget.h"
+#include <QAbstractItemView>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
@@ -90,6 +91,12 @@ private:
 	ItemInfo * mousePressItem = 0;
 	signed char mouseState = 0;	//0: none, 1: pressed, 3: dragging, -1: navigator pressed, -2: double clicked
 
+	QAbstractItemView::SelectionMode selectionMode = QAbstractItemView::NoSelection;
+	QList<int> selection;
+	int currentItemIndex = -1;
+	QList<int> dragStartSelection;
+	int dragStartItemIndex = -1;
+
 public:
 	ContentWidget(QWidget * parent = 0);
 	ContentWidget(int rowHeight, int itemWidth = 0, bool alignRows = true, bool alignLastRow = false, bool allowOverfill = true, int navigatorHeight = 500, QWidget *parent = 0);
@@ -110,7 +117,7 @@ private:
 
 protected:
 	// Can be overridden. Behavior can also be changed by setting a different item factory.
-	virtual QWidget * createItemWidget(ContentItemInfo const & info, int width, int height);
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height);
 
 private slots:
 	void updateTrackingItem();
@@ -157,6 +164,9 @@ public:
 	int findRow(int itemIndex);
 	void findRowCol(int & row, int & col, int itemIndex);
 
+private:
+	void updateSelection(int itemIndex, bool dragging, bool controlPressed, bool shiftPressed);
+
 signals:
 	void scrollRequest(int dx, int dy);
 	void scrollToRequest(int x, int y);
@@ -164,6 +174,8 @@ signals:
 	void itemReleased(int row, int col, int itemIndex, Qt::MouseButtons buttons);
 	void itemClicked(int row, int col, int itemIndex);
 	void itemDoubleClicked(int row, int col, int itemIndex);
+	void selectionChanged(QList<int> const & selection);
+	void currentItemChanged(int itemIndex);
 };
 
 LONGSCROLLQT_NAMESPACE_END

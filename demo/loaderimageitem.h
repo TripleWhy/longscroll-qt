@@ -16,7 +16,7 @@ private:
 	bool imageSet = false;
 
 public:
-	LoaderImageItem(ContentItemInfo const & info, bool fit = false);
+	LoaderImageItem(ContentItemInfo const & info, int itemIndex, bool fit = false, ContentWidget * cw = 0);
 	~LoaderImageItem();
 
 private slots:

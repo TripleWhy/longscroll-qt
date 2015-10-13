@@ -1,13 +1,35 @@
 #include "imageitemwidget.h"
 #include "imagewidget.h"
+#include "contentwidget.h"
 #include <QVBoxLayout>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
-ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, bool fit, bool doLoadImage, QWidget * parent)
+/*!
+  \class ImageItemWidget
+  \brief Simple widget displays an image from a ContentItemInfo.
+  The image is either fit inside the widget by leaving some widget space empty or by cropping the image (see ImageWidget for more details).
+  This behavior can be controlled using the fit parameter on construction.
+
+  ImageItemWidget can also visualize a selection state by showing a frame around the image. This can be enabled by specifying a ContentWidget on construction,
+  or connecting or calling the updateSelection() slot later.
+*/
+
+/*!
+ * \brief Constructs an ImageItemWidget.
+ * Use This constructor if you don't want this widget to load the image (yet).
+ * \param info
+ * \param itemIndex
+ * \param fit
+ * \param doLoadImage
+ * \param cw
+ * \param parent
+ */
+ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, int itemIndex, bool fit, bool doLoadImage, ContentWidget * cw, QWidget * parent)
     : QFrame(parent),
       fit(fit),
-      info(info)
+      info(info),
+      itemIndex(itemIndex)
 {
 	new QVBoxLayout(this);
 	layout()->setMargin(0);
@@ -17,12 +39,26 @@ ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, bool fit, bool do
 	label->setFit(fit);
 	layout()->addWidget(label);
 
+	setFrameStyle(QFrame::NoFrame);
+	setLineWidth(2);
+
+	if (cw != 0)
+		connect(cw, &ContentWidget::selectionChanged, this, &ImageItemWidget::updateSelection);
+
 	if (doLoadImage)
 		loadImage();
 }
 
-ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, bool fit, QWidget * parent)
-    : ImageItemWidget(info, fit, true, parent)
+/*!
+ * \brief Constructs an ImageItemWidget.
+ * \param info
+ * \param itemIndex Used to check if the item this widget represents is selected.
+ * \param fit Controls how the image is fit inside the widget. See ImageWidget.
+ * \param cw If cw is set, this widget will automatically connect its selectionChanged() signal to this updateSelection() slot.
+ * \param parent parent is passed to the QFrame constructor.
+ */
+ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, int itemIndex, bool fit, ContentWidget * cw, QWidget * parent)
+    : ImageItemWidget(info, itemIndex, fit, true, cw, parent)
 {
 }
 
@@ -30,6 +66,24 @@ ImageItemWidget::~ImageItemWidget()
 {
 }
 
+/*!
+ * \brief Shows or hides this' frame.
+ * The frame is shown if the selection contains the itemIndex that was passed to the constructor.
+ * \param selection
+ */
+void ImageItemWidget::updateSelection(const QList<int> & selection)
+{
+	if (selection.contains(itemIndex))
+		setFrameStyle(QFrame::Box | QFrame::Plain);
+	else
+		setFrameStyle(QFrame::NoFrame);
+}
+
+/*!
+ * \brief Loads and displays the image.
+ * Loads the image referenced by the ContentItemInfo passed on construction, by interpreting its data as string file name.
+ * You can use this if you did not load the image on construction.
+ */
 void ImageItemWidget::loadImage()
 {
 	QPixmap px;

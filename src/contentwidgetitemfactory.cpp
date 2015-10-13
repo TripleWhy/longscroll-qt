@@ -1,6 +1,7 @@
 #include "contentwidgetitemfactory.h"
 #include "imageitemwidget.h"
 #include "imageinfowidget.h"
+#include "contentwidget.h"
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
@@ -10,13 +11,13 @@ ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage, QObj
 {
 }
 
-QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo & info, int /*width*/, int /*height*/)
+QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo & info, int itemIndex, int /*width*/, int /*height*/, ContentWidget * cw)
 {
-	return new ImageItemWidget(info, imageFit);
+	return new ImageItemWidget(info, itemIndex, imageFit, cw);
 }
 
 
-QWidget *ContentWidgetImageInfoFactory::createItemWidget(const ContentItemInfo & info, int /*width*/, int /*height*/)
+QWidget *ContentWidgetImageInfoFactory::createItemWidget(const ContentItemInfo & info, int /*itemIndex*/, int /*width*/, int /*height*/, ContentWidget * /*cw*/)
 {
 	return new ImageInfoWidget(info);
 }

@@ -253,7 +253,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			}
 			else
 			{
-				itemWidget = createItemWidget(*item.item, item.width, rowH);
+				itemWidget = createItemWidget(*item.item, item.index, item.width, rowH);
 				itemWidgets[item.index] = itemWidget;
 #if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
 				if (item.index == trackingItem.index)
@@ -267,9 +267,9 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 	rowWidget->setVisible(true);
 }
 
-QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int width, int height)
+QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemIndex,int width, int height)
 {
-	QWidget * widget = itemFactory->createItemWidget(info, width, height);
+	QWidget * widget = itemFactory->createItemWidget(info, itemIndex, width, height, this);
 #if CONTENTWIDGET_DEMO_STYLESHEETS
 	widget->setStyleSheet("QWidget{ background: blue; } QLabel { background: red; }");
 #endif
@@ -695,6 +695,8 @@ void ContentWidget::mousePressEvent(QMouseEvent * event)
 		mousePressRow = row;
 		mousePressCol = col;
 		mousePressItem = item;
+
+		updateSelection(item->index, false, event->modifiers() & Qt::ControlModifier, event->modifiers() & Qt::ShiftModifier);
 	}
 	else
 	{
@@ -715,13 +717,29 @@ void ContentWidget::mouseMoveEvent(QMouseEvent * event)
 		return;
 	}
 	event->accept();
-	if (event->buttons() == Qt::LeftButton
-	        && mouseState == 1
-	        && (mousePressPoint - event->pos()).manhattanLength() >= QApplication::startDragDistance())
+	if (event->buttons() == Qt::LeftButton)
 	{
-		mouseState = 2;
 		if (dragEnabled)
-			startDrag(mousePressRow, mousePressCol, mousePressItem->index);
+		{
+			if (mouseState == 1
+			        && (mousePressPoint - event->pos()).manhattanLength() >= QApplication::startDragDistance())
+			{
+				mouseState = 2;
+				startDrag(mousePressRow, mousePressCol, mousePressItem->index);
+			}
+		}
+		else
+		{
+			bool onNavigator;
+			int row = rowAt(event->y(), &onNavigator);
+			if (onNavigator)
+				return;
+
+			int col = colAt(event->x(), row);
+			ItemInfo * item = &rowInfos[row].items[col];
+
+			updateSelection(item->index, true, event->modifiers() & Qt::ControlModifier, event->modifiers() & Qt::ShiftModifier);
+		}
 	}
 }
 
@@ -912,6 +930,105 @@ void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
 	row = findRow(itemIndex);
 	col = itemIndex - rowInfos[row].items.first().index;
 	Q_ASSERT(rowInfos[row].items[col].index == itemIndex);
+}
+
+void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPressed, bool shiftPressed)
+{
+	if (selectionMode == QAbstractItemView::NoSelection)
+		return;
+	QList<int> oldSelection;
+	int oldCurrentItemIndex = currentItemIndex;
+	selection.swap(oldSelection);
+	switch (selectionMode)
+	{
+		case QAbstractItemView::NoSelection:
+			break;
+		case QAbstractItemView::SingleSelection:
+			selection.append(itemIndex);
+			currentItemIndex = itemIndex;
+			break;
+		case QAbstractItemView::ExtendedSelection:
+			if (!controlPressed)
+			{
+				if (dragging || shiftPressed)
+				{
+					Q_ASSERT(currentItemIndex != -1);
+					Q_ASSERT(!oldSelection.isEmpty());
+					if (itemIndex > currentItemIndex)
+					{
+						for (int i = currentItemIndex; i <= itemIndex; ++i)
+							selection.append(i);
+					}
+					else
+					{
+						for (int i = currentItemIndex; i >= itemIndex; --i)
+							selection.append(i);
+					}
+				}
+				else
+				{
+					selection.append(itemIndex);
+					currentItemIndex = itemIndex;
+				}
+				break;
+			}
+			//no break
+		case QAbstractItemView::MultiSelection:
+			currentItemIndex = itemIndex;
+			selection = oldSelection;
+			if (dragging)
+			{
+				Q_ASSERT(dragStartItemIndex != -1);
+				selection = dragStartSelection;
+				bool select = selection.contains(dragStartItemIndex);
+				for (int i = qMin(dragStartItemIndex, itemIndex); i <= qMax(dragStartItemIndex, itemIndex); ++i)
+				{
+					if (!select)
+						selection.removeOne(i);
+					else if (!selection.contains(i))
+						selection.append(i);
+				}
+			}
+			else
+			{
+				if (selection.contains(itemIndex))
+					selection.removeOne(itemIndex);
+				else
+					selection.append(itemIndex);
+				dragStartSelection = selection;
+				dragStartItemIndex = itemIndex;
+			}
+			currentItemIndex = itemIndex;
+			break;
+		case QAbstractItemView::ContiguousSelection:
+			if (dragging || controlPressed || shiftPressed)
+			{
+				Q_ASSERT(currentItemIndex != -1);
+				Q_ASSERT(!oldSelection.isEmpty());
+				Q_ASSERT(oldSelection.first() == currentItemIndex);
+				if (itemIndex > currentItemIndex)
+				{
+					for (int i = currentItemIndex; i <= itemIndex; ++i)
+						selection.append(i);
+				}
+				else
+				{
+					for (int i = currentItemIndex; i >= itemIndex; --i)
+						selection.append(i);
+				}
+			}
+			else
+			{
+				currentItemIndex = itemIndex;
+				selection.append(itemIndex);
+			}
+			break;
+	}
+
+	if (selection != oldSelection)
+		emit selectionChanged(selection);
+	if (currentItemIndex != oldCurrentItemIndex)
+		emit currentItemChanged(currentItemIndex);
 }
 
 
