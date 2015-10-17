@@ -1,56 +1,36 @@
 #include "imagewidget.h"
-#include <QEvent>
-#include <QResizeEvent>
-#include <QLabel>
+#include <QPainter>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
 ImageWidget::ImageWidget(QWidget *parent) : QFrame(parent)
 {
-	imgLabel = new QLabel(this);
-	imgLabel->setScaledContents(true);
 }
 
 ImageWidget::~ImageWidget()
 {
 }
 
-void ImageWidget::resizeEvent(QResizeEvent *event)
+void ImageWidget::paintEvent(QPaintEvent * e)
 {
-	relayout(event->size());
-}
+	QFrame::paintEvent(e);
 
-bool ImageWidget::event(QEvent *event)
-{
-	if (event->type() == QEvent::LayoutRequest)
-	{
-		relayout(size());
-		event->accept();
-		return true;
-	}
-	else
-		return QWidget::event(event);
-}
+	QPainter painter(this);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-void ImageWidget::relayout(const QSize &size)
-{
-	int w = size.width();
-	int h = size.height();
-	int lw = w;
-	int lh = h;
-	double r = double(w) / double(h);
-	if (qIsNaN(pxr) || pxr == r)
-		imgLabel->setGeometry(0, 0, size.width(), size.height());
-	else if ((fit && pxr > r) || (!fit && pxr < r))
-	{
-		lh = qRound(w / pxr);
-		imgLabel->setGeometry(0, (h - lh) / 2, lw, lh);
-	}
-	else
-	{
-		lw = qRound(pxr * h);
-		imgLabel->setGeometry((w - lw) / 2, 0, lw, lh);
-	}
+	QIcon::Mode mode = QIcon::Normal;
+	if (!isEnabled())
+		mode = QIcon::Disabled;
+	else if (selected)
+		mode = QIcon::Selected;
+
+	QPixmap const & pix = icon.pixmap(pxSize, mode, QIcon::Off);
+	QSize && s = size();
+	s.scale(pxSize, fit ? Qt::KeepAspectRatioByExpanding : Qt::KeepAspectRatio);
+	QRect r(QPoint(), s);
+	r.moveCenter(pix.rect().center());
+
+	painter.drawPixmap(rect(), pix, r);
 }
 
 bool ImageWidget::hasHeightForWidth() const
@@ -60,9 +40,9 @@ bool ImageWidget::hasHeightForWidth() const
 
 int ImageWidget::heightForWidth(int w) const
 {
-	if (qIsNaN(pxr))
+	if (pxSize.isEmpty())
 		return -1;
-	return qRound(w / pxr);
+	return qRound(qreal(w * pxSize.height()) / qreal(pxSize.width()));
 }
 
 QSize ImageWidget::sizeHint() const
@@ -72,16 +52,25 @@ QSize ImageWidget::sizeHint() const
 
 void ImageWidget::setPixmap(const QPixmap &px)
 {
-	imgLabel->setPixmap(px);
-	pxr = double(px.width()) / double(px.height());
+	icon = QIcon(px);
 	pxSize = px.size();
-	relayout(size());
+	update();
 }
 
 void ImageWidget::setFit(bool _fit)
 {
+	if (_fit == fit)
+		return;
 	fit = _fit;
-	relayout(size());
+	update();
+}
+
+void ImageWidget::setSelected(bool _selected)
+{
+	if (_selected == selected)
+		return;
+	selected = _selected;
+	update();
 }
 
 LONGSCROLLQT_NAMESPACE_END

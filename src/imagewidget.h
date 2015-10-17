@@ -3,6 +3,7 @@
 
 #include "longscroll-qt_global.h"
 #include <QFrame>
+#include <QIcon>
 
 class QLabel;
 
@@ -13,19 +14,17 @@ class LONGSCROLLQT_EXPORT ImageWidget : public QFrame
 	Q_OBJECT
 
 private:
-	QLabel * imgLabel;
+	QIcon icon;
 	QSize pxSize;
-	double pxr = qQNaN();
 	bool fit = true;
+	bool selected = false;
 
 public:
 	explicit ImageWidget(QWidget *parent = 0);
 	~ImageWidget();
 
 protected:
-	virtual void resizeEvent(QResizeEvent * event) override;
-	virtual bool event(QEvent * event) override;
-	void relayout(QSize const & size);
+	virtual void paintEvent(QPaintEvent * e) override;
 
 	virtual bool hasHeightForWidth() const override;
 	virtual int heightForWidth(int w) const override;
@@ -34,6 +33,8 @@ protected:
 public slots:
 	void setPixmap(QPixmap const & px);
 	void setFit(bool fit);
+	void setSelected(bool selected);
+
 };
 
 LONGSCROLLQT_NAMESPACE_END
