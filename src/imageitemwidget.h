@@ -17,6 +17,7 @@ protected:
 	bool fit = false;
 	ContentItemInfo info;
 	int itemIndex = -1;
+	bool selected = false;
 
 protected:
 	ImageItemWidget(ContentItemInfo const & info, int itemIndex, bool fit, bool loadImage, ContentWidget * cw, QWidget * parent);
@@ -29,6 +30,9 @@ public slots:
 
 protected:
 	void loadImage();
+
+protected:
+	virtual void paintEvent(QPaintEvent * e) override;
 };
 
 LONGSCROLLQT_NAMESPACE_END

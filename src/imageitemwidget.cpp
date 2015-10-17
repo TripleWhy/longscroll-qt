@@ -1,6 +1,7 @@
 #include "imageitemwidget.h"
 #include "imagewidget.h"
 #include "contentwidget.h"
+#include <QPainter>
 #include <QVBoxLayout>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
@@ -11,7 +12,7 @@ LONGSCROLLQT_NAMESPACE_BEGIN
   The image is either fit inside the widget by leaving some widget space empty or by cropping the image (see ImageWidget for more details).
   This behavior can be controlled using the fit parameter on construction.
 
-  ImageItemWidget can also visualize a selection state by showing a frame around the image. This can be enabled by specifying a ContentWidget on construction,
+  ImageItemWidget can also visualize a selection state. This can be enabled by specifying a ContentWidget on construction,
   or connecting or calling the updateSelection() slot later.
 */
 
@@ -39,9 +40,6 @@ ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, int itemIndex, bo
 	label->setFit(fit);
 	layout()->addWidget(label);
 
-	setFrameStyle(QFrame::NoFrame);
-	setLineWidth(2);
-
 	if (cw != 0)
 		connect(cw, &ContentWidget::selectionChanged, this, &ImageItemWidget::updateSelection);
 
@@ -67,16 +65,14 @@ ImageItemWidget::~ImageItemWidget()
 }
 
 /*!
- * \brief Shows or hides this' frame.
- * The frame is shown if the selection contains the itemIndex that was passed to the constructor.
+ * \brief Updates the selection state.
+ * The widget will be drawn as selected if the selection contains the itemIndex that was passed to the constructor.
  * \param selection
  */
 void ImageItemWidget::updateSelection(const QList<int> & selection)
 {
-	if (selection.contains(itemIndex))
-		setFrameStyle(QFrame::Box | QFrame::Plain);
-	else
-		setFrameStyle(QFrame::NoFrame);
+	selected = selection.contains(itemIndex);
+	label->setSelected(selected);
 }
 
 /*!
@@ -89,6 +85,20 @@ void ImageItemWidget::loadImage()
 	QPixmap px;
 	px.load(info.getData().toString());
 	label->setPixmap(px);
+}
+
+void ImageItemWidget::paintEvent(QPaintEvent * e)
+{
+	if (selected)
+	{
+		QPainter painter(this);
+		QStyleOptionViewItem opt;
+		opt.initFrom(this);
+		opt.backgroundBrush = Qt::transparent;
+		opt.state |= QStyle::State_Selected;
+		style()->drawControl(QStyle::CE_ItemViewItem, &opt, &painter, this);
+	}
+	QFrame::paintEvent(e);
 }
 
 LONGSCROLLQT_NAMESPACE_END
