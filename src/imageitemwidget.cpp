@@ -36,9 +36,9 @@ ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, int itemIndex, bo
 	layout()->setMargin(0);
 	layout()->setSpacing(0);
 
-	label = new ImageWidget();
-	label->setFit(fit);
-	layout()->addWidget(label);
+	imageWidget = new ImageWidget();
+	imageWidget->setFit(fit);
+	layout()->addWidget(imageWidget);
 
 	if (cw != 0)
 		connect(cw, &ContentWidget::selectionChanged, this, &ImageItemWidget::updateSelection);
@@ -72,7 +72,7 @@ ImageItemWidget::~ImageItemWidget()
 void ImageItemWidget::updateSelection(const QList<int> & selection)
 {
 	selected = selection.contains(itemIndex);
-	label->setSelected(selected);
+	imageWidget->setSelected(selected);
 }
 
 /*!
@@ -84,7 +84,7 @@ void ImageItemWidget::loadImage()
 {
 	QPixmap px;
 	px.load(info.getData().toString());
-	label->setPixmap(px);
+	imageWidget->setPixmap(px);
 }
 
 void ImageItemWidget::paintEvent(QPaintEvent * e)

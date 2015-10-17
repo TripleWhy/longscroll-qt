@@ -23,5 +23,5 @@ void LoaderImageItem::requestFinished(const QString &, const QObject * receiver,
 		return;
 
 	imageSet = true;
-	label->setPixmap(px);
+	imageWidget->setPixmap(px);
 }

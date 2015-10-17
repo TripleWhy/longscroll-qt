@@ -13,7 +13,7 @@ class ContentWidget;
 class LONGSCROLLQT_EXPORT ImageItemWidget : public QFrame
 {
 protected:
-	ImageWidget * label = 0;
+	ImageWidget * imageWidget = 0;
 	bool fit = false;
 	ContentItemInfo info;
 	int itemIndex = -1;
