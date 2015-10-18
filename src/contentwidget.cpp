@@ -195,6 +195,100 @@ void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, ucha
 }
 
 /*!
+ * \property prefetchRowsBefore
+ * \brief Number of rows before the visible region that should be kept ready.
+ * These rows are not currently visible, but their widgets still or already exist anyway.
+ * This can be useful for example if a widget needs some time to load data from the network.
+ * Default is 1.
+ * \accessors getPrefetchRowsBefore(), setPrefetchRowsBefore()
+ */
+
+/*!
+ * \see prefetchRowsBefore
+ */
+int ContentWidget::getPrefetchRowsBefore() const
+{
+	return prefetchBefore;
+}
+
+/*!
+ * \see prefetchRowsBefore
+ */
+void ContentWidget::setPrefetchRowsBefore(int rows)
+{
+	prefetchBefore = rows;
+}
+
+/*!
+ * \property prefetchRowsAfter
+ * \brief Number of rows after the visible region that should be kept ready.
+ * These rows are not currently visible, but their widgets still or already exist anyway.
+ * This can be useful for example if a widget needs some time to load data from the network.
+ * Default is 3.
+ * \accessors getPrefetchRowsAfter(), setPrefetchRowsAfter()
+ */
+
+/*!
+ * \see prefetchRowsAfter
+ */
+int ContentWidget::getPrefetchRowsAfter() const
+{
+	return prefetchAfter;
+}
+
+/*!
+ * \see prefetchRowsAfter
+ */
+void ContentWidget::setPrefetchRowsAfter(int rows)
+{
+	prefetchAfter = rows;
+}
+
+/*!
+ * \property horizontalSpacing
+ * \brief Horizontal spacing between items.
+ * \accessors getHorizontalSpacing(), setHorizontalSpacing()
+ */
+
+/*!
+ * \see horizontalSpacing
+ */
+int ContentWidget::getHorizontalSpacing() const
+{
+	return xSpacing;
+}
+
+/*!
+ * \see horizontalSpacing
+ */
+void ContentWidget::setHorizontalSpacing(int spacing)
+{
+	xSpacing = spacing;
+}
+
+/*!
+ * \property verticalSpacing
+ * \brief Vertical spacing between items.
+ * \accessors getVerticalSpacing(), setVerticalSpacing()
+ */
+
+/*!
+ * \see verticalSpacing
+ */
+int ContentWidget::getVerticalSpacing() const
+{
+	return ySpacing;
+}
+
+/*!
+ * \see verticalSpacing
+ */
+void ContentWidget::setVerticalSpacing(int spacing)
+{
+	ySpacing = spacing;
+}
+
+/*!
  * \property ContentWidget::itemInfos
  * \brief The list of ContentItemInfos being displayed.
  * \accessors getItemInfos(), setItemInfos()

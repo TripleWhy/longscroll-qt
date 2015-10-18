@@ -59,6 +59,20 @@ public:
 	uchar getItemTrackingScreenPositionPercentageY() const;
 	void setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY);
 
+	Q_PROPERTY(int prefetchRowsBefore READ getPrefetchRowsBefore WRITE setPrefetchRowsBefore)
+	int getPrefetchRowsBefore() const;
+	void setPrefetchRowsBefore(int rows);
+	Q_PROPERTY(int prefetchRowsAfter READ getPrefetchRowsAfter WRITE setPrefetchRowsAfter)
+	int getPrefetchRowsAfter() const;
+	void setPrefetchRowsAfter(int rows);
+
+	Q_PROPERTY(int horizontalSpacing READ getHorizontalSpacing WRITE setHorizontalSpacing)
+	int getHorizontalSpacing() const;
+	void setHorizontalSpacing(int spacing);
+	Q_PROPERTY(int verticalSpacing READ getVerticalSpacing WRITE setVerticalSpacing)
+	int getVerticalSpacing() const;
+	void setVerticalSpacing(int spacing);
+
 	Q_PROPERTY(QList<ContentItemInfo> itemInfos READ getItemInfos WRITE setItemInfos)
 	QList<ContentItemInfo> const & getItemInfos() const;
 	void setItemInfos(QList<ContentItemInfo> const & infos);
@@ -124,12 +138,14 @@ signals:
 	void selectionChanged(QList<int> const & selection);
 	void currentItemChanged(int itemIndex);
 
-protected:
-	static constexpr int prefetchBefore = 1;
-	static constexpr int prefetchAfter = 3;
-	static constexpr int xSpacing = 5;
-	static constexpr int ySpacing = 5;
+private:
+	//TODO make unsigned?
+	int prefetchBefore = 1;
+	int prefetchAfter = 3;
+	int xSpacing = 5;
+	int ySpacing = 5;
 
+protected:
 	int rowHeight = 200;
 	int itemWidth = 0;
 	bool allowOverfill = true;
