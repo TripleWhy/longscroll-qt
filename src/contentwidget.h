@@ -43,19 +43,31 @@ public:
 	ContentWidget(int rowHeight, int itemWidth = 0, bool alignRows = true, bool alignLastRow = false, bool allowOverfill = true, int navigatorHeight = 500, QWidget *parent = 0);
 	~ContentWidget();
 
+	Q_PROPERTY(ContentWidgetItemFactory * itemFactory READ getItemFactory WRITE setItemFactory)
+	ContentWidgetItemFactory * getItemFactory();
 	void setItemFactory(ContentWidgetItemFactory * factory);
+
+	Q_PROPERTY(NavigatorWidget * navigatorWidget READ getNavigatorWidget WRITE setNavigatorWidget)
+	NavigatorWidget * getNavigatorWidget();
 	void setNavigatorWidget(NavigatorWidget * nav);
+
+	Q_PROPERTY(bool itemTrackingEnabled READ isItemTrackingEnabled WRITE setItemTrackingEnabled)
+	bool isItemTrackingEnabled() const;
 	void setItemTrackingEnabled(bool enabled);
+	uchar getItemTrackingScreenPositionPercentageX() const;
+	uchar getItemTrackingScreenPositionPercentageY() const;
 	void setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY);
 
-	void setItemInfos(const QList<ContentItemInfo> & infos);
+	Q_PROPERTY(QList<ContentItemInfo> itemInfos READ getItemInfos WRITE setItemInfos)
+	QList<ContentItemInfo> const & getItemInfos() const;
+	void setItemInfos(QList<ContentItemInfo> const & infos);
 
 	int findRow(int itemIndex);
 	void findRowCol(int & row, int & col, int itemIndex);
 
 public slots:
 	void showNavigator(int itemIndex);
-	void showNavigator(int const row, int const col);
+	void showNavigator(int row, int col);
 
 	virtual QSize sizeHint() const override;
 	virtual void showingRect(QRect const & rect) override;

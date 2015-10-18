@@ -51,6 +51,23 @@ ContentWidget::~ContentWidget()
 {
 }
 
+/*!
+ * \property ContentWidget::itemFactory
+ * \brief ContentWidgetItemFactory used to create displaying widgets.
+ * \accessors getItemFactory(), setItemFactory()
+ */
+
+/*!
+ * \see itemFactory
+ */
+ContentWidgetItemFactory * ContentWidget::getItemFactory()
+{
+	return itemFactory;
+}
+
+/*!
+ * \see itemFactory
+ */
 void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 {
 	delete itemFactory;
@@ -58,6 +75,23 @@ void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 	itemFactory = factory;
 }
 
+/*!
+ * \property ContentWidget::navigatorWidget
+ * \brief NavigatorWidget.
+ * \accessors getNavigatorWidget(), setNavigatorWidget()
+ */
+
+/*!
+ * \see navigatorWidget
+ */
+NavigatorWidget * ContentWidget::getNavigatorWidget()
+{
+	return navigator;
+}
+
+/*!
+ * \see navigatorWidget
+ */
 void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
 {
 	if (navigator == nav)
@@ -88,6 +122,27 @@ void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
 		setUpdatesEnabled(true);
 }
 
+/*!
+ * \property ContentWidget::itemTrackingEnabled
+ * \brief Tries to keep one item at the same screen y-coordinate while resizing.
+ * If item tracking is enabled, an item is memorized when the user scrolls the widget.
+ * When the widget is resized, it tries to keep that tracking item at the same screen y-coordinate.
+ * The default is true.
+ * \see setItemTrackingScreenPositionPercentage
+ * \accessors isItemTrackingEnabled(), setItemTrackingEnabled()
+ */
+
+/*!
+ * \see itemTrackingEnabled
+ */
+bool ContentWidget::isItemTrackingEnabled() const
+{
+	return itemTrackingEnabled;
+}
+
+/*!
+ * \see itemTrackingEnabled
+ */
 void ContentWidget::setItemTrackingEnabled(bool enabled)
 {
 	if (enabled == itemTrackingEnabled)
@@ -96,6 +151,38 @@ void ContentWidget::setItemTrackingEnabled(bool enabled)
 	trackingItem = ItemInfo();
 }
 
+/*!
+ * \brief ContentWidget::getItemTrackingScreenPositionPercentageX
+ * \return Tracking item x-coordinate percentage
+ * \see setItemTrackingScreenPositionPercentage
+ */
+uchar ContentWidget::getItemTrackingScreenPositionPercentageX() const
+{
+	return itemTrackingX;
+}
+
+/*!
+ * \brief ContentWidget::getItemTrackingScreenPositionPercentageY
+ * \return Tracking item y-coordinate percentage
+ * \see setItemTrackingScreenPositionPercentage
+ */
+uchar ContentWidget::getItemTrackingScreenPositionPercentageY() const
+{
+	return itemTrackingY;
+}
+
+/*!
+ * \brief Sets the position where the tracking item is searched.
+ * If item tracking is enabled, the tracking item is the item that is found at this position of the visible region.
+ * The values are in percent. For example, (0, 0) is the item at the top left corner, (0, 100) is the item at the bottom left corner
+ * and (50, 50) is the item at the center.
+ * The default is (0, 0).
+ * \param percentX X-coordinate percentage.
+ * \param percentY Y-coordinate percentage.
+ * \see itemTrackingEnabled
+ * \see getItemTrackingScreenPositionPercentageX
+ * \see getItemTrackingScreenPositionPercentageY
+ */
 void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, uchar percentY)
 {
 	percentX = qBound(uchar(0), percentX, uchar(100));
@@ -107,6 +194,23 @@ void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, ucha
 	trackingItem = ItemInfo();
 }
 
+/*!
+ * \property ContentWidget::itemInfos
+ * \brief The list of ContentItemInfos being displayed.
+ * \accessors getItemInfos(), setItemInfos()
+ */
+
+/*!
+ * \see itemInfos
+ */
+const QList<ContentItemInfo> &ContentWidget::getItemInfos() const
+{
+	return itemInfos;
+}
+
+/*!
+ * \see itemInfos
+ */
 void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 {
 #if CONTENTWIDGET_MEASURE_SETINFOS
@@ -152,6 +256,15 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 #endif
 }
 
+/*!
+ * \brief Searches the row of a given item index.
+ * Uses binary search using std::lower_bound() to find the row.
+ * The itemIndex must be in the range of the item info list, this is not checked.
+ * \param itemIndex
+ * \return row
+ * \see itemInfos
+ * \see findRowCol
+ */
 int ContentWidget::findRow(int itemIndex)
 {
 	int const row = std::lower_bound(rowInfos.begin(), rowInfos.end(), itemIndex, [](RowInfo const & ri, int index){ return ri.items.last().index < index; }) - rowInfos.begin();
@@ -160,6 +273,16 @@ int ContentWidget::findRow(int itemIndex)
 	return row;
 }
 
+/*!
+ * \brief Searches the row and column of a given item index.
+ * Uses binary search using std::lower_bound() to find the row, the column is calculated directly.
+ * The itemIndex must be in the range of the item info list, this is not checked.
+ * \param row Returns the row.
+ * \param col Returns the column.
+ * \param itemIndex
+ * \see itemInfos
+ * \see findRow
+ */
 void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
 {
 	row = findRow(itemIndex);
@@ -167,6 +290,13 @@ void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
 	Q_ASSERT(rowInfos[row].items[col].index == itemIndex);
 }
 
+/*!
+ * \brief Shows the navigatorWidget for the given item index.
+ * The index must exist in the item info list.
+ * \param itemIndex
+ * \see itemInfos
+ * \see findRowCol
+ */
 void ContentWidget::showNavigator(int itemIndex)
 {
 	int row, col;
@@ -174,16 +304,28 @@ void ContentWidget::showNavigator(int itemIndex)
 	showNavigator(row, col);
 }
 
-void ContentWidget::showNavigator(const int row, const int col)
+/*!
+ * \brief Shows the navigatorWidget for the given row and column.
+ * The row and column must exist.
+ * \param row
+ * \param col
+ */
+void ContentWidget::showNavigator(int row, int col)
 {
 	showNavigator(row, col, true);
 }
 
+/*!
+ * \brief Reimplemented from QFrame::sizeHint().
+ */
 QSize ContentWidget::sizeHint() const
 {
 	return size;
 }
 
+/*!
+ * \brief Reimplemented from NotifyableScrollContentWidget::showingRect().
+ */
 void ContentWidget::showingRect(const QRect & rect)
 {
 #if CONTENTWIDGET_MEASURE_SHOWINGRECT
@@ -246,6 +388,23 @@ void ContentWidget::showingRect(const QRect & rect)
 #endif
 }
 
+/*!
+ * \brief Creates an item widget.
+ * This method creates a widget to visualize an item. These widgets are created when the respective item becomes close to the visible region
+ * and destroyed when it moves away. For fine control when the widget is created, use prefetchBefore and prefetchAfter.
+ * This widget takes ownership of the returned widget.
+ *
+ * This method can be overridden. However, the same effect can be achieved by changing the \ref itemFactory.
+ *
+ * \param info The item info to be displayed.
+ * \param itemIndex List index of the item info.
+ * \param width Width the element currently has. This parameter is optional and intended for fine tuning, as ContentWidget will always set the geometry afterwards.
+ * \param height Height the element currently has. This parameter is optional and intended for fine tuning, as ContentWidget will always set the geometry afterwards.
+ * \return The newly created widget.
+ * \see itemFactory
+ * \see prefetchBefore
+ * \see prefetchAfter
+ */
 QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemIndex,int width, int height)
 {
 	QWidget * widget = itemFactory->createItemWidget(info, itemIndex, width, height, this);
