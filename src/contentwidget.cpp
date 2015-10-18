@@ -107,6 +107,78 @@ void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, ucha
 	trackingItem = ItemInfo();
 }
 
+void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
+{
+#if CONTENTWIDGET_MEASURE_SETINFOS
+	QElapsedTimer t;
+	t.start();
+#endif
+
+	itemInfos = infos;
+	int const size = itemInfos.size();
+	imageWidths.clear();
+	imageWidths.reserve(size);
+	qDeleteAll(itemWidgets);
+	itemWidgets.clear();
+	itemWidgets.reserve(size);
+	if (itemWidth == 0)
+	{
+		for (ContentItemInfo const & img : infos)
+		{
+			imageWidths.append(img.widthForHeight(rowHeight));
+			itemWidgets.append(0);
+		}
+	}
+	else if (itemWidth < 0)
+	{
+		for (int i = 0; i < size; ++i)
+		{
+			imageWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
+			itemWidgets.append(0);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < size; ++i)
+		{
+			imageWidths.append(itemWidth);
+			itemWidgets.append(0);
+		}
+	}
+
+#if CONTENTWIDGET_MEASURE_SETINFOS
+	qint64 elapsed = t.elapsed();
+	qDebug() << "ContentWidget::setItemInfos took" << elapsed << "ms";
+#endif
+}
+
+int ContentWidget::findRow(int itemIndex)
+{
+	int const row = std::lower_bound(rowInfos.begin(), rowInfos.end(), itemIndex, [](RowInfo const & ri, int index){ return ri.items.last().index < index; }) - rowInfos.begin();
+	Q_ASSERT(rowInfos[row].items.first().index <= itemIndex);
+	Q_ASSERT(rowInfos[row].items.last().index >= itemIndex);
+	return row;
+}
+
+void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
+{
+	row = findRow(itemIndex);
+	col = itemIndex - rowInfos[row].items.first().index;
+	Q_ASSERT(rowInfos[row].items[col].index == itemIndex);
+}
+
+void ContentWidget::showNavigator(int itemIndex)
+{
+	int row, col;
+	findRowCol(row, col, itemIndex);
+	showNavigator(row, col);
+}
+
+void ContentWidget::showNavigator(const int row, const int col)
+{
+	showNavigator(row, col, true);
+}
+
 QSize ContentWidget::sizeHint() const
 {
 	return size;
@@ -174,99 +246,6 @@ void ContentWidget::showingRect(const QRect & rect)
 #endif
 }
 
-void ContentWidget::updateRows()
-{
-	int firstRow = qMax(0, rowAt(visibleRect.y())  -  prefetchBefore);
-	int bottom = visibleRect.bottom();
-	if (navigatorVisible)
-		bottom += navigatorHeight;
-	int lastRow = qMin(rowInfos.length() - 1, rowAt(bottom)  +  prefetchAfter);
-
-	for (int i = 0; i < firstRow; i++)
-	{
-		RowInfo & row = rowInfos[i];
-		if (row.displaying)
-			hideRow(i);
-		row.displaying = false;
-	}
-	for (int i = lastRow + 1, l = rowInfos.size(); i < l; i++)
-	{
-		RowInfo & row = rowInfos[i];
-		if (row.displaying)
-			hideRow(i);
-		row.displaying = false;
-	}
-	for (int i = firstRow; i <= lastRow; i++)
-	{
-		RowInfo & row = rowInfos[i];
-		if (row.displaying)
-			continue;
-		row.displaying = true;
-		if (!row.aligned)
-			alignRow(row);
-		showRow(row, i);
-	}
-}
-
-void ContentWidget::hideRow(int i)
-{
-	if (rowWidgets[i] != 0)
-	{
-		for (ItemInfo const & info : rowInfos[i].items)
-			itemWidgets[info.index] = 0;
-		delete rowWidgets[i];
-		rowWidgets[i] = 0;
-	}
-}
-
-void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex)
-{
-	QWidget * rowWidget = rowWidgets[rowIndex];
-	bool updateOnly = true;
-	if (rowWidget == 0)
-	{
-		updateOnly = false;
-		rowWidget = new QWidget(this);
-		rowWidgets[rowIndex] = rowWidget;
-	}
-#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-	int const & rowH = rowInfo.height;
-#else
-	int const & rowH = rowHeight;
-#endif
-	rowWidget->setGeometry(0, rowInfo.y, visibleRect.width(), rowH);
-
-	for (int i = 0; i < rowInfo.items.size(); ++i)
-	{
-		ItemInfo const & item = rowInfo.items[i];
-		QWidget * itemWidget;
-		if (updateOnly)
-		{
-			itemWidget = static_cast<QWidget *>(rowWidget->children().at(i));
-		}
-		else
-		{
-			if (itemWidgets[item.index] != 0)
-			{
-				itemWidget = itemWidgets[item.index];
-				itemWidget->setVisible(true);
-			}
-			else
-			{
-				itemWidget = createItemWidget(*item.item, item.index, item.width, rowH);
-				itemWidgets[item.index] = itemWidget;
-#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
-				if (item.index == trackingItem.index)
-					itemWidget->setStyleSheet("QWidget{ background: blue; }");
-#endif
-			}
-		}
-		itemWidget->setParent(rowWidget);
-		itemWidget->setGeometry(item.x, 0, item.width, rowH);
-	}
-	rowWidget->setVisible(true);
-}
-
 QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemIndex,int width, int height)
 {
 	QWidget * widget = itemFactory->createItemWidget(info, itemIndex, width, height, this);
@@ -274,95 +253,6 @@ QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemI
 	widget->setStyleSheet("QWidget{ background: blue; } QLabel { background: red; }");
 #endif
 	return widget;
-}
-
-void ContentWidget::updateTrackingItem()
-{
-#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
-	QWidget * trackingWidget = itemWidgets.value(trackingItem.index);
-	if (trackingWidget != 0)
-		trackingWidget->setStyleSheet(QString());
-#endif
-
-	if (rowInfos.isEmpty() > 0)
-	{
-		trackingItem = ItemInfo();
-		trackingItemOffset = 0;
-	}
-	else
-	{
-		updateTrackingPoint();
-		RowInfo const & row = rowInfos.at(rowAt(trackingPoint.y()));
-		int colIndex = colAt(trackingPoint.x(), row);
-		trackingItem = row.items.at(colIndex);
-
-		trackingItemOffset = trackingPoint.y() - row.y;
-	}
-
-#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
-	trackingWidget = itemWidgets.value(trackingItem.index);
-	if (trackingWidget != 0)
-		trackingWidget->setStyleSheet("QWidget{ background: yellow; }");
-#endif
-}
-
-void ContentWidget::updateTrackingPoint()
-{
-	trackingPoint.setX(visibleRect.x() + (visibleRect.width() * itemTrackingX * 100 / (100 * 100)));
-	trackingPoint.setY(visibleRect.y() + (visibleRect.height() * itemTrackingY * 100 / (100 * 100)));
-#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGPOINT
-	static QFrame * w = 0;
-	delete w;
-	w = new QFrame(this);
-	w->setStyleSheet("QFrame { background: red; }");
-	w->setGeometry(trackingPoint.x() - 5, trackingPoint.y() - 5, 10, 10);
-	w->setVisible(true);
-#endif
-}
-
-void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
-{
-#if CONTENTWIDGET_MEASURE_SETINFOS
-	QElapsedTimer t;
-	t.start();
-#endif
-
-	itemInfos = infos;
-	int const size = itemInfos.size();
-	imageWidths.clear();
-	imageWidths.reserve(size);
-	qDeleteAll(itemWidgets);
-	itemWidgets.clear();
-	itemWidgets.reserve(size);
-	if (itemWidth == 0)
-	{
-		for (ContentItemInfo const & img : infos)
-		{
-			imageWidths.append(img.widthForHeight(rowHeight));
-			itemWidgets.append(0);
-		}
-	}
-	else if (itemWidth < 0)
-	{
-		for (int i = 0; i < size; ++i)
-		{
-			imageWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
-			itemWidgets.append(0);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < size; ++i)
-		{
-			imageWidths.append(itemWidth);
-			itemWidgets.append(0);
-		}
-	}
-
-#if CONTENTWIDGET_MEASURE_SETINFOS
-	qint64 elapsed = t.elapsed();
-	qDebug() << "ContentWidget::setItemInfos took" << elapsed << "ms";
-#endif
 }
 
 bool ContentWidget::calculateSize(const bool calculateChanges)
@@ -786,150 +676,97 @@ void ContentWidget::startDrag(int /*row*/, int /*col*/, int /*itemIndex*/)
 {
 }
 
-void ContentWidget::showNavigator(int itemIndex)
+void ContentWidget::updateRows()
 {
-	int row, col;
-	findRowCol(row, col, itemIndex);
-	showNavigator(row, col);
-}
-
-void ContentWidget::showNavigator(const int row, const int col)
-{
-	showNavigator(row, col, true);
-}
-
-void ContentWidget::showNavigator(const int row, const int col, const bool blockUpdates)
-{
-	if (navigatorVisible && navigatorRow == row && navigatorColumn == col)
-		return;
-
-	if (blockUpdates)
-		setUpdatesEnabled(false);
-
-	bool needsTrackingUpdate = itemTrackingEnabled && !navigatorVisible;
+	int firstRow = qMax(0, rowAt(visibleRect.y())  -  prefetchBefore);
+	int bottom = visibleRect.bottom();
 	if (navigatorVisible)
+		bottom += navigatorHeight;
+	int lastRow = qMin(rowInfos.length() - 1, rowAt(bottom)  +  prefetchAfter);
+
+	for (int i = 0; i < firstRow; i++)
 	{
-		for (int i = navigatorRow+1; i <= row; ++i)
-		{
-			rowInfos[i].y -= navigatorHeight + ySpacing;
-			if (rowWidgets[i] != 0)
-				rowWidgets[i]->move(0, rowInfos[i].y);
-		}
-		for (int i = row+1; i <= navigatorRow; ++i)
-		{
-			rowInfos[i].y += navigatorHeight + ySpacing;
-			if (rowWidgets[i] != 0)
-				rowWidgets[i]->move(0, rowInfos[i].y);
-		}
+		RowInfo & row = rowInfos[i];
+		if (row.displaying)
+			hideRow(i);
+		row.displaying = false;
 	}
-	else
+	for (int i = lastRow + 1, l = rowInfos.size(); i < l; i++)
 	{
-		for (int i = row+1; i < rowInfos.size(); ++i)
-		{
-			rowInfos[i].y += navigatorHeight + ySpacing;
-			if (rowWidgets[i] != 0)
-				rowWidgets[i]->move(0, rowInfos[i].y);
-		}
-
-		size.setHeight(size.height() + navigatorHeight + ySpacing);
-		setMinimumSize(size);
+		RowInfo & row = rowInfos[i];
+		if (row.displaying)
+			hideRow(i);
+		row.displaying = false;
 	}
-
-	navigatorVisible = true;
-	navigatorImg = rowInfos[row].items[col].item;
-	navigator->setItemInfo(*rowInfos[row].items[col].item);
-	updateNavigator(row, col);
-	navigator->setVisible(true);
-
-	if (needsTrackingUpdate)
-		updateTrackingItem();
-
-	if (blockUpdates)
-		setUpdatesEnabled(true);
+	for (int i = firstRow; i <= lastRow; i++)
+	{
+		RowInfo & row = rowInfos[i];
+		if (row.displaying)
+			continue;
+		row.displaying = true;
+		if (!row.aligned)
+			alignRow(row);
+		showRow(row, i);
+	}
 }
 
-void ContentWidget::updateNavigator(const int row, const int col)
+void ContentWidget::hideRow(int i)
 {
-	navigatorRow = row;
-	navigatorColumn = col;
+	if (rowWidgets[i] != 0)
+	{
+		for (ItemInfo const & info : rowInfos[i].items)
+			itemWidgets[info.index] = 0;
+		delete rowWidgets[i];
+		rowWidgets[i] = 0;
+	}
+}
 
-	RowInfo const & rowInfo = rowInfos.at(row);
+void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex)
+{
+	QWidget * rowWidget = rowWidgets[rowIndex];
+	bool updateOnly = true;
+	if (rowWidget == 0)
+	{
+		updateOnly = false;
+		rowWidget = new QWidget(this);
+		rowWidgets[rowIndex] = rowWidget;
+	}
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 	int const & rowH = rowInfo.height;
 #else
 	int const & rowH = rowHeight;
 #endif
-	int const y = rowInfo.y + rowH + ySpacing;
-	navigator->setGeometry(0, y, visibleRect.width(), navigatorHeight);
-}
+	rowWidget->setGeometry(0, rowInfo.y, visibleRect.width(), rowH);
 
-void ContentWidget::hideNavigator()
-{
-	if (!navigatorVisible)
-		return;
-
-	setUpdatesEnabled(false);
-
-	for (int i = navigatorRow+1; i < rowInfos.size(); ++i)
+	for (int i = 0; i < rowInfo.items.size(); ++i)
 	{
-		rowInfos[i].y -= navigatorHeight + ySpacing;
-		if (rowWidgets[i] != 0)
-			rowWidgets[i]->move(0, rowInfos[i].y);
+		ItemInfo const & item = rowInfo.items[i];
+		QWidget * itemWidget;
+		if (updateOnly)
+		{
+			itemWidget = static_cast<QWidget *>(rowWidget->children().at(i));
+		}
+		else
+		{
+			if (itemWidgets[item.index] != 0)
+			{
+				itemWidget = itemWidgets[item.index];
+				itemWidget->setVisible(true);
+			}
+			else
+			{
+				itemWidget = createItemWidget(*item.item, item.index, item.width, rowH);
+				itemWidgets[item.index] = itemWidget;
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
+				if (item.index == trackingItem.index)
+					itemWidget->setStyleSheet("QWidget{ background: blue; }");
+#endif
+			}
+		}
+		itemWidget->setParent(rowWidget);
+		itemWidget->setGeometry(item.x, 0, item.width, rowH);
 	}
-
-	navigatorVisible = false;
-	navigator->setVisible(false);
-
-	size.setHeight(size.height() - (navigatorHeight + ySpacing));
-	setMinimumSize(size);
-
-	setUpdatesEnabled(true);
-}
-
-void ContentWidget::navigatorNext()
-{
-	navigatorPrevNext(true);
-}
-
-void ContentWidget::navigatorPrev()
-{
-	navigatorPrevNext(false);
-}
-
-void ContentWidget::navigatorPrevNext(bool next)
-{
-	int row = navigatorRow;
-	int col = navigatorColumn;
-	if (next)
-		nextImage(row, col);
-	else
-		previousImage(row, col);
-	if (row < 0 || col < 0)
-		return;
-
-	int oldNaviY = navigator->y();
-	showNavigator(row, col);
-	if (navigator->y() != oldNaviY)
-	{
-		blockScroll = true;
-		emit scrollRequest( 0, navigator->y() - oldNaviY );
-		blockScroll = false;
-	}
-}
-
-int ContentWidget::findRow(int itemIndex)
-{
-	int const row = std::lower_bound(rowInfos.begin(), rowInfos.end(), itemIndex, [](RowInfo const & ri, int index){ return ri.items.last().index < index; }) - rowInfos.begin();
-	Q_ASSERT(rowInfos[row].items.first().index <= itemIndex);
-	Q_ASSERT(rowInfos[row].items.last().index >= itemIndex);
-	return row;
-}
-
-void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
-{
-	row = findRow(itemIndex);
-	col = itemIndex - rowInfos[row].items.first().index;
-	Q_ASSERT(rowInfos[row].items[col].index == itemIndex);
+	rowWidget->setVisible(true);
 }
 
 void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPressed, bool shiftPressed)
@@ -1029,6 +866,169 @@ void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPr
 		emit selectionChanged(selection);
 	if (currentItemIndex != oldCurrentItemIndex)
 		emit currentItemChanged(currentItemIndex);
+}
+
+void ContentWidget::showNavigator(const int row, const int col, const bool blockUpdates)
+{
+	if (navigatorVisible && navigatorRow == row && navigatorColumn == col)
+		return;
+
+	if (blockUpdates)
+		setUpdatesEnabled(false);
+
+	bool needsTrackingUpdate = itemTrackingEnabled && !navigatorVisible;
+	if (navigatorVisible)
+	{
+		for (int i = navigatorRow+1; i <= row; ++i)
+		{
+			rowInfos[i].y -= navigatorHeight + ySpacing;
+			if (rowWidgets[i] != 0)
+				rowWidgets[i]->move(0, rowInfos[i].y);
+		}
+		for (int i = row+1; i <= navigatorRow; ++i)
+		{
+			rowInfos[i].y += navigatorHeight + ySpacing;
+			if (rowWidgets[i] != 0)
+				rowWidgets[i]->move(0, rowInfos[i].y);
+		}
+	}
+	else
+	{
+		for (int i = row+1; i < rowInfos.size(); ++i)
+		{
+			rowInfos[i].y += navigatorHeight + ySpacing;
+			if (rowWidgets[i] != 0)
+				rowWidgets[i]->move(0, rowInfos[i].y);
+		}
+
+		size.setHeight(size.height() + navigatorHeight + ySpacing);
+		setMinimumSize(size);
+	}
+
+	navigatorVisible = true;
+	navigatorImg = rowInfos[row].items[col].item;
+	navigator->setItemInfo(*rowInfos[row].items[col].item);
+	updateNavigator(row, col);
+	navigator->setVisible(true);
+
+	if (needsTrackingUpdate)
+		updateTrackingItem();
+
+	if (blockUpdates)
+		setUpdatesEnabled(true);
+}
+
+void ContentWidget::updateNavigator(const int row, const int col)
+{
+	navigatorRow = row;
+	navigatorColumn = col;
+
+	RowInfo const & rowInfo = rowInfos.at(row);
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	int const & rowH = rowInfo.height;
+#else
+	int const & rowH = rowHeight;
+#endif
+	int const y = rowInfo.y + rowH + ySpacing;
+	navigator->setGeometry(0, y, visibleRect.width(), navigatorHeight);
+}
+
+void ContentWidget::navigatorPrevNext(bool next)
+{
+	int row = navigatorRow;
+	int col = navigatorColumn;
+	if (next)
+		nextImage(row, col);
+	else
+		previousImage(row, col);
+	if (row < 0 || col < 0)
+		return;
+
+	int oldNaviY = navigator->y();
+	showNavigator(row, col);
+	if (navigator->y() != oldNaviY)
+	{
+		blockScroll = true;
+		emit scrollRequest( 0, navigator->y() - oldNaviY );
+		blockScroll = false;
+	}
+}
+
+void ContentWidget::hideNavigator()
+{
+	if (!navigatorVisible)
+		return;
+
+	setUpdatesEnabled(false);
+
+	for (int i = navigatorRow+1; i < rowInfos.size(); ++i)
+	{
+		rowInfos[i].y -= navigatorHeight + ySpacing;
+		if (rowWidgets[i] != 0)
+			rowWidgets[i]->move(0, rowInfos[i].y);
+	}
+
+	navigatorVisible = false;
+	navigator->setVisible(false);
+
+	size.setHeight(size.height() - (navigatorHeight + ySpacing));
+	setMinimumSize(size);
+
+	setUpdatesEnabled(true);
+}
+
+void ContentWidget::navigatorNext()
+{
+	navigatorPrevNext(true);
+}
+
+void ContentWidget::navigatorPrev()
+{
+	navigatorPrevNext(false);
+}
+
+void ContentWidget::updateTrackingItem()
+{
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
+	QWidget * trackingWidget = itemWidgets.value(trackingItem.index);
+	if (trackingWidget != 0)
+		trackingWidget->setStyleSheet(QString());
+#endif
+
+	if (rowInfos.isEmpty() > 0)
+	{
+		trackingItem = ItemInfo();
+		trackingItemOffset = 0;
+	}
+	else
+	{
+		updateTrackingPoint();
+		RowInfo const & row = rowInfos.at(rowAt(trackingPoint.y()));
+		int colIndex = colAt(trackingPoint.x(), row);
+		trackingItem = row.items.at(colIndex);
+
+		trackingItemOffset = trackingPoint.y() - row.y;
+	}
+
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
+	trackingWidget = itemWidgets.value(trackingItem.index);
+	if (trackingWidget != 0)
+		trackingWidget->setStyleSheet("QWidget{ background: yellow; }");
+#endif
+}
+
+void ContentWidget::updateTrackingPoint()
+{
+	trackingPoint.setX(visibleRect.x() + (visibleRect.width() * itemTrackingX * 100 / (100 * 100)));
+	trackingPoint.setY(visibleRect.y() + (visibleRect.height() * itemTrackingY * 100 / (100 * 100)));
+#if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGPOINT
+	static QFrame * w = 0;
+	delete w;
+	w = new QFrame(this);
+	w->setStyleSheet("QFrame { background: red; }");
+	w->setGeometry(trackingPoint.x() - 5, trackingPoint.y() - 5, 10, 10);
+	w->setVisible(true);
+#endif
 }
 
 
