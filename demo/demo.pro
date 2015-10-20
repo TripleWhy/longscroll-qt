@@ -9,8 +9,12 @@ include($$PWD/../src/longscroll-qt_dst-dir.pri)
 DEPENDPATH += $$LONGSCROLLQT_DST_DIR/include
 INCLUDEPATH += $$LONGSCROLLQT_DST_DIR/include
 
-CONFIG(release, debug|release): LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -llongscroll-qt
-CONFIG(debug, debug|release):   LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -llongscroll-qtd
+CONFIG(release, debug|release): LIBNAME = longscroll-qt
+CONFIG(debug, debug|release):   LIBNAME = longscroll-qtd
+
+windows: LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -l$${LIBNAME}2
+else:    LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -l$${LIBNAME}
+
 
 HEADERS += \
     mainwindow.h \

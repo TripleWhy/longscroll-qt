@@ -3,6 +3,7 @@
 
 #include "longscroll-qt_global.h"
 #include "notifyablescrollcontentwidget.h"
+#include "contentiteminfo.h"
 #include <QAbstractItemView>
 
 LONGSCROLLQT_NAMESPACE_BEGIN

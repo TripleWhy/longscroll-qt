@@ -1,6 +1,7 @@
 #include "contentiteminfo.h"
 #include <QFileInfo>
 #include <QSize>
+#include <QDataStream>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
