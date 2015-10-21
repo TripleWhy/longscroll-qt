@@ -31,6 +31,7 @@ PUBLIC_HEADERS += \
     contentwidgetitemfactory.h \
     imagewidget.h \
     longscroll-qt_global.h \
+    longscroll-qt_qtincludes.h \
     navigatorwidget.h \
     notifyablescrollcontentwidget.h \
     notifyingscrollarea.h \

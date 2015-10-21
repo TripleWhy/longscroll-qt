@@ -3,7 +3,7 @@
 
 #include "longscroll-qt_global.h"
 #include "contentiteminfo.h"
-#include <QFrame>
+#include "longscroll-qt_qtincludes.h"
 
 namespace Ui {
 class ImageInfoWidget;

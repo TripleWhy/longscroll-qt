@@ -1,6 +1,5 @@
 #include "imageinfowidget.h"
 #include "ui_imageinfowidget.h"
-#include <QImageReader>
 #include <QFileInfo>
 
 LONGSCROLLQT_NAMESPACE_BEGIN

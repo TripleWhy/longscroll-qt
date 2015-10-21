@@ -2,7 +2,7 @@
 #define NOTIFYABLESCROLLCONTENT_H
 
 #include "longscroll-qt_global.h"
-#include <QFrame>
+#include "longscroll-qt_qtincludes.h"
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 

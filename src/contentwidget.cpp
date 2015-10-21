@@ -2,7 +2,7 @@
 #include "navigatorwidget.h"
 #include "contentiteminfo.h"
 #include "contentwidgetitemfactory.h"
-#include <QMouseEvent>
+#include "longscroll-qt_qtincludes.h"
 #include <QApplication>
 
 #define CONTENTWIDGET_MEASURE_SHOWINGRECT   0

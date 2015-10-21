@@ -2,7 +2,7 @@
 #define IMAGEWIDGET_H
 
 #include "longscroll-qt_global.h"
-#include <QFrame>
+#include "longscroll-qt_qtincludes.h"
 #include <QIcon>
 
 class QLabel;

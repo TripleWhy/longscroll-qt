@@ -2,7 +2,7 @@
 #define CONTENTITEMINFO_H
 
 #include "longscroll-qt_global.h"
-#include <QVariant>
+#include "longscroll-qt_qtincludes.h"
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 

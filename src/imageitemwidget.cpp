@@ -1,7 +1,6 @@
 #include "imageitemwidget.h"
 #include "imagewidget.h"
 #include "contentwidget.h"
-#include <QPainter>
 #include <QVBoxLayout>
 
 LONGSCROLLQT_NAMESPACE_BEGIN

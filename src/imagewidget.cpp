@@ -1,5 +1,4 @@
 #include "imagewidget.h"
-#include <QPainter>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
