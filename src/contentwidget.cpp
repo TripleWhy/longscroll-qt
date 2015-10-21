@@ -546,8 +546,9 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 				QObjectList children = rowWidgets[i]->children();	//copy list
 				for (QObject * o : children)
 				{
-					static_cast<QWidget *>(o)->setVisible(false);
-					o->setParent(this);
+					QWidget * w = static_cast<QWidget *>(o);
+					w->setVisible(false);
+					w->setParent(this);
 				}
 				delete rowWidgets[i];
 				rowWidgets[i] = 0;
@@ -562,8 +563,9 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 		QObjectList children = last->children();	//copy list
 		for (QObject * o : children)
 		{
-			static_cast<QWidget *>(o)->setVisible(false);
-			o->setParent(this);
+			QWidget * w = static_cast<QWidget *>(o);
+			w->setVisible(false);
+			w->setParent(this);
 		}
 		delete last;
 	}
