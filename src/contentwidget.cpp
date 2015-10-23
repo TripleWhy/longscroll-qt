@@ -1156,7 +1156,7 @@ void ContentWidget::updateTrackingItem()
 		trackingWidget->setStyleSheet(QString());
 #endif
 
-	if (rowInfos.isEmpty() > 0)
+	if (rowInfos.isEmpty())
 	{
 		trackingItem = ItemInfo();
 		trackingItemOffset = 0;

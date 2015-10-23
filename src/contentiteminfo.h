@@ -24,17 +24,11 @@ public:
 	QVariant const & getData() const;
 
 private:
-	friend bool operator==(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
-	friend bool operator!=(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
-	friend QDataStream &operator<<(QDataStream & ds, ContentItemInfo const & ci);
-	friend QDataStream &operator>>(QDataStream & ds, ContentItemInfo & ci);
+	LONGSCROLLQT_EXPORT friend bool operator==(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
+	LONGSCROLLQT_EXPORT friend bool operator!=(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
+	LONGSCROLLQT_EXPORT friend QDataStream &operator<<(QDataStream & ds, ContentItemInfo const & ci);
+	LONGSCROLLQT_EXPORT friend QDataStream &operator>>(QDataStream & ds, ContentItemInfo & ci);
 };
-
-LONGSCROLLQT_EXPORT bool operator==(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
-LONGSCROLLQT_EXPORT bool operator!=(ContentItemInfo const & lhs, ContentItemInfo const & rhs);
-LONGSCROLLQT_EXPORT QDataStream &operator<<(QDataStream & ds, ContentItemInfo const & ci);
-LONGSCROLLQT_EXPORT QDataStream &operator>>(QDataStream & ds, ContentItemInfo & ci);
-
 
 LONGSCROLLQT_NAMESPACE_END
 
