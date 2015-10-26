@@ -54,7 +54,7 @@ void NotifyingScrollArea::findVisible()
 		if (region.contains(it->geometry()))
 		{
 			QRect && r = region.boundingRect().intersected(it->geometry());
-			r.setTopLeft( it->mapFromParent(r.topLeft()) );
+//			r.moveTopLeft( it->mapFromParent(r.topLeft()) );	// Apparently this line was unnecessary
 			it->showingRect(r);
 		}
 	}
