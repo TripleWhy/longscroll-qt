@@ -1204,7 +1204,7 @@ void ContentWidget::navigatorPrevNext(bool next)
 	if (navigator->y() != oldNaviY)
 	{
 		blockScroll = true;
-		emit scrollRequest( 0, navigator->y() - oldNaviY );
+		emit scrollToRequest( 0, visibleRect.top() + (navigator->y() - oldNaviY) );
 		blockScroll = false;
 	}
 }

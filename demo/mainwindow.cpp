@@ -39,7 +39,6 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 		cw->setItemFactory(cwif);
 
 	layout->addWidget(cw);
-	connect(cw, SIGNAL(scrollRequest(int,int)), ui->scrollArea, SLOT(scrollBy(int,int)));
 	connect(cw, SIGNAL(scrollToRequest(int,int)), ui->scrollArea, SLOT(scrollTo(int,int)));
 }
 

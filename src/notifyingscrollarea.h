@@ -13,7 +13,6 @@ public:
 	using QScrollArea::QScrollArea;
 
 public slots:
-	void scrollBy(int dx, int dy);
 	void scrollTo(int x, int y);
 
 protected:

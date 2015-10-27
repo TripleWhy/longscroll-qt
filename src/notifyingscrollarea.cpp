@@ -4,14 +4,6 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
-void NotifyingScrollArea::scrollBy(int dx, int dy)
-{
-	if (dx != 0)
-		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + dx);
-	if (dy != 0)
-		verticalScrollBar()->setValue(verticalScrollBar()->value() + dy);
-}
-
 void NotifyingScrollArea::scrollTo(int x, int y)
 {
 	horizontalScrollBar()->setValue(x);
