@@ -88,14 +88,7 @@ public slots:
 	virtual void showingRect(QRect const & rect) override;
 
 protected:
-	// Can be overridden. Behavior can also be changed by setting a different item factory.
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height);
-
-	bool calculateSize(bool const calculateChanges = false);
-	void alignRow(RowInfo & row);
-#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-	void scaleRow(RowInfo & row);
-#endif
 
 	int rowAt(int y, bool * onNavigator = 0);
 	int colAt(int x, int row);
@@ -110,7 +103,12 @@ protected:
 	virtual void startDrag(int row, int col, int itemIndex);
 
 private:
+	bool calculateSize(bool const calculateChanges = false);
 	void updateRows();
+	void alignRow(RowInfo & row);
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	void scaleRow(RowInfo & row);
+#endif
 	void hideRow(int i);
 	void showRow(RowInfo const & rowInfo, int rowIndex);
 

@@ -508,228 +508,6 @@ QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemI
 	return widget;
 }
 
-bool ContentWidget::calculateSize(const bool calculateChanges)
-{
-	QList<RowInfo> rowInfosNew;
-	rowInfosNew.reserve(rowInfos.size());
-	RowInfo row;
-	int rowWidth = 0;
-	int y = 0;
-	int navRow = -1, navCol = -1;
-	for (int i = 0, l = itemInfos.size(); i < l; ++i)
-	{
-		int width = imageWidths[i];
-
-		ItemInfo item;
-		item.index = i;
-		item.item = &itemInfos[i];
-		item.width = width;
-
-		if (navigatorVisible && navigatorImg == item.item)
-		{
-			navRow = rowInfosNew.size();
-			navCol = row.items.size();
-		}
-
-		if (rowWidth == 0)
-		{
-			item.x = 0;
-			row.items.append(item);
-			rowWidth += width;
-		}
-		else if(rowWidth + width + xSpacing <= visibleRect.width())
-		{
-			item.x = rowWidth + xSpacing;
-			row.items.append(item);
-			rowWidth += width + xSpacing;
-		}
-		else
-		{
-			if (allowOverfill && ( ((rowWidth + width + xSpacing) - visibleRect.width()) < (visibleRect.width() - rowWidth) ))	//overfill
-			{
-				item.x = rowWidth + xSpacing;
-				row.items.append(item);
-				row.aligned = !align;
-#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-				row.height = rowHeight;
-				if (scaleRows)
-					scaleRow(row);
-				y += row.height + ySpacing;
-#else
-				y += rowHeight + ySpacing;
-#endif
-				rowInfosNew.append(row);
-				row = RowInfo();
-				row.y = y;
-				rowWidth = 0;
-			}
-			else	//underfill
-			{
-				row.aligned = !align;
-#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-				row.height = rowHeight;
-				if (scaleRows)
-					scaleRow(row);
-				y += row.height + ySpacing;
-#else
-				y += rowHeight + ySpacing;
-#endif
-				rowInfosNew.append(row);
-				row = RowInfo();
-				row.y = y;
-
-				item.x = 0;
-				row.items.append(item);
-				rowWidth = width;
-
-				if (navigatorVisible && navigatorImg == item.item)
-				{
-					++navRow;
-					navCol = 0;
-				}
-			}
-			if (navigatorVisible && rowInfosNew.size()-1 == navRow)
-			{
-				y += navigatorHeight + ySpacing;
-				row.y += navigatorHeight + ySpacing;
-			}
-		}
-	}
-	size.setWidth(visibleRect.width());
-	if (!row.items.isEmpty())
-	{
-		row.aligned = !alignLast;
-#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-		row.height = rowHeight;
-		if (scaleRows && alignLast)
-			scaleRow(row);
-		size.setHeight(y + row.height);
-#else
-		size.setHeight(y + rowHeight);
-#endif
-		rowInfosNew.append(row);
-	}
-	else
-	{
-		size.setHeight(y - ySpacing);
-	}
-	setMinimumSize(size);
-
-
-	int const is = rowInfosNew.size();
-	int const ws = rowWidgets.size();
-	for (int i = 0, l = qMin(ws, rowInfosNew.size()); i < l; ++i)
-	{
-		bool equal = true;
-		QList<ItemInfo> const & items1 = rowInfos[i].items;
-		QList<ItemInfo> const & items2 = rowInfosNew[i].items;
-		if (items1.size() != items2.size())
-			equal = false;
-		else
-		{
-			for (int j = 0, m = items1.size(); j < m; ++j)
-			{
-				if (items1[j].item != items2[j].item)
-					equal = false;
-			}
-		}
-		if (!equal)
-		{
-			if (rowWidgets[i] != 0)
-			{
-				QObjectList children = rowWidgets[i]->children();	//copy list
-				for (QObject * o : children)
-				{
-					QWidget * w = static_cast<QWidget *>(o);
-					w->setVisible(false);
-					w->setParent(this);
-				}
-				delete rowWidgets[i];
-				rowWidgets[i] = 0;
-			}
-		}
-	}
-	for (int i = is; i < ws; ++i)
-	{
-		QWidget * last = rowWidgets.takeLast();
-		if (last == 0)
-			continue;
-		QObjectList children = last->children();	//copy list
-		for (QObject * o : children)
-		{
-			QWidget * w = static_cast<QWidget *>(o);
-			w->setVisible(false);
-			w->setParent(this);
-		}
-		delete last;
-	}
-	rowWidgets.reserve(is);
-	for (int i = ws; i < is; ++i)
-		rowWidgets.append(0);
-	Q_ASSERT(rowWidgets.size() == rowInfosNew.size());
-	rowInfos.swap(rowInfosNew);
-
-	if (navigatorVisible)
-		updateNavigator(navRow, navCol);
-
-	if (calculateChanges)
-		return rowInfos != rowInfosNew;
-	else
-		return false;
-}
-
-void ContentWidget::alignRow(ContentWidget::RowInfo & row)
-{
-	int const n = row.items.size();
-	double const width = double(visibleRect.width() - xSpacing * (row.items.size() - 1));
-	int sumWidth = 0;
-	for (int i = 0; i < n; ++i)
-		sumWidth += row.items[i].width;
-
-	//TODO: is the same result possible using integers?
-	double const r = double(width) / double(sumWidth);
-	double x = 0;
-	int ix = 0;
-	for (int i = 0; i < n; ++i)
-	{
-		ItemInfo & item = row.items[i];
-		double w = double(row.items[i].width) * r;
-		item.x = ix;
-		item.width = qRound(w + (x - ix));
-		ix += item.width + xSpacing;
-		x += w + xSpacing;
-	}
-	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
-	row.aligned = true;
-}
-
-#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-void ContentWidget::scaleRow(ContentWidget::RowInfo & row)
-{
-	int const n = row.items.size();
-	double const width = double(visibleRect.width() - xSpacing * (row.items.size() - 1));
-	int sumWidth = 0;
-	for (int i = 0; i < n; ++i)
-		sumWidth += row.items[i].width;
-
-	double const r = double(width) / double(sumWidth);
-	double x = 0;
-	int ix = 0;
-	for (int i = 0; i < n; ++i)
-	{
-		ItemInfo & item = row.items[i];
-		double w = double(row.items[i].width) * r;
-		item.x = ix;
-		item.width = qRound(w + (x - ix));
-		ix += item.width + xSpacing;
-		x += w + xSpacing;
-	}
-	row.height = qRound(row.height * r);
-	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
-	row.aligned = true;
-}
-#endif
-
 int ContentWidget::rowAt(int y, bool * onNavigator)
 {
 	if (onNavigator != 0)
@@ -931,6 +709,176 @@ void ContentWidget::startDrag(int /*row*/, int /*col*/, int /*itemIndex*/)
 {
 }
 
+bool ContentWidget::calculateSize(const bool calculateChanges)
+{
+	QList<RowInfo> rowInfosNew;
+	rowInfosNew.reserve(rowInfos.size());
+	RowInfo row;
+	int rowWidth = 0;
+	int y = 0;
+	int navRow = -1, navCol = -1;
+	for (int i = 0, l = itemInfos.size(); i < l; ++i)
+	{
+		int width = imageWidths[i];
+
+		ItemInfo item;
+		item.index = i;
+		item.item = &itemInfos[i];
+		item.width = width;
+
+		if (navigatorVisible && navigatorImg == item.item)
+		{
+			navRow = rowInfosNew.size();
+			navCol = row.items.size();
+		}
+
+		if (rowWidth == 0)
+		{
+			item.x = 0;
+			row.items.append(item);
+			rowWidth += width;
+		}
+		else if(rowWidth + width + xSpacing <= visibleRect.width())
+		{
+			item.x = rowWidth + xSpacing;
+			row.items.append(item);
+			rowWidth += width + xSpacing;
+		}
+		else
+		{
+			if (allowOverfill && ( ((rowWidth + width + xSpacing) - visibleRect.width()) < (visibleRect.width() - rowWidth) ))	//overfill
+			{
+				item.x = rowWidth + xSpacing;
+				row.items.append(item);
+				row.aligned = !align;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+				row.height = rowHeight;
+				if (scaleRows)
+					scaleRow(row);
+				y += row.height + ySpacing;
+#else
+				y += rowHeight + ySpacing;
+#endif
+				rowInfosNew.append(row);
+				row = RowInfo();
+				row.y = y;
+				rowWidth = 0;
+			}
+			else	//underfill
+			{
+				row.aligned = !align;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+				row.height = rowHeight;
+				if (scaleRows)
+					scaleRow(row);
+				y += row.height + ySpacing;
+#else
+				y += rowHeight + ySpacing;
+#endif
+				rowInfosNew.append(row);
+				row = RowInfo();
+				row.y = y;
+
+				item.x = 0;
+				row.items.append(item);
+				rowWidth = width;
+
+				if (navigatorVisible && navigatorImg == item.item)
+				{
+					++navRow;
+					navCol = 0;
+				}
+			}
+			if (navigatorVisible && rowInfosNew.size()-1 == navRow)
+			{
+				y += navigatorHeight + ySpacing;
+				row.y += navigatorHeight + ySpacing;
+			}
+		}
+	}
+	size.setWidth(visibleRect.width());
+	if (!row.items.isEmpty())
+	{
+		row.aligned = !alignLast;
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+		row.height = rowHeight;
+		if (scaleRows && alignLast)
+			scaleRow(row);
+		size.setHeight(y + row.height);
+#else
+		size.setHeight(y + rowHeight);
+#endif
+		rowInfosNew.append(row);
+	}
+	else
+	{
+		size.setHeight(y - ySpacing);
+	}
+	setMinimumSize(size);
+
+
+	int const is = rowInfosNew.size();
+	int const ws = rowWidgets.size();
+	for (int i = 0, l = qMin(ws, rowInfosNew.size()); i < l; ++i)
+	{
+		bool equal = true;
+		QList<ItemInfo> const & items1 = rowInfos[i].items;
+		QList<ItemInfo> const & items2 = rowInfosNew[i].items;
+		if (items1.size() != items2.size())
+			equal = false;
+		else
+		{
+			for (int j = 0, m = items1.size(); j < m; ++j)
+			{
+				if (items1[j].item != items2[j].item)
+					equal = false;
+			}
+		}
+		if (!equal)
+		{
+			if (rowWidgets[i] != 0)
+			{
+				QObjectList children = rowWidgets[i]->children();	//copy list
+				for (QObject * o : children)
+				{
+					QWidget * w = static_cast<QWidget *>(o);
+					w->setVisible(false);
+					w->setParent(this);
+				}
+				delete rowWidgets[i];
+				rowWidgets[i] = 0;
+			}
+		}
+	}
+	for (int i = is; i < ws; ++i)
+	{
+		QWidget * last = rowWidgets.takeLast();
+		if (last == 0)
+			continue;
+		QObjectList children = last->children();	//copy list
+		for (QObject * o : children)
+		{
+			QWidget * w = static_cast<QWidget *>(o);
+			w->setVisible(false);
+			w->setParent(this);
+		}
+		delete last;
+	}
+	rowWidgets.reserve(is);
+	for (int i = ws; i < is; ++i)
+		rowWidgets.append(0);
+	Q_ASSERT(rowWidgets.size() == rowInfosNew.size());
+	rowInfos.swap(rowInfosNew);
+
+	if (navigatorVisible)
+		updateNavigator(navRow, navCol);
+
+	if (calculateChanges)
+		return rowInfos != rowInfosNew;
+	else
+		return false;
+}
+
 void ContentWidget::updateRows()
 {
 	int firstRow = qMax(0, rowAt(visibleRect.y())  -  prefetchBefore);
@@ -964,6 +912,58 @@ void ContentWidget::updateRows()
 		showRow(row, i);
 	}
 }
+
+void ContentWidget::alignRow(ContentWidget::RowInfo & row)
+{
+	int const n = row.items.size();
+	double const width = double(visibleRect.width() - xSpacing * (row.items.size() - 1));
+	int sumWidth = 0;
+	for (int i = 0; i < n; ++i)
+		sumWidth += row.items[i].width;
+
+	//TODO: is the same result possible using integers?
+	double const r = double(width) / double(sumWidth);
+	double x = 0;
+	int ix = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		ItemInfo & item = row.items[i];
+		double w = double(row.items[i].width) * r;
+		item.x = ix;
+		item.width = qRound(w + (x - ix));
+		ix += item.width + xSpacing;
+		x += w + xSpacing;
+	}
+	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
+	row.aligned = true;
+}
+
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+void ContentWidget::scaleRow(ContentWidget::RowInfo & row)
+{
+	int const n = row.items.size();
+	double const width = double(visibleRect.width() - xSpacing * (row.items.size() - 1));
+	int sumWidth = 0;
+	for (int i = 0; i < n; ++i)
+		sumWidth += row.items[i].width;
+
+	double const r = double(width) / double(sumWidth);
+	double x = 0;
+	int ix = 0;
+	for (int i = 0; i < n; ++i)
+	{
+		ItemInfo & item = row.items[i];
+		double w = double(row.items[i].width) * r;
+		item.x = ix;
+		item.width = qRound(w + (x - ix));
+		ix += item.width + xSpacing;
+		x += w + xSpacing;
+	}
+	row.height = qRound(row.height * r);
+	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
+	row.aligned = true;
+}
+#endif
 
 void ContentWidget::hideRow(int i)
 {
