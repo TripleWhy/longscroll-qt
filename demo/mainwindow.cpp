@@ -1,8 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "itemfactories.h"
 #include <longscroll-qt/contentwidget.h>
 #include <longscroll-qt/contentwidgetitemfactory.h>
-#include "itemfactories.h"
+#include <QScrollBar>
 
 MainWindow::MainWindow(int demoNr, QWidget *parent)
     : QMainWindow(parent),
@@ -39,7 +40,7 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 		cw->setItemFactory(cwif);
 
 	layout->addWidget(cw);
-	connect(cw, SIGNAL(scrollToRequest(int,int)), ui->scrollArea, SLOT(scrollTo(int,int)));
+	connect(cw, SIGNAL(scrollToRequest(int)), ui->scrollArea->verticalScrollBar(), SLOT(setValue(int)));
 }
 
 MainWindow::~MainWindow()

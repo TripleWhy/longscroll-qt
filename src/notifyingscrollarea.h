@@ -12,9 +12,6 @@ class LONGSCROLLQT_EXPORT NotifyingScrollArea : public QScrollArea
 public:
 	using QScrollArea::QScrollArea;
 
-public slots:
-	void scrollTo(int x, int y);
-
 protected:
 	virtual void scrollContentsBy(int dx, int dy) override;
 	virtual void resizeEvent(QResizeEvent * event) override;

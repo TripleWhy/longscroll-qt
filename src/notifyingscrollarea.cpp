@@ -4,12 +4,6 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
-void NotifyingScrollArea::scrollTo(int x, int y)
-{
-	horizontalScrollBar()->setValue(x);
-	verticalScrollBar()->setValue(y);
-}
-
 void NotifyingScrollArea::scrollContentsBy(int dx, int dy)
 {
 	QScrollArea::scrollContentsBy(dx, dy);

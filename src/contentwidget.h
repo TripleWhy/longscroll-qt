@@ -127,7 +127,7 @@ private slots:
 	void updateTrackingPoint();
 
 signals:
-	void scrollToRequest(int x, int y);
+	void scrollToRequest(int y);
 	void itemPressed(int row, int col, int itemIndex, Qt::MouseButtons buttons);
 	void itemReleased(int row, int col, int itemIndex, Qt::MouseButtons buttons);
 	void itemClicked(int row, int col, int itemIndex);

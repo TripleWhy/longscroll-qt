@@ -460,7 +460,7 @@ void ContentWidget::showingRect(const QRect & rect)
 		{
 			int const r = findRow(trackingItem.index);
 			blockScroll = true;
-			emit scrollToRequest(0, rowInfos[r].y + trackingItemOffset - (trackingPoint.y() - rect.y()));
+			emit scrollToRequest(rowInfos[r].y + trackingItemOffset - (trackingPoint.y() - rect.y()));
 			blockScroll = false;
 		}
 	}
@@ -1204,7 +1204,7 @@ void ContentWidget::navigatorPrevNext(bool next)
 	if (navigator->y() != oldNaviY)
 	{
 		blockScroll = true;
-		emit scrollToRequest( 0, visibleRect.top() + (navigator->y() - oldNaviY) );
+		emit scrollToRequest( visibleRect.top() + (navigator->y() - oldNaviY) );
 		blockScroll = false;
 	}
 }
