@@ -410,7 +410,7 @@ void ContentWidget::showNavigator(int row, int col)
 }
 
 /*!
- * \brief Reimplemented from QFrame::sizeHint().
+ * \reimp{NotifyableScrollContentWidget::sizeHint()}
  */
 QSize ContentWidget::sizeHint() const
 {
@@ -418,7 +418,7 @@ QSize ContentWidget::sizeHint() const
 }
 
 /*!
- * \brief Reimplemented from NotifyableScrollContentWidget::showingRect().
+ * \reimp{NotifyableScrollContentWidget::showingRect()}
  */
 void ContentWidget::showingRect(const QRect & rect)
 {
@@ -508,6 +508,14 @@ QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemI
 	return widget;
 }
 
+/*!
+ * \brief Calculates which row a given y-coordinate belongs to.
+ * If the navigator widget is shown and the y-coordinate is on the navigator, the returned row will be the number of the row above the navigator.
+ * The optional parameter onNavigator returns if the y-coordinate is on the navigator.
+ * \param y Y-Coordinate.
+ * \param onNavigator Returns if y is on the navigator widget.
+ * \return Row index.
+ */
 int ContentWidget::rowAt(int y, bool * onNavigator)
 {
 	if (onNavigator != 0)
@@ -546,11 +554,23 @@ int ContentWidget::rowAt(int y, bool * onNavigator)
 	return row;
 }
 
+/*!
+ * \overloaded
+ * \see colAt(int x, const ContentWidget::RowInfo & row)
+ */
 int ContentWidget::colAt(int x, int row)
 {
 	return colAt(x, rowInfos.at(row));
 }
 
+/*!
+ * \brief Calculates which column of a row a given x-coordinate belongs to.
+ * Since items can have different widths, a row is needed.
+ * \param x X-Coordinate.
+ * \param row Row.
+ * \return Column.
+ * \see rowAt
+ */
 int ContentWidget::colAt(int x, const ContentWidget::RowInfo & row)
 {
 	for (int i = row.items.length() - 1; i >= 0; --i)
@@ -559,6 +579,12 @@ int ContentWidget::colAt(int x, const ContentWidget::RowInfo & row)
 	return 0;
 }
 
+/*!
+ * \brief Takes a row and column and changes them to point at the next item.
+ * The input row and column have to exist. If there is no next item, row and col will be -1.
+ * \param row Row.
+ * \param col Column.
+ */
 void ContentWidget::nextImage(int & row, int & col)
 {
 	RowInfo const & rowInfo = rowInfos.at(row);
@@ -575,6 +601,12 @@ void ContentWidget::nextImage(int & row, int & col)
 	row = -1;
 }
 
+/*!
+ * \brief Takes a row and column and changes them to point at the previous item.
+ * The input row and column have to exist. If there is no previous item, row and col will be -1.
+ * \param row Row.
+ * \param col Column.
+ */
 void ContentWidget::previousImage(int & row, int & col)
 {
 	--col;
@@ -591,6 +623,9 @@ void ContentWidget::previousImage(int & row, int & col)
 	row = -1;
 }
 
+/*!
+ * \reimp{NotifyableScrollContentWidget::mousePressEvent()}
+ */
 void ContentWidget::mousePressEvent(QMouseEvent * event)
 {
 	if (!handleMouseEvents)
@@ -632,6 +667,9 @@ void ContentWidget::mousePressEvent(QMouseEvent * event)
 	emit itemPressed(row, col, item->index);
 }
 
+/*!
+ * \reimp{NotifyableScrollContentWidget::mouseMoveEvent()}
+ */
 void ContentWidget::mouseMoveEvent(QMouseEvent * event)
 {
 	if (!handleMouseEvents)
@@ -666,6 +704,9 @@ void ContentWidget::mouseMoveEvent(QMouseEvent * event)
 	}
 }
 
+/*!
+ * \reimp{NotifyableScrollContentWidget::mouseReleaseEvent()}
+ */
 void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
 {
 	if (!handleMouseEvents)
@@ -692,6 +733,9 @@ void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
 		emit itemClicked(row, col, item->index);
 }
 
+/*!
+ * \reimp{NotifyableScrollContentWidget::mouseDoubleClickEvent()}
+ */
 void ContentWidget::mouseDoubleClickEvent(QMouseEvent * event)
 {
 	event->accept();
@@ -705,6 +749,13 @@ void ContentWidget::mouseDoubleClickEvent(QMouseEvent * event)
 	emit itemDoubleClicked(row, col, itemIndex);
 }
 
+/*!
+ * \brief Begins a drag operation.
+ * If dragging is enabled (dragEnabled), and the user tries to drag an item, this method is called.
+ * If you wish to implement some kind of drag support, you have to override this moethod.
+ * The default implementation does nothing.
+ * \see dragEnabled
+ */
 void ContentWidget::startDrag(int /*row*/, int /*col*/, int /*itemIndex*/)
 {
 }
@@ -1296,5 +1347,86 @@ bool operator==(const ContentWidget::RowInfo & lhs, const ContentWidget::RowInfo
 {
 	return lhs.y == rhs.y && lhs.items == rhs.items;
 }
+
+//TODO: Remove link in overview of scrollToRequest somehow.
+/*!
+ * \fn ContentWidget::scrollToRequest
+ * \brief This signal is emitted when the widget wants to scroll somewhere.
+ * This happens when the navigator switches a line to keep it steady on the screen,
+ * or when itemTrackingEnabled is enabled and the widget is resized and tries to keep one item at one y-coordinate.
+ * Can be connected to the setValue() signal of the vertical scroll bar of the containing scroll area.
+ * \param y The y-coordiate the widget wants to be visible on the top edge.
+ */
+
+/*!
+ * \fn ContentWidget::itemPressed
+ * \brief This signal is emitted whenever an item is pressed.
+ * The row, column and item inex specify is the item that was pressed.
+ * Use the QApplication::mouseButtons() function to get the state of the mouse buttons.
+ * \param row
+ * \param col
+ * \param itemIndex
+ *
+ * \see itemReleased
+ * \see itemClicked
+ * \see itemDoubleClicked
+ * \see QGuiApplication::mouseButtons()
+ */
+
+/*!
+ * \fn ContentWidget::itemReleased
+ * \brief This signal is emitted whenever an item is released.
+ * The row, column and item inex specify is the item that was released.
+ * Use the QApplication::mouseButtons() function to get the state of the mouse buttons.
+ * \param row
+ * \param col
+ * \param itemIndex
+ * 
+ * \see itemPressed
+ * \see itemClicked
+ * \see itemDoubleClicked
+ * \see QGuiApplication::mouseButtons()
+ */
+
+/*!
+ * \fn ContentWidget::itemClicked
+ * \brief This signal is emitted whenever an item is left-clicked.
+ * The row, column and item inex specify is the item that was clicked.
+ * \param row
+ * \param col
+ * \param itemIndex
+ * 
+ * \see itemPressed
+ * \see itemReleased
+ * \see itemDoubleClicked
+ */
+
+/*!
+ * \fn ContentWidget::itemDoubleClicked
+ * \brief This signal is emitted whenever an item is double clicked.
+ * The row, column and item inex specify is the item that was double clicked.
+ * \param row
+ * \param col
+ * \param itemIndex
+ *
+ * \see itemPressed
+ * \see itemReleased
+ * \see itemClicked
+ */
+
+/*!
+ * \fn ContentWidget::selectionChanged
+ * \brief This signal is emitted whenever the selection changes.
+ * \param selection New selection.
+ * \param oldSelection Old selection.
+ */
+
+/*!
+ * \fn ContentWidget::currentItemChanged
+ * \brief This signal is emitted whenever the current item changes.
+ * The previous model item index is replaced by the current index as the selection's current item.
+ * \param itemIndex Current item index.
+ * \param oldItemIndex Old current item index.
+ */
 
 LONGSCROLLQT_NAMESPACE_END
