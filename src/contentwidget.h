@@ -132,8 +132,8 @@ signals:
 	void itemReleased(int row, int col, int itemIndex);
 	void itemClicked(int row, int col, int itemIndex);
 	void itemDoubleClicked(int row, int col, int itemIndex);
-	void selectionChanged(QList<int> const & selection);
-	void currentItemChanged(int itemIndex);
+	void selectionChanged(QList<int> const & selection, QList<int> const & oldSelection);
+	void currentItemChanged(int itemIndex, int oldItemIndex);
 
 private:
 	//TODO make unsigned?

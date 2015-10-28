@@ -1118,9 +1118,9 @@ void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPr
 	}
 
 	if (selection != oldSelection)
-		emit selectionChanged(selection);
+		emit selectionChanged(selection, oldSelection);
 	if (currentItemIndex != oldCurrentItemIndex)
-		emit currentItemChanged(currentItemIndex);
+		emit currentItemChanged(currentItemIndex, oldCurrentItemIndex);
 }
 
 void ContentWidget::showNavigator(const int row, const int col, const bool blockUpdates)
