@@ -33,7 +33,7 @@ ContentWidget::ContentWidget(QWidget * parent)
 	navigator->setStyleSheet("QWidget { background: darkgray; }");
 #endif
 
-	connect(this, SIGNAL(itemPressed(int,int,int,Qt::MouseButtons)), this, SLOT(showNavigator(int,int)));
+	connect(this, SIGNAL(itemPressed(int,int,int)), this, SLOT(showNavigator(int,int)));
 }
 
 ContentWidget::ContentWidget(int _rowHeight, int _itemWidth, bool alignRows, bool alignLastRow, bool _allowOverfill, int _navigatorHeight, QWidget * parent)
@@ -629,7 +629,7 @@ void ContentWidget::mousePressEvent(QMouseEvent * event)
 		mousePressItem = 0;
 	}
 
-	emit itemPressed(row, col, item->index, event->buttons());
+	emit itemPressed(row, col, item->index);
 }
 
 void ContentWidget::mouseMoveEvent(QMouseEvent * event)
@@ -685,7 +685,7 @@ void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
 	}
 	int col = colAt(event->x(), row);
 	ItemInfo * item = &rowInfos[row].items[col];
-	emit itemReleased(row, col, item->index, event->buttons());
+	emit itemReleased(row, col, item->index);
 
 	if (event->buttons() == Qt::NoButton && mouseState == 1 &&
 	        row == mousePressRow && col == mousePressCol && item == mousePressItem)

@@ -128,8 +128,8 @@ private slots:
 
 signals:
 	void scrollToRequest(int y);
-	void itemPressed(int row, int col, int itemIndex, Qt::MouseButtons buttons);
-	void itemReleased(int row, int col, int itemIndex, Qt::MouseButtons buttons);
+	void itemPressed(int row, int col, int itemIndex);
+	void itemReleased(int row, int col, int itemIndex);
 	void itemClicked(int row, int col, int itemIndex);
 	void itemDoubleClicked(int row, int col, int itemIndex);
 	void selectionChanged(QList<int> const & selection);
