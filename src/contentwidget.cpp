@@ -805,7 +805,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 				row.height = rowHeight;
 				if (scaleRows)
-					scaleRow(row);
+					alignRow<true>(row);
 				y += row.height + ySpacing;
 #else
 				y += rowHeight + ySpacing;
@@ -821,7 +821,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 				row.height = rowHeight;
 				if (scaleRows)
-					scaleRow(row);
+					alignRow<true>(row);
 				y += row.height + ySpacing;
 #else
 				y += rowHeight + ySpacing;
@@ -854,7 +854,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 		row.height = rowHeight;
 		if (scaleRows && alignLast)
-			scaleRow(row);
+			alignRow<true>(row);
 		size.setHeight(y + row.height);
 #else
 		size.setHeight(y + rowHeight);
@@ -964,6 +964,9 @@ void ContentWidget::updateRows()
 	}
 }
 
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+template<bool scale>
+#endif
 void ContentWidget::alignRow(ContentWidget::RowInfo & row)
 {
 	int const n = row.items.size();
@@ -985,36 +988,13 @@ void ContentWidget::alignRow(ContentWidget::RowInfo & row)
 		ix += item.width + xSpacing;
 		x += w + xSpacing;
 	}
-	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
-	row.aligned = true;
-}
-
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-void ContentWidget::scaleRow(ContentWidget::RowInfo & row)
-{
-	int const n = row.items.size();
-	double const width = double(visibleRect.width() - xSpacing * (row.items.size() - 1));
-	int sumWidth = 0;
-	for (int i = 0; i < n; ++i)
-		sumWidth += row.items[i].width;
-
-	double const r = double(width) / double(sumWidth);
-	double x = 0;
-	int ix = 0;
-	for (int i = 0; i < n; ++i)
-	{
-		ItemInfo & item = row.items[i];
-		double w = double(row.items[i].width) * r;
-		item.x = ix;
-		item.width = qRound(w + (x - ix));
-		ix += item.width + xSpacing;
-		x += w + xSpacing;
-	}
-	row.height = qRound(row.height * r);
+	if (scale)
+		row.height = qRound(row.height * r);
+#endif
 	Q_ASSERT( (ix - xSpacing) == visibleRect.width() );
 	row.aligned = true;
 }
-#endif
 
 void ContentWidget::hideRow(int i)
 {

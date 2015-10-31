@@ -12,7 +12,10 @@ class NavigatorWidget;
 struct ContentItemInfo;
 class ContentWidgetItemFactory;
 
-#define CONTENTWIDGET_VARIABLE_ROW_HEIGHT 1
+#ifndef CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+# define CONTENTWIDGET_VARIABLE_ROW_HEIGHT 1
+#endif
+
 class LONGSCROLLQT_EXPORT ContentWidget : public NotifyableScrollContentWidget
 {
 	Q_OBJECT
@@ -105,10 +108,10 @@ protected:
 private:
 	bool calculateSize(bool const calculateChanges = false);
 	void updateRows();
-	void alignRow(RowInfo & row);
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
-	void scaleRow(RowInfo & row);
+	template<bool scale = false>
 #endif
+	void alignRow(RowInfo & row);	//template function if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 	void hideRow(int i);
 	void showRow(RowInfo const & rowInfo, int rowIndex);
 
