@@ -36,13 +36,13 @@ ContentWidget::ContentWidget(QWidget * parent)
 	connect(this, SIGNAL(itemPressed(int,int,int)), this, SLOT(showNavigator(int,int)));
 }
 
-ContentWidget::ContentWidget(int _rowHeight, int _itemWidth, bool alignRows, bool alignLastRow, bool _allowOverfill, int _navigatorHeight, QWidget * parent)
+ContentWidget::ContentWidget(int _rowHeight, int _itemWidth, bool stretchRows, bool stretchLastRow, bool _allowOverfill, int _navigatorHeight, QWidget * parent)
 	: ContentWidget(parent)
 {
 	rowHeight = _rowHeight;
 	itemWidth = _itemWidth;
-	align = alignRows;
-	alignLast = alignLastRow;
+	align = stretchRows;
+	alignLast = stretchLastRow;
 	allowOverfill = _allowOverfill;
 	navigatorHeight = _navigatorHeight;
 }
@@ -55,6 +55,8 @@ ContentWidget::~ContentWidget()
  * \property ContentWidget::itemFactory
  * \brief ContentWidgetItemFactory used to create displaying widgets.
  * \accessors getItemFactory(), setItemFactory()
+ * \default{new ContentWidgetImageItemFactory(false, this)}
+ * \see ContentWidgetImageItemFactory
  */
 
 /*!
@@ -78,7 +80,10 @@ void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 /*!
  * \property ContentWidget::navigatorWidget
  * \brief NavigatorWidget.
+ * \default{new ImageNavigatorWidget(this)}
  * \accessors getNavigatorWidget(), setNavigatorWidget()
+ * \see navigatorHeight
+ * \see ImageNavigatorWidget
  */
 
 /*!
@@ -123,13 +128,39 @@ void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
 }
 
 /*!
+ * \property ContentWidget::navigatorHeight
+ * \brief Navigator widget height.
+ * The navigator widget always has a fixed height.
+ * \default 500
+ * \accessors getNavigatorHeight(), setNavigatorHeight()
+ * \see navigatorWidget
+ */
+
+/*!
+ * \see navigatorWidget
+ */
+int ContentWidget::getNavigatorHeight() const
+{
+	return navigatorHeight;
+}
+
+/*!
+ * \see navigatorWidget
+ */
+void ContentWidget::setNavigatorHeight(int height)
+{
+	if (height >= 0)
+		navigatorHeight = height;
+}
+
+/*!
  * \property ContentWidget::itemTrackingEnabled
  * \brief Tries to keep one item at the same screen y-coordinate while resizing.
  * If item tracking is enabled, an item is memorized when the user scrolls the widget.
  * When the widget is resized, it tries to keep that tracking item at the same screen y-coordinate.
- * The default is true.
- * \see setItemTrackingScreenPositionPercentage
+ * \default true
  * \accessors isItemTrackingEnabled(), setItemTrackingEnabled()
+ * \see setItemTrackingScreenPositionPercentage
  */
 
 /*!
@@ -174,9 +205,9 @@ uchar ContentWidget::getItemTrackingScreenPositionPercentageY() const
 /*!
  * \brief Sets the position where the tracking item is searched.
  * If item tracking is enabled, the tracking item is the item that is found at this position of the visible region.
- * The values are in percent. For example, (0, 0) is the item at the top left corner, (0, 100) is the item at the bottom left corner
- * and (50, 50) is the item at the center.
- * The default is (0, 0).
+ * The values are in percent. For example, <tt>(0, 0)</tt> is the item at the top left corner, <tt>(0, 100)</tt> is the item at the bottom left corner
+ * and <tt>(50, 50)</tt> is the item at the center.
+ * \default{(0, 0)}
  * \param percentX X-coordinate percentage.
  * \param percentY Y-coordinate percentage.
  * \see itemTrackingEnabled
@@ -195,11 +226,11 @@ void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, ucha
 }
 
 /*!
- * \property prefetchRowsBefore
- * \brief Number of rows before the visible region that should be kept ready.
+ * \property ContentWidget::prefetchRowsBefore
+ * \brief Number of rows before the first visible row that should be kept ready for displaying.
  * These rows are not currently visible, but their widgets still or already exist anyway.
- * This can be useful for example if a widget needs some time to load data from the network.
- * Default is 1.
+ * This can be useful for example if a widget needs some time to load data from the disk or network.
+ * \default 1
  * \accessors getPrefetchRowsBefore(), setPrefetchRowsBefore()
  */
 
@@ -220,11 +251,11 @@ void ContentWidget::setPrefetchRowsBefore(int rows)
 }
 
 /*!
- * \property prefetchRowsAfter
- * \brief Number of rows after the visible region that should be kept ready.
+ * \property ContentWidget::prefetchRowsAfter
+ * \brief Number of rows after the last visible row that should be kept ready for displaying.
  * These rows are not currently visible, but their widgets still or already exist anyway.
- * This can be useful for example if a widget needs some time to load data from the network.
- * Default is 3.
+ * This can be useful for example if a widget needs some time to load data from the disk or network.
+ * \default 3
  * \accessors getPrefetchRowsAfter(), setPrefetchRowsAfter()
  */
 
@@ -245,8 +276,9 @@ void ContentWidget::setPrefetchRowsAfter(int rows)
 }
 
 /*!
- * \property horizontalSpacing
+ * \property ContentWidget::horizontalSpacing
  * \brief Horizontal spacing between items.
+ * \default 5
  * \accessors getHorizontalSpacing(), setHorizontalSpacing()
  */
 
@@ -267,8 +299,9 @@ void ContentWidget::setHorizontalSpacing(int spacing)
 }
 
 /*!
- * \property verticalSpacing
+ * \property ContentWidget::verticalSpacing
  * \brief Vertical spacing between items.
+ * \default 5
  * \accessors getVerticalSpacing(), setVerticalSpacing()
  */
 
@@ -287,6 +320,177 @@ void ContentWidget::setVerticalSpacing(int spacing)
 {
 	ySpacing = spacing;
 }
+
+/*!
+ * \property ContentWidget::rowHeight
+ * \brief Row base height.
+ * If \c scaleRows is not set, every row will have this height. If \c scaleRows is set, this will be the base value to calculate the actual size from.
+ * The value must be > 0.
+ * \default 200
+ * \accessors getRowHeight(), setRowHeight()
+ * \see scaleRows
+ */
+
+/*!
+ * \see rowHeight
+ */
+int ContentWidget::getRowHeight() const
+{
+	return rowHeight;
+}
+
+/*!
+ * \see rowHeight
+ */
+void ContentWidget::setRowHeight(int height)
+{
+	if (height > 0)
+		rowHeight = height;
+}
+
+/*!
+ * \property ContentWidget::itemWidth
+ * \brief Item base width.
+ * If <tt>itemWidth > 0</tt>, all items will have this width, unless stretchRows is set. \n
+ * If <tt>itemWidth < 0</tt>, all items will have some large width. Only use this to gether with \ref stretchRows and without \ref scaleRows. That has the effect that one item takes exactly one row. \n
+ * If <tt>itemWidth == 0</tt>, the items will have their size assigned by using item.widthForHeight(rowHeight), i.e. each item has the width that fits the rowHeight best.
+ * \default 0
+ * \accessors getItemWidth(), setItemWidth()
+ * \see stretchRows
+ */
+
+/*!
+ * \see itemWidth
+ */
+int ContentWidget::getItemWidth() const
+{
+	return itemWidth;
+}
+
+/*!
+ * \see itemWidth
+ */
+void ContentWidget::setItemWidth(int width)
+{
+	itemWidth = width;
+}
+
+/*!
+ * \property ContentWidget::allowOverfill
+ * \brief Allows the last item in a row to exceed the width of that row.
+ * If \c allowOverfill is not set, a row is never wider than the widget.\n
+ * If \c allowOverfill is set, the widget decides for the first item that does not fit inside a row anymore, if it adds the item to the row anyway or creates a new row.
+ * The item is added to the row if more than half of the item fits inside the row.
+ * This is usually used this together with \ref stretchRows or \ref scaleRows.
+ * \default true
+ * \accessors getAllowOverfill(), setAllowOverfill()
+ * \see stretchRows
+ * \see scaleRows
+ */
+
+/*!
+ * \see allowOverfill
+ */
+bool ContentWidget::getAllowOverfill() const
+{
+	return allowOverfill;
+}
+
+/*!
+ * \see allowOverfill
+ */
+void ContentWidget::setAllowOverfill(bool allow)
+{
+	allowOverfill = allow;
+}
+
+/*!
+ * \property ContentWidget::stretchRows
+ * \brief Stretch row widths to the actual widget's width.
+ * If \c stretchRows is set, all rows will be stretched to the actual widget's width. This is done by stretching all items of a row proportionally to their widths.
+ * If \c stretchRows is not set, all items will have the size specified by itemWidth.
+ * This value does not affect the last row, which is controlled by \ref stretchLastRow.
+ * \default true
+ * \accessors getStretchRows(), setStretchRows()
+ * \see stretchLastRow
+ * \see scaleRows
+ */
+
+/*!
+ * \see stretchRows
+ */
+bool ContentWidget::getStretchRows() const
+{
+	return align;
+}
+
+/*!
+ * \see stretchRows
+ */
+void ContentWidget::setStretchRows(bool al)
+{
+	align = al;
+}
+
+/*!
+ * \property ContentWidget::stretchLastRow
+ * \brief Stretch last row.
+ * The last row can be stretched independently from the other rows. This is because the last row usually is not completely filled and stretching it looks strange.
+ * \default false
+ * \accessors getStretchLastRow(), setStretchLastRow()
+ * \see stretchRows
+ */
+
+/*!
+ * \see stretchLastRow
+ */
+bool ContentWidget::getStretchLastRow() const
+{
+	return alignLast;
+}
+
+/*!
+ * \see stretchLastRow
+ */
+void ContentWidget::setStretchLastRow(bool align)
+{
+	alignLast = align;
+}
+
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+/*!
+ * \property ContentWidget::scaleRows
+ * \brief Scale rows to the actual widget's width, keeping the row's aspect ratio.
+ * Similar to \ref stretchRows, but keeps the aspect ratios of the items. Instead it changes the row height. If enabled, overrides \ref stretchRows, but respects \ref stretchLastRow.
+ * However, for (theoretically) better performance disable \ref stretchRows when \c scaleRows is set.
+ *
+ * Enabling \c scaleRows means that rows don't have fixed row heights anymore, which causes some operations to be a bit more complex.
+ * For maximum performance, this feature can be disabled completely by compiling the library with \c CONTENTWIDGET_VARIABLE_ROW_HEIGHT=0 defined.
+ * However I found the effective performance impact hardly mensurable.
+ *
+ * Don't use \c scaleRows with \ref itemWidth <tt>< 0</tt>.
+ * \default false
+ * \accessors getScaleRows(), setScaleRows()
+ * \see stretchRows
+ * \see stretchLastRow
+ */
+
+/*!
+ * \see scaleRows
+ */
+bool ContentWidget::getScaleRows() const
+{
+	return scaleRows;
+}
+
+/*!
+ * \see scaleRows
+ */
+void ContentWidget::setScaleRows(bool scale)
+{
+	scaleRows = scale;
+}
+#endif
 
 /*!
  * \property ContentWidget::itemInfos
@@ -352,8 +556,8 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 
 /*!
  * \brief Searches the row of a given item index.
- * Uses binary search using std::lower_bound() to find the row.
- * The itemIndex must be in the range of the item info list, this is not checked.
+ * Uses binary search using \c std::lower_bound() to find the row.
+ * The \c itemIndex must be in the range of the item info list, this is not checked.
  * \param itemIndex
  * \return row
  * \see itemInfos
@@ -369,7 +573,7 @@ int ContentWidget::findRow(int itemIndex)
 
 /*!
  * \brief Searches the row and column of a given item index.
- * Uses binary search using std::lower_bound() to find the row, the column is calculated directly.
+ * Uses binary search using \c std::lower_bound() to find the row, the column is calculated directly.
  * The itemIndex must be in the range of the item info list, this is not checked.
  * \param row Returns the row.
  * \param col Returns the column.
@@ -385,7 +589,7 @@ void ContentWidget::findRowCol(int & row, int & col, int itemIndex)
 }
 
 /*!
- * \brief Shows the navigatorWidget for the given item index.
+ * \brief Shows the \ref navigatorWidget for the given item index.
  * The index must exist in the item info list.
  * \param itemIndex
  * \see itemInfos
@@ -399,7 +603,7 @@ void ContentWidget::showNavigator(int itemIndex)
 }
 
 /*!
- * \brief Shows the navigatorWidget for the given row and column.
+ * \brief Shows the \ref navigatorWidget for the given row and column.
  * The row and column must exist.
  * \param row
  * \param col
@@ -485,7 +689,7 @@ void ContentWidget::showingRect(const QRect & rect)
 /*!
  * \brief Creates an item widget.
  * This method creates a widget to visualize an item. These widgets are created when the respective item becomes close to the visible region
- * and destroyed when it moves away. For fine control when the widget is created, use prefetchBefore and prefetchAfter.
+ * and destroyed when it moves away. For fine control when the widget is created, use \ref prefetchBefore and \ref prefetchAfter.
  * This widget takes ownership of the returned widget.
  *
  * This method can be overridden. However, the same effect can be achieved by changing the \ref itemFactory.

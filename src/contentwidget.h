@@ -44,7 +44,7 @@ private:
 
 public:
 	ContentWidget(QWidget * parent = 0);
-	ContentWidget(int rowHeight, int itemWidth = 0, bool alignRows = true, bool alignLastRow = false, bool allowOverfill = true, int navigatorHeight = 500, QWidget *parent = 0);
+	ContentWidget(int rowHeight, int itemWidth = 0, bool stretchRows = true, bool stretchLastRow = false, bool allowOverfill = true, int navigatorHeight = 500, QWidget *parent = 0);
 	~ContentWidget();
 
 	Q_PROPERTY(ContentWidgetItemFactory * itemFactory READ getItemFactory WRITE setItemFactory)
@@ -54,6 +54,9 @@ public:
 	Q_PROPERTY(NavigatorWidget * navigatorWidget READ getNavigatorWidget WRITE setNavigatorWidget)
 	NavigatorWidget * getNavigatorWidget();
 	void setNavigatorWidget(NavigatorWidget * nav);
+	Q_PROPERTY(int navigatorHeight READ getNavigatorHeight WRITE setNavigatorHeight)
+	int getNavigatorHeight() const;
+	void setNavigatorHeight(int height);
 
 	Q_PROPERTY(bool itemTrackingEnabled READ isItemTrackingEnabled WRITE setItemTrackingEnabled)
 	bool isItemTrackingEnabled() const;
@@ -75,6 +78,26 @@ public:
 	Q_PROPERTY(int verticalSpacing READ getVerticalSpacing WRITE setVerticalSpacing)
 	int getVerticalSpacing() const;
 	void setVerticalSpacing(int spacing);
+	Q_PROPERTY(int rowHeight READ getRowHeight WRITE setRowHeight)
+	int getRowHeight() const;
+	void setRowHeight(int height);
+	Q_PROPERTY(int itemWidth READ getItemWidth WRITE setItemWidth)
+	int getItemWidth() const;
+	void setItemWidth(int width);
+	Q_PROPERTY(bool allowOverfill READ getAllowOverfill WRITE setAllowOverfill)
+	bool getAllowOverfill() const;
+	void setAllowOverfill(bool allow);
+	Q_PROPERTY(bool stretchRows READ getStretchRows WRITE setStretchRows)
+	bool getStretchRows() const;
+	void setStretchRows(bool align);
+	Q_PROPERTY(bool stretchLastRow READ getStretchLastRow WRITE setStretchLastRow)
+	bool getStretchLastRow() const;
+	void setStretchLastRow(bool align);
+#if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
+	Q_PROPERTY(bool scaleRows READ getScaleRows WRITE setScaleRows)
+	bool getScaleRows() const;
+	void setScaleRows(bool scale);
+#endif
 
 	Q_PROPERTY(QList<ContentItemInfo> itemInfos READ getItemInfos WRITE setItemInfos)
 	QList<ContentItemInfo> const & getItemInfos() const;
@@ -145,7 +168,6 @@ private:
 	int xSpacing = 5;
 	int ySpacing = 5;
 
-protected:
 	int rowHeight = 200;
 	int itemWidth = 0;
 	bool allowOverfill = true;
