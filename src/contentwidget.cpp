@@ -518,8 +518,8 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 
 	itemInfos = infos;
 	int const size = itemInfos.size();
-	imageWidths.clear();
-	imageWidths.reserve(size);
+	itemWidths.clear();
+	itemWidths.reserve(size);
 	qDeleteAll(itemWidgets);
 	itemWidgets.clear();
 	itemWidgets.reserve(size);
@@ -527,7 +527,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	{
 		for (ContentItemInfo const & img : infos)
 		{
-			imageWidths.append(img.widthForHeight(rowHeight));
+			itemWidths.append(img.widthForHeight(rowHeight));
 			itemWidgets.append(0);
 		}
 	}
@@ -535,7 +535,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	{
 		for (int i = 0; i < size; ++i)
 		{
-			imageWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
+			itemWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
 			itemWidgets.append(0);
 		}
 	}
@@ -543,7 +543,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	{
 		for (int i = 0; i < size; ++i)
 		{
-			imageWidths.append(itemWidth);
+			itemWidths.append(itemWidth);
 			itemWidgets.append(0);
 		}
 	}
@@ -974,7 +974,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 	int navRow = -1, navCol = -1;
 	for (int i = 0, l = itemInfos.size(); i < l; ++i)
 	{
-		int width = imageWidths[i];
+		int width = itemWidths[i];
 
 		ItemInfo item;
 		item.index = i;

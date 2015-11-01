@@ -201,7 +201,7 @@ private:
 	NavigatorWidget * navigator = 0;
 
 	QList<ContentItemInfo> itemInfos;
-	QList<int> imageWidths;
+	QList<int> itemWidths;
 	QList<RowInfo> rowInfos;
 	QList<QWidget *> rowWidgets;
 	QList<QWidget *> itemWidgets;
