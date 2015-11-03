@@ -493,6 +493,139 @@ void ContentWidget::setScaleRows(bool scale)
 #endif
 
 /*!
+ * \property handleMouseEvents
+ * \brief Handle mouse events.
+ * Handle press, release and move events to change the selection and start dragging.
+ * \default false
+ * \accessors getHandleMouseEvents(), setHandleMouseEvents()
+ * \see selectionMode
+ * \see dragEnabled
+ */
+
+/*!
+ * \see ContentWidget::handleMouseEvents
+ */
+bool ContentWidget::getHandleMouseEvents() const
+{
+	return handleMouseEvents;
+}
+
+/*!
+ * \see ContentWidget::handleMouseEvents
+ */
+void ContentWidget::setHandleMouseEvents(bool handle)
+{
+	handleMouseEvents = handle;
+}
+
+/*!
+ * \property dragEnabled
+ * \brief Enables drag detection, requires \ref handleMouseEvents to be set.
+ * If \c dragEnabled is set, the widget detects mouse dragging.
+ * If a drag was detected, \ref startDrag is called. Any actual actions need to be implemented by overriding it.
+ * \default false
+ * \accessors isDragEnabled(), setDragEnabled()
+ * \see handleMouseEvents
+ * \see startDrag
+ */
+
+/*!
+ * \see ContentWidget::dragEnabled
+ */
+bool ContentWidget::isDragEnabled() const
+{
+	return dragEnabled;
+}
+
+/*!
+ * \see ContentWidget::dragEnabled
+ */
+void ContentWidget::setDragEnabled(bool enabled)
+{
+	dragEnabled = drag;
+}
+
+/*!
+ * \property selectionMode
+ * \brief Selection mode.
+ * If \c selectionMode is set to \c QAbstractItemView::NoSelection, the selection is cleared and disabled.
+ * Requires \ref handleMouseEvents for mouse selection to work.
+ * Currently only mouse selection is implemented.
+ * \accessors getSelectionMode(), setSelectionMode()
+ * \see handleMouseEvents
+ */
+
+/*!
+ * \see ContentWidget::selectionMode
+ */
+QAbstractItemView::SelectionMode ContentWidget::getSelectionMode() const
+{
+	return selectionMode;
+}
+
+/*!
+ * \see ContentWidget::selectionMode
+ */
+void ContentWidget::setSelectionMode(QAbstractItemView::SelectionMode mode)
+{
+	selectionMode = mode;
+	if (mode == QAbstractItemView::NoSelection)
+		setSelectedItems(QList<int>());
+}
+
+/*!
+ * \property selectedItems
+ * \brief Selected item indexes.
+ * \accessors getSelectedItems(), setSelectedItems()
+ */
+
+/*!
+ * \see ContentWidget::selectedItems
+ */
+QList<int> ContentWidget::getSelectedItems() const
+{
+	return selection;
+}
+
+/*!
+ * \see ContentWidget::selectedItems
+ */
+void ContentWidget::setSelectedItems(QList<int> const & indexes)
+{
+	if (indexes == selection)
+		return;
+	QList<int> oldSelection = indexes;
+	selection.swap(oldSelection);
+	emit selectionChanged(selection, oldSelection);
+}
+
+/*!
+ * \property currentItem
+ * \brief Current item index.
+ * \accessors getcurrentItem(), setcurrentItem()
+ */
+
+/*!
+ * \see ContentWidget::currentItem
+ */
+int ContentWidget::getcurrentItem() const
+{
+	return currentItemIndex;
+}
+
+/*!
+ * \see ContentWidget::currentItem
+ */
+void ContentWidget::setcurrentItem(int index)
+{
+	if (index == currentItemIndex)
+		return;
+	int oldItemindex = currentItemIndex;
+	currentItemIndex = index;
+	emit currentItemChanged(currentItemIndex, oldItemindex);
+}
+
+/*!
  * \property ContentWidget::itemInfos
  * \brief The list of ContentItemInfos being displayed.
  * \accessors getItemInfos(), setItemInfos()
@@ -1263,99 +1396,97 @@ void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPr
 {
 	if (selectionMode == QAbstractItemView::NoSelection)
 		return;
-	QList<int> oldSelection;
-	int oldCurrentItemIndex = currentItemIndex;
-	selection.swap(oldSelection);
+	QList<int> newSelection;
+	int newCurrentItemIndex = currentItemIndex;
+
 	switch (selectionMode)
 	{
 		case QAbstractItemView::NoSelection:
 			break;
 		case QAbstractItemView::SingleSelection:
-			selection.append(itemIndex);
-			currentItemIndex = itemIndex;
+			newSelection.append(itemIndex);
+			newCurrentItemIndex = itemIndex;
 			break;
 		case QAbstractItemView::ExtendedSelection:
 			if (!controlPressed)
 			{
 				if (dragging || shiftPressed)
 				{
-					Q_ASSERT(currentItemIndex != -1);
-					Q_ASSERT(!oldSelection.isEmpty());
-					if (itemIndex > currentItemIndex)
+					Q_ASSERT(newCurrentItemIndex != -1);
+					Q_ASSERT(!selection.isEmpty());
+					if (itemIndex > newCurrentItemIndex)
 					{
-						for (int i = currentItemIndex; i <= itemIndex; ++i)
-							selection.append(i);
+						for (int i = newCurrentItemIndex; i <= itemIndex; ++i)
+							newSelection.append(i);
 					}
 					else
 					{
-						for (int i = currentItemIndex; i >= itemIndex; --i)
-							selection.append(i);
+						for (int i = newCurrentItemIndex; i >= itemIndex; --i)
+							newSelection.append(i);
 					}
 				}
 				else
 				{
-					selection.append(itemIndex);
-					currentItemIndex = itemIndex;
+					newSelection.append(itemIndex);
+					newCurrentItemIndex = itemIndex;
 				}
 				break;
 			}
 			//no break
 		case QAbstractItemView::MultiSelection:
-			currentItemIndex = itemIndex;
-			selection = oldSelection;
+			newCurrentItemIndex = itemIndex;
+			newSelection = selection;
 			if (dragging)
 			{
 				Q_ASSERT(dragStartItemIndex != -1);
-				selection = dragStartSelection;
-				bool select = selection.contains(dragStartItemIndex);
+				newSelection = dragStartSelection;
+				bool select = newSelection.contains(dragStartItemIndex);
 				for (int i = qMin(dragStartItemIndex, itemIndex); i <= qMax(dragStartItemIndex, itemIndex); ++i)
 				{
 					if (!select)
-						selection.removeOne(i);
-					else if (!selection.contains(i))
-						selection.append(i);
+						newSelection.removeOne(i);
+					else if (!newSelection.contains(i))
+						newSelection.append(i);
 				}
 			}
 			else
 			{
-				if (selection.contains(itemIndex))
-					selection.removeOne(itemIndex);
+				if (newSelection.contains(itemIndex))
+					newSelection.removeOne(itemIndex);
 				else
-					selection.append(itemIndex);
-				dragStartSelection = selection;
+					newSelection.append(itemIndex);
+				dragStartSelection = newSelection;
 				dragStartItemIndex = itemIndex;
 			}
-			currentItemIndex = itemIndex;
+			newCurrentItemIndex = itemIndex;
 			break;
 		case QAbstractItemView::ContiguousSelection:
 			if (dragging || controlPressed || shiftPressed)
 			{
-				Q_ASSERT(currentItemIndex != -1);
-				Q_ASSERT(!oldSelection.isEmpty());
-				Q_ASSERT(oldSelection.first() == currentItemIndex);
-				if (itemIndex > currentItemIndex)
+				Q_ASSERT(newCurrentItemIndex != -1);
+				Q_ASSERT(!selection.isEmpty());
+				Q_ASSERT(selection.first() == newCurrentItemIndex);
+				if (itemIndex > newCurrentItemIndex)
 				{
-					for (int i = currentItemIndex; i <= itemIndex; ++i)
-						selection.append(i);
+					for (int i = newCurrentItemIndex; i <= itemIndex; ++i)
+						newSelection.append(i);
 				}
 				else
 				{
-					for (int i = currentItemIndex; i >= itemIndex; --i)
-						selection.append(i);
+					for (int i = newCurrentItemIndex; i >= itemIndex; --i)
+						newSelection.append(i);
 				}
 			}
 			else
 			{
-				currentItemIndex = itemIndex;
-				selection.append(itemIndex);
+				newCurrentItemIndex = itemIndex;
+				newSelection.append(itemIndex);
 			}
 			break;
 	}
 
-	if (selection != oldSelection)
-		emit selectionChanged(selection, oldSelection);
-	if (currentItemIndex != oldCurrentItemIndex)
-		emit currentItemChanged(currentItemIndex, oldCurrentItemIndex);
+	setSelectedItems(newSelection);
+	setcurrentItem(newCurrentItemIndex);
 }
 
 void ContentWidget::showNavigator(const int row, const int col, const bool blockUpdates)

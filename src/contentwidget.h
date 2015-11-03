@@ -99,6 +99,22 @@ public:
 	void setScaleRows(bool scale);
 #endif
 
+	Q_PROPERTY(bool handleMouseEvents READ getHandleMouseEvents WRITE setHandleMouseEvents)
+	bool getHandleMouseEvents() const;
+	void setHandleMouseEvents(bool handle);
+	Q_PROPERTY(bool dragEnabled READ isDragEnabled WRITE setDragEnabled)
+	bool isDragEnabled() const;
+	void setDragEnabled(bool enabled);
+	Q_PROPERTY(QAbstractItemView::SelectionMode selectionMode READ getSelectionMode WRITE setSelectionMode)
+	QAbstractItemView::SelectionMode getSelectionMode() const;
+	void setSelectionMode(QAbstractItemView::SelectionMode mode);
+	Q_PROPERTY(QList<int> selectedItems READ getSelectedItems WRITE setSelectedItems)
+	QList<int> getSelectedItems() const;
+	void setSelectedItems(QList<int> const & indexes);
+	Q_PROPERTY(int currentItem READ getcurrentItem WRITE setcurrentItem)
+	int getcurrentItem() const;
+	void setcurrentItem(int index);
+
 	Q_PROPERTY(QList<ContentItemInfo> itemInfos READ getItemInfos WRITE setItemInfos)
 	QList<ContentItemInfo> const & getItemInfos() const;
 	void setItemInfos(QList<ContentItemInfo> const & infos);
@@ -206,7 +222,7 @@ private:
 	QList<QWidget *> rowWidgets;
 	QList<QWidget *> itemWidgets;
 
-	bool handleMouseEvents = true;
+	bool handleMouseEvents = false;
 	bool dragEnabled = false;
 	QPoint mousePressPoint;
 	int mousePressRow = -1;
