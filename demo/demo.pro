@@ -15,6 +15,11 @@ CONFIG(debug, debug|release):   LIBNAME = longscroll-qtd
 windows: LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -l$${LIBNAME}2
 else:    LIBS += -L$$LONGSCROLLQT_DST_DIR/lib -l$${LIBNAME}
 
+macx {
+    maclib.files = $$LONGSCROLLQT_DST_DIR/lib/lib$${LIBNAME}.2.dylib
+    maclib.path = $$OUT_PWD/$${TARGET}.app/Contents/MacOS
+    INSTALLS += maclib
+}
 
 HEADERS += \
     mainwindow.h \
