@@ -542,7 +542,7 @@ bool ContentWidget::isDragEnabled() const
  */
 void ContentWidget::setDragEnabled(bool enabled)
 {
-	dragEnabled = drag;
+	dragEnabled = enabled;
 }
 
 /*!
