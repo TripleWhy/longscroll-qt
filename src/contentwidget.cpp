@@ -427,9 +427,9 @@ bool ContentWidget::getStretchRows() const
 /*!
  * \see stretchRows
  */
-void ContentWidget::setStretchRows(bool al)
+void ContentWidget::setStretchRows(bool stretch)
 {
-	align = al;
+	align = stretch;
 }
 
 /*!
@@ -452,9 +452,9 @@ bool ContentWidget::getStretchLastRow() const
 /*!
  * \see stretchLastRow
  */
-void ContentWidget::setStretchLastRow(bool align)
+void ContentWidget::setStretchLastRow(bool stretch)
 {
-	alignLast = align;
+	alignLast = stretch;
 }
 
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT

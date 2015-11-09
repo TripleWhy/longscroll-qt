@@ -89,10 +89,10 @@ public:
 	void setAllowOverfill(bool allow);
 	Q_PROPERTY(bool stretchRows READ getStretchRows WRITE setStretchRows)
 	bool getStretchRows() const;
-	void setStretchRows(bool align);
+	void setStretchRows(bool stretch);
 	Q_PROPERTY(bool stretchLastRow READ getStretchLastRow WRITE setStretchLastRow)
 	bool getStretchLastRow() const;
-	void setStretchLastRow(bool align);
+	void setStretchLastRow(bool stretch);
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 	Q_PROPERTY(bool scaleRows READ getScaleRows WRITE setScaleRows)
 	bool getScaleRows() const;
