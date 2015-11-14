@@ -20,6 +20,10 @@ public:
 
 	void setItemInfos(QList<ContentItemInfo> const & infos);
 
+private slots:
+	void updatePropertyMenu();
+	void propertyMenuTriggered(QAction * action);
+
 private:
 	Ui::MainWindow *ui;
 };

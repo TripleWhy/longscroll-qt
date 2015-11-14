@@ -29,6 +29,12 @@
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuProperties">
+    <property name="title">
+     <string>Properties</string>
+    </property>
+   </widget>
+   <addaction name="menuProperties"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

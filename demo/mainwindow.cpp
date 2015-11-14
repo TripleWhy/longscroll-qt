@@ -1,9 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "itemfactories.h"
+#include "valueeditdialog.h"
 #include <longscroll-qt/contentwidget.h>
 #include <longscroll-qt/contentwidgetitemfactory.h>
 #include <QScrollBar>
+#include <QMetaProperty>
 
 MainWindow::MainWindow(int demoNr, QWidget *parent)
     : QMainWindow(parent),
@@ -12,6 +14,19 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 	ui->setupUi(this);
 
 	ContentWidget * cw = ui->longscroll->getContentWidget();
+
+	connect(ui->menuProperties, &QMenu::aboutToShow, this, &MainWindow::updatePropertyMenu);
+	connect(ui->menuProperties, &QMenu::triggered, this, &MainWindow::propertyMenuTriggered);
+
+	const QMetaObject * mo = cw->metaObject();
+	for (int i = mo->superClass()->propertyCount(), count = mo->propertyCount(); i < count; ++i)
+	{
+		QMetaProperty const & prop = mo->property(i);
+		if (prop.userType() == QMetaType::UnknownType || !prop.isReadable() || !prop.isWritable())
+			continue;
+		ui->menuProperties->addAction(QString())->setData(i);
+	}
+
 	ContentWidgetItemFactory * cwif = 0;
 	switch (demoNr)
 	{
@@ -64,4 +79,49 @@ void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos)
 {
 	ContentWidget * cw = ui->longscroll->getContentWidget();
 	cw->setItemInfos(infos);
+}
+
+void MainWindow::updatePropertyMenu()
+{
+	ContentWidget * cw = ui->longscroll->getContentWidget();
+	const QMetaObject * mo = cw->metaObject();
+
+	for (QAction * a : ui->menuProperties->actions())
+	{
+		QMetaProperty const & prop = mo->property(a->data().toInt());
+		QString const & name = prop.name();
+		int type = prop.userType();
+		QVariant const & value = prop.read(cw);
+
+		QString const & displayName = QString("%1 = %2").arg(name, prop.read(cw).toString());
+		a->setText(displayName);
+		switch (type)
+		{
+			case QMetaType::Bool:
+				a->setCheckable(true);
+				a->setChecked(value.toBool());
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+void MainWindow::propertyMenuTriggered(QAction * action)
+{
+	ContentWidget * cw = ui->longscroll->getContentWidget();
+	const QMetaObject * mo = cw->metaObject();
+	QMetaProperty const & prop = mo->property(action->data().toInt());
+	switch (prop.userType())
+	{
+		case QMetaType::Bool:
+			prop.write(cw, action->isChecked());
+			break;
+		default:
+			ValueEditDialog ved(this);
+			ved.setValue(prop.name(), prop.read(cw));
+			if (ved.exec() == QDialog::Accepted)
+				prop.write(cw, ved.getValue());
+			break;
+	}
 }

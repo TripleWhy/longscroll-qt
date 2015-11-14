@@ -25,15 +25,18 @@ HEADERS += \
     mainwindow.h \
     itemfactories.h \
     imageloader.h \
-    loaderimageitem.h
+    loaderimageitem.h \
+    valueeditdialog.h
 
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
     itemfactories.cpp \
     imageloader.cpp \
-    loaderimageitem.cpp
+    loaderimageitem.cpp \
+    valueeditdialog.cpp
 
 FORMS += \
     itemtype1.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    valueeditdialog.ui
