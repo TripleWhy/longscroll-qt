@@ -102,6 +102,9 @@ public:
 	Q_PROPERTY(bool handleMouseEvents READ getHandleMouseEvents WRITE setHandleMouseEvents)
 	bool getHandleMouseEvents() const;
 	void setHandleMouseEvents(bool handle);
+	Q_PROPERTY(bool showNavigatorOnClick READ getShowNavigatorOnClick WRITE setShowNavigatorOnClick)
+	bool getShowNavigatorOnClick() const;
+	void setShowNavigatorOnClick(bool show);
 	Q_PROPERTY(bool dragEnabled READ isDragEnabled WRITE setDragEnabled)
 	bool isDragEnabled() const;
 	void setDragEnabled(bool enabled);
@@ -222,7 +225,8 @@ private:
 	QList<QWidget *> rowWidgets;
 	QList<QWidget *> itemWidgets;
 
-	bool handleMouseEvents = false;
+	bool handleMouseEvents = true;
+	QMetaObject::Connection navigatorClickConnection;
 	bool dragEnabled = false;
 	QPoint mousePressPoint;
 	int mousePressRow = -1;

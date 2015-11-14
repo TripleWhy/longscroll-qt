@@ -27,13 +27,12 @@ ContentWidget::ContentWidget(QWidget * parent)
 
 	setNavigatorWidget(new ImageNavigatorWidget(this));
 	navigator->setVisible(false);
+	setShowNavigatorOnClick(true);
 
 #if CONTENTWIDGET_DEMO_STYLESHEETS
 	setStyleSheet("QWidget { background: green; } ImageItem { background: blue; } QLabel { background: red; }");
 	navigator->setStyleSheet("QWidget { background: darkgray; }");
 #endif
-
-	connect(this, SIGNAL(itemPressed(int,int,int)), this, SLOT(showNavigator(int,int)));
 }
 
 ContentWidget::ContentWidget(int rowHeight, int itemWidth, QWidget * parent)
@@ -491,9 +490,10 @@ void ContentWidget::setScaleRows(bool scale)
 /*!
  * \property handleMouseEvents
  * \brief Handle mouse events.
- * Handle press, release and move events to change the selection and start dragging.
- * \default false
+ * Handle press, release and move events to change the selection, start dragging, emit events or show navigator.
+ * \default true
  * \accessors getHandleMouseEvents(), setHandleMouseEvents()
+ * \see showNavigatorOnClick
  * \see selectionMode
  * \see dragEnabled
  */
@@ -512,6 +512,35 @@ bool ContentWidget::getHandleMouseEvents() const
 void ContentWidget::setHandleMouseEvents(bool handle)
 {
 	handleMouseEvents = handle;
+}
+
+/*!
+ * \property showNavigatorOnClick
+ * \brief Show the navigator widget on item click, requires \ref handleMouseEvents to be set.
+ * \default true
+ * \accessors getShowNavigatorOnClick(), setShowNavigatorOnClick()
+ * \see handleMouseEvents
+ */
+
+/*!
+ * \see ContentWidget::showNavigatorOnClick
+ */
+bool ContentWidget::getShowNavigatorOnClick() const
+{
+	return navigatorClickConnection;
+}
+
+/*!
+ * \see ContentWidget::showNavigatorOnClick
+ */
+void ContentWidget::setShowNavigatorOnClick(bool show)
+{
+	if (bool(navigatorClickConnection) == show)
+		return;
+	if (show)
+		navigatorClickConnection = connect(this, SIGNAL(itemClicked(int,int,int)), this, SLOT(showNavigator(int,int)));
+	else
+		disconnect(navigatorClickConnection);
 }
 
 /*!
