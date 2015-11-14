@@ -33,8 +33,17 @@ void NotifyingScrollArea::findVisible()
 	QWidget * wid = widget();
 	if (wid == 0)
 		return;
+
 	QRect const & visible = wid->visibleRegion().boundingRect();
-	QList<NotifyableScrollContentWidget *> const & widgets = wid->findChildren<NotifyableScrollContentWidget *>(QString(), Qt::FindDirectChildrenOnly); //TODO: Can this be optimized, so that we don't have to call findChildren every time?
+
+	NotifyableScrollContentWidget * nscw = qobject_cast<NotifyableScrollContentWidget *>(wid);
+	if (nscw != 0)
+	{
+		nscw->showingRect(visible);
+		return;
+	}
+
+	QList<NotifyableScrollContentWidget *> const & widgets = wid->findChildren<NotifyableScrollContentWidget *>(QString(), Qt::FindDirectChildrenOnly);
 	for (NotifyableScrollContentWidget * w : widgets)
 	{
 		QRect && r = visible.intersected(w->geometry());

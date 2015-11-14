@@ -804,6 +804,9 @@ void ContentWidget::showingRect(const QRect & rect)
 	else
 		visibleRect = rect;
 
+	if (rect.width() <= 0)
+		return;
+
 	updateRows();
 
 	setUpdatesEnabled(true);

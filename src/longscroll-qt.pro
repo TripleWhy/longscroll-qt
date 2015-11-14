@@ -26,7 +26,7 @@ CONFIG(debug, debug|release):   RD = debug
 include( longscroll-qt_dst-dir.pri )
 
 
-PUBLIC_HEADERS += \
+HEADERS += \
     contentwidget.h \
     contentwidgetitemfactory.h \
     imagewidget.h \
@@ -37,11 +37,8 @@ PUBLIC_HEADERS += \
     notifyingscrollarea.h \
     contentiteminfo.h \
     imageitemwidget.h \
-    imageinfowidget.h
-
-PRIVATE_HEADERS += \
-
-HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
+    imageinfowidget.h \
+    longscrollwidget.h
 
 SOURCES += \
     contentwidget.cpp \
@@ -52,7 +49,8 @@ SOURCES += \
     notifyingscrollarea.cpp \
     contentiteminfo.cpp \
     imageitemwidget.cpp \
-    imageinfowidget.cpp
+    imageinfowidget.cpp \
+    longscrollwidget.cpp
 
 FORMS += \
     navigatorwidget.ui \
@@ -60,7 +58,7 @@ FORMS += \
 
 
 headersDataFiles.path = $$LONGSCROLLQT_DST_DIR/include/longscroll-qt
-headersDataFiles.files = $$PUBLIC_HEADERS
+headersDataFiles.files = $$HEADERS
 INSTALLS += headersDataFiles
 
 target.path = $$LONGSCROLLQT_DST_DIR/lib

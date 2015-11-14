@@ -8,9 +8,10 @@ LONGSCROLLQT_NAMESPACE_BEGIN
 
 class LONGSCROLLQT_EXPORT NotifyableScrollContentWidget : public QFrame
 {
+	Q_OBJECT
 public:
 	using QFrame::QFrame;
-	virtual void showingRect(QRect const & rect) = 0;
+	virtual void showingRect(QRect const & visible) = 0;
 };
 
 LONGSCROLLQT_NAMESPACE_END

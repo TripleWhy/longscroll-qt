@@ -16,21 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="NotifyingScrollArea" name="scrollArea">
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>324</width>
-         <height>212</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
+     <widget class="LongscrollWidget" name="longscroll" native="true"/>
     </item>
    </layout>
   </widget>
@@ -57,9 +43,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>NotifyingScrollArea</class>
-   <extends>QScrollArea</extends>
-   <header location="global">longscroll-qt/notifyingscrollarea.h</header>
+   <class>LongscrollWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">longscroll-qt/longscrollwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

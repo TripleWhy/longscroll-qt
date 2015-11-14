@@ -10,37 +10,49 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
       ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	QVBoxLayout * layout = new QVBoxLayout();
-	layout->setMargin(0);
-	ui->scrollAreaWidgetContents->setLayout(layout);
 
-	ContentWidget * cw;
+	ContentWidget * cw = ui->longscroll->getContentWidget();
 	ContentWidgetItemFactory * cwif = 0;
 	switch (demoNr)
 	{
 		default:
 		case 0:
-			cw = new ContentWidget();
 			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 		case 1:
-			cw = new ContentWidget(100, 100, false, false, false, 200);
+			cw->setRowHeight(100);
+			cw->setItemWidth(100);
+			cw->setStretchRows(false);
+			cw->setStretchLastRow(false);
+			cw->setAllowOverfill(false);
+			cw->setNavigatorHeight(200);
 			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
 		case 2:
-			cw = new ContentWidget(100, -1, true, true, false, 200);
+			cw->setRowHeight(100);
+			cw->setItemWidth(-1);
+			cw->setStretchRows(true);
+			cw->setStretchLastRow(true);
+			cw->setAllowOverfill(false);
+			cw->setNavigatorHeight(200);
 			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
 		case 3:
-			cw = new ContentWidget(100, 200, false, false, false, 200);
+			cw->setRowHeight(100);
+			cw->setItemWidth(200);
+			cw->setStretchRows(false);
+			cw->setStretchLastRow(false);
+			cw->setAllowOverfill(false);
+			cw->setNavigatorHeight(200);
 			cwif = new ContentWidgetImageInfoFactory();
+			break;
+		case 4:
+			cw->setScaleRows(true);
+			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 	}
 	if (cwif != 0)
 		cw->setItemFactory(cwif);
-
-	layout->addWidget(cw);
-	connect(cw, SIGNAL(scrollToRequest(int)), ui->scrollArea->verticalScrollBar(), SLOT(setValue(int)));
 }
 
 MainWindow::~MainWindow()
@@ -50,6 +62,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos)
 {
-	ContentWidget * test = ui->scrollAreaWidgetContents->findChild<ContentWidget *>();
-	test->setItemInfos(infos);
+	ContentWidget * cw = ui->longscroll->getContentWidget();
+	cw->setItemInfos(infos);
 }
