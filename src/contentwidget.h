@@ -44,7 +44,7 @@ private:
 
 public:
 	ContentWidget(QWidget * parent = 0);
-	ContentWidget(int rowHeight, int itemWidth = 0, bool stretchRows = true, bool stretchLastRow = false, bool allowOverfill = true, int navigatorHeight = 500, QWidget *parent = 0);
+	ContentWidget(int rowHeight, int itemWidth = 0, QWidget *parent = 0);
 	~ContentWidget();
 
 	Q_PROPERTY(ContentWidgetItemFactory * itemFactory READ getItemFactory WRITE setItemFactory)

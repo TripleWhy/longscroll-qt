@@ -36,15 +36,11 @@ ContentWidget::ContentWidget(QWidget * parent)
 	connect(this, SIGNAL(itemPressed(int,int,int)), this, SLOT(showNavigator(int,int)));
 }
 
-ContentWidget::ContentWidget(int _rowHeight, int _itemWidth, bool stretchRows, bool stretchLastRow, bool _allowOverfill, int _navigatorHeight, QWidget * parent)
-	: ContentWidget(parent)
+ContentWidget::ContentWidget(int rowHeight, int itemWidth, QWidget * parent)
+    : ContentWidget(parent)
 {
-	rowHeight = _rowHeight;
-	itemWidth = _itemWidth;
-	align = stretchRows;
-	alignLast = stretchLastRow;
-	allowOverfill = _allowOverfill;
-	navigatorHeight = _navigatorHeight;
+	setRowHeight(rowHeight);
+	setItemWidth(itemWidth);
 }
 
 ContentWidget::~ContentWidget()
