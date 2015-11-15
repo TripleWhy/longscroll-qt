@@ -1264,35 +1264,23 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 
 	int const is = rowInfosNew.size();
 	int const ws = rowWidgets.size();
-	for (int i = 0, l = qMin(ws, rowInfosNew.size()); i < l; ++i)
+	for (int i = 0, l = qMin(ws, is); i < l; ++i)
 	{
-		bool equal = true;
+		if (rowWidgets[i] == 0)
+			continue;
 		QList<ItemInfo> const & items1 = rowInfos[i].items;
 		QList<ItemInfo> const & items2 = rowInfosNew[i].items;
-		if (items1.size() != items2.size())
-			equal = false;
-		else
+		if (items1 != items2)
 		{
-			for (int j = 0, m = items1.size(); j < m; ++j)
+			QObjectList children = rowWidgets[i]->children();	//copy list
+			for (QObject * o : children)
 			{
-				if (items1[j].item != items2[j].item)
-					equal = false;
+				QWidget * w = static_cast<QWidget *>(o);
+				w->setVisible(false);
+				w->setParent(this);
 			}
-		}
-		if (!equal)
-		{
-			if (rowWidgets[i] != 0)
-			{
-				QObjectList children = rowWidgets[i]->children();	//copy list
-				for (QObject * o : children)
-				{
-					QWidget * w = static_cast<QWidget *>(o);
-					w->setVisible(false);
-					w->setParent(this);
-				}
-				delete rowWidgets[i];
-				rowWidgets[i] = 0;
-			}
+			delete rowWidgets[i];
+			rowWidgets[i] = 0;
 		}
 	}
 	for (int i = is; i < ws; ++i)
@@ -1431,7 +1419,6 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			if (itemWidgets[item.index] != 0)
 			{
 				itemWidget = itemWidgets[item.index];
-				itemWidget->setVisible(true);
 			}
 			else
 			{
@@ -1442,8 +1429,9 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 					itemWidget->setStyleSheet("QWidget{ background: blue; }");
 #endif
 			}
+			itemWidget->setParent(rowWidget);
+			itemWidget->setVisible(true);
 		}
-		itemWidget->setParent(rowWidget);
 		itemWidget->setGeometry(item.x, 0, item.width, rowH);
 	}
 	rowWidget->setVisible(true);
