@@ -19,10 +19,12 @@ MainWindow::MainWindow(int demoNr, QWidget *parent)
 	connect(ui->menuProperties, &QMenu::triggered, this, &MainWindow::propertyMenuTriggered);
 
 	const QMetaObject * mo = cw->metaObject();
+	QStringList blacklist;
+	blacklist << "dragEnabled" << "selectedItems" << "currentItem";
 	for (int i = mo->superClass()->propertyCount(), count = mo->propertyCount(); i < count; ++i)
 	{
 		QMetaProperty const & prop = mo->property(i);
-		if (prop.userType() == QMetaType::UnknownType || !prop.isReadable() || !prop.isWritable())
+		if (prop.userType() == QMetaType::UnknownType || !prop.isReadable() || !prop.isWritable() || blacklist.contains(prop.name()))
 			continue;
 		ui->menuProperties->addAction(QString())->setData(i);
 	}
