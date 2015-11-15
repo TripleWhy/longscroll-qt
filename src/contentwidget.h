@@ -148,6 +148,8 @@ protected:
 	virtual void startDrag(int row, int col, int itemIndex);
 
 private:
+	void refresh();
+	void rebuild();
 	bool calculateSize(bool const calculateChanges = false);
 	void updateRows();
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT

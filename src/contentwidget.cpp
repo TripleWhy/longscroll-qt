@@ -70,6 +70,7 @@ void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 	delete itemFactory;
 	factory->setParent(this);
 	itemFactory = factory;
+	rebuild();
 }
 
 /*!
@@ -144,8 +145,10 @@ int ContentWidget::getNavigatorHeight() const
  */
 void ContentWidget::setNavigatorHeight(int height)
 {
-	if (height >= 0)
-		navigatorHeight = height;
+	if (height <= 0)
+		return;
+	navigatorHeight = height;
+	refresh();
 }
 
 /*!
@@ -291,6 +294,7 @@ int ContentWidget::getHorizontalSpacing() const
 void ContentWidget::setHorizontalSpacing(int spacing)
 {
 	xSpacing = spacing;
+	refresh();
 }
 
 /*!
@@ -314,6 +318,7 @@ int ContentWidget::getVerticalSpacing() const
 void ContentWidget::setVerticalSpacing(int spacing)
 {
 	ySpacing = spacing;
+	refresh();
 }
 
 /*!
@@ -339,8 +344,10 @@ int ContentWidget::getRowHeight() const
  */
 void ContentWidget::setRowHeight(int height)
 {
-	if (height > 0)
-		rowHeight = height;
+	if (height <= 0)
+		return;
+	rowHeight = height;
+	rebuild();
 }
 
 /*!
@@ -368,6 +375,7 @@ int ContentWidget::getItemWidth() const
 void ContentWidget::setItemWidth(int width)
 {
 	itemWidth = width;
+	rebuild();
 }
 
 /*!
@@ -397,6 +405,7 @@ bool ContentWidget::getAllowOverfill() const
 void ContentWidget::setAllowOverfill(bool allow)
 {
 	allowOverfill = allow;
+	refresh();
 }
 
 /*!
@@ -425,6 +434,7 @@ bool ContentWidget::getStretchRows() const
 void ContentWidget::setStretchRows(bool stretch)
 {
 	align = stretch;
+	refresh();
 }
 
 /*!
@@ -450,6 +460,7 @@ bool ContentWidget::getStretchLastRow() const
 void ContentWidget::setStretchLastRow(bool stretch)
 {
 	alignLast = stretch;
+	refresh();
 }
 
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
@@ -484,6 +495,7 @@ bool ContentWidget::getScaleRows() const
 void ContentWidget::setScaleRows(bool scale)
 {
 	scaleRows = scale;
+	refresh();
 }
 #endif
 
@@ -706,6 +718,8 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 		}
 	}
 
+	refresh();
+
 #if CONTENTWIDGET_MEASURE_SETINFOS
 	qint64 elapsed = t.elapsed();
 	qDebug() << "ContentWidget::setItemInfos took" << elapsed << "ms";
@@ -790,6 +804,9 @@ void ContentWidget::showingRect(const QRect & rect)
 	QElapsedTimer t;
 	t.start();
 #endif
+
+	if (rect == visibleRect)
+		return;
 
 	bool needsUpdate = itemTrackingEnabled && !blockScroll && rect.size() == visibleRect.size() && rect.topLeft() != visibleRect.topLeft();
 
@@ -1123,6 +1140,18 @@ void ContentWidget::mouseDoubleClickEvent(QMouseEvent * event)
  */
 void ContentWidget::startDrag(int /*row*/, int /*col*/, int /*itemIndex*/)
 {
+}
+
+void ContentWidget::refresh()
+{
+	QRect r = visibleRect;
+	visibleRect = QRect();
+	showingRect(r);
+}
+
+void ContentWidget::rebuild()
+{
+	setItemInfos(itemInfos);
 }
 
 bool ContentWidget::calculateSize(const bool calculateChanges)
