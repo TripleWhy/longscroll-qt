@@ -693,6 +693,9 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	qDeleteAll(itemWidgets);
 	itemWidgets.clear();
 	itemWidgets.reserve(size);
+	qDeleteAll(rowWidgets);
+	rowWidgets.clear();
+	rowInfos.clear();
 	if (itemWidth == 0)
 	{
 		for (ContentItemInfo const & img : infos)
