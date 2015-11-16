@@ -106,7 +106,8 @@ int main(int argc, char *argv[])
 	int demoMode = 0;
 	if (app.arguments().size() >=2)
 		demoMode = app.arguments().last().toInt();
-	MainWindow w(demoMode);
+	MainWindow w;
+	w.setDemoNumber(demoMode);
 
 #if 1
 	w.setItemInfos(cache.values());

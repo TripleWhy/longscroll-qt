@@ -34,6 +34,12 @@
      <string>Properties</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuDemo">
+    <property name="title">
+     <string>Demo</string>
+    </property>
+   </widget>
+   <addaction name="menuDemo"/>
    <addaction name="menuProperties"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
