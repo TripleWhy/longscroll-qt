@@ -6,6 +6,10 @@
 #include <longscroll-qt/contentwidgetitemfactory.h>
 #include <QScrollBar>
 #include <QMetaProperty>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -39,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	setDemoNumber(0);
 
+	connect(ui->menuFile, &QMenu::aboutToShow, this, &MainWindow::updateFileMenu);
 	connect(ui->menuProperties, &QMenu::aboutToShow, this, &MainWindow::updatePropertyMenu);
 	connect(ui->menuProperties, &QMenu::triggered, this, &MainWindow::propertyMenuTriggered);
 	connect(demoGroup, &QActionGroup::triggered, this, &MainWindow::demoMenuTriggered);
@@ -49,10 +54,30 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos)
+void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos, int fixedSize)
 {
 	ContentWidget * cw = ui->longscroll->getContentWidget();
-	cw->setItemInfos(infos);
+	QList<ContentItemInfo> displayInfos = infos;
+
+	if (fixedSize == -1)
+		fixedSize = fixedInfoSize;
+	if (fixedSize > 0)
+	{
+		qDebug() << "creating items ...";
+		displayInfos.clear();
+		for (int i = 0; i < fixedSize; ++i)
+			displayInfos.append(infos.at(i % infos.count()));
+		qDebug() << "created" << fixedSize << "items";
+	}
+
+	fixedInfoSize = fixedSize;
+	itemInfos = infos;
+	cw->setItemInfos(displayInfos);
+}
+
+void MainWindow::setFixedItemCount(int fixedSize)
+{
+	setItemInfos(itemInfos, fixedSize);
 }
 
 void MainWindow::setDemoNumber(int demoNo)
@@ -121,6 +146,85 @@ void MainWindow::setDemoNumber(int demoNo)
 	demoGroup->blockSignals(false);
 }
 
+void MainWindow::loadDir(const QDir & dir, bool useCache)
+{
+	if (!dir.exists())
+		return;
+	QMap<QString, ContentItemInfo> cache, loadedCache;
+	QFile cacheFile(dir.absoluteFilePath("images.cache"));
+	if (cacheFile.exists())
+	{
+		if (cacheFile.open(QIODevice::ReadOnly))
+		{
+			QByteArray const & buffer = qUncompress(cacheFile.readAll());
+			cacheFile.close();
+			QDataStream ds(buffer);
+			ds >> loadedCache;
+		}
+		else
+		{
+			qWarning() << "could not open cache file:" << cacheFile.fileName();
+		}
+	}
+	cache = loadedCache;
+	qDebug() << "cached images:" << cache.size();
+
+	QStringList fileNamefilters;
+	for (QString const & format : QImageReader::supportedImageFormats())
+		fileNamefilters.append(QString("*.%1").arg(format));
+
+	QImageReader ir;
+	qDebug() << "loading file list for" << dir.absolutePath() << "...";
+	QFileInfoList const & files = dir.entryInfoList(fileNamefilters, QDir::Files | QDir::Readable);
+	qDebug() << "loading images from" << dir.absolutePath() << "...";
+	for (QFileInfo const & file : files)
+	{
+		QString const & fileName = file.absoluteFilePath();
+		if (cache.contains(fileName))
+			continue;
+
+		ir.setFileName(fileName);
+		cache.insert(fileName, ContentItemInfo(fileName, ir.size()));
+	}
+
+	qDebug() << "checking file existence ...";
+	for (auto it = cache.begin(); it != cache.end(); )
+	{
+		QFileInfo fi(it.key());
+		if (fi.exists())
+			++it;
+		else
+			it = cache.erase(it);
+	}
+
+	if (useCache && cache != loadedCache)
+	{
+		qDebug() << "storing cache file ...";
+		QByteArray buffer;
+		if (cacheFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+		{
+			QDataStream ds(&buffer, QIODevice::WriteOnly);
+			ds << cache;
+			cacheFile.write(qCompress(buffer, 9));
+			cacheFile.close();
+		}
+		else
+		{
+			qWarning() << "Could not open" << cacheFile.fileName() << "for write.";
+		}
+	}
+
+	qDebug() << "loaded" << cache.size() << "images";
+	qDebug() << "loading gui ...";
+
+	setItemInfos(cache.values(), fixedInfoSize);
+}
+
+void MainWindow::updateFileMenu()
+{
+	ui->actionCount->setText(tr("Count = %1").arg(fixedInfoSize));
+}
+
 void MainWindow::updatePropertyMenu()
 {
 	ContentWidget * cw = ui->longscroll->getContentWidget();
@@ -172,4 +276,37 @@ void MainWindow::propertyMenuTriggered(QAction * action)
 void MainWindow::demoMenuTriggered(QAction * action)
 {
 	setDemoNumber(action->data().toInt());
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+	if (fileDialog == 0)
+	{
+		fileDialog = new QFileDialog(this);
+		fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+		fileDialog->setFileMode(QFileDialog::Directory);
+		fileDialog->setOption(QFileDialog::ShowDirsOnly, true);
+	}
+	if (fileDialog->exec() != QDialog::Accepted)
+		return;
+	QDir dir(fileDialog->selectedFiles().first());
+	dir.makeAbsolute();
+	QFileInfo cacheInfo(dir.filePath("images.cache"));
+
+	qDebug() << cacheInfo.absoluteFilePath() << cacheInfo.exists() << cacheInfo.isFile() << cacheInfo.isWritable() << cacheInfo.permissions();
+	QFileInfo dirInfo(dir.absolutePath());
+	qDebug() << dirInfo.absoluteFilePath() << dirInfo.isWritable() << dirInfo.permissions();
+
+	bool useCache = ((!cacheInfo.exists() && QFileInfo(dir.absolutePath()).isWritable()) || (cacheInfo.isFile() && cacheInfo.isWritable()));
+	if (useCache && QMessageBox::question(this, tr("Write Cache File?"), tr("Write a cache file?\nThis is useful if you open a directory with a large number of files more than once.")) != QMessageBox::Yes)
+		useCache = false;
+	loadDir(dir, useCache);
+}
+
+void MainWindow::on_actionCount_triggered()
+{
+	bool ok;
+	int val = QInputDialog::getInt(this, "Count", "Fixed number of images", fixedInfoSize, 0, std::numeric_limits<int>::max(), 1, &ok);
+	if (ok)
+		setFixedItemCount(val);
 }

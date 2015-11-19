@@ -39,6 +39,14 @@
      <string>Demo</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionCount"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuDemo"/>
    <addaction name="menuProperties"/>
   </widget>
@@ -51,6 +59,19 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open Directory ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionCount">
+   <property name="text">
+    <string notr="true">Count</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
