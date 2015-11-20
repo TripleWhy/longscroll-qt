@@ -7,10 +7,8 @@ ContentWidgetLoaderImageItemFactory::ContentWidgetLoaderImageItemFactory(bool fi
 {
 }
 
-QWidget * ContentWidgetLoaderImageItemFactory::createItemWidget(const ContentItemInfo & info, int itemIndex, int width, int height, ContentWidget * cw)
+QWidget * ContentWidgetLoaderImageItemFactory::createItemWidget(const ContentItemInfo & info, int itemIndex, ContentWidget * cw)
 {
-	Q_UNUSED(width);
-	Q_UNUSED(height);
 	ImageItemWidget * item = new LoaderImageItem(info, itemIndex, imageFit, cw);
 	return item;
 }

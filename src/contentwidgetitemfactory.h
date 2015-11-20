@@ -14,7 +14,7 @@ class LONGSCROLLQT_EXPORT ContentWidgetItemFactory
 {
 public:
 	virtual ~ContentWidgetItemFactory() {}
-	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height, ContentWidget * cw) = 0;
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, ContentWidget * cw) = 0;
 };
 
 class LONGSCROLLQT_EXPORT ContentWidgetImageItemFactory : public ContentWidgetItemFactory
@@ -23,14 +23,14 @@ private:
 	bool imageFit;
 public:
 	ContentWidgetImageItemFactory(bool fitImage = false);
-	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height, ContentWidget * cw) override;
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, ContentWidget * cw) override;
 };
 
 class LONGSCROLLQT_EXPORT ContentWidgetImageInfoFactory : public ContentWidgetItemFactory
 {
 public:
 	using ContentWidgetItemFactory::ContentWidgetItemFactory;
-	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height, ContentWidget * cw) override;
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, ContentWidget * cw) override;
 };
 
 LONGSCROLLQT_NAMESPACE_END

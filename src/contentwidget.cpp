@@ -877,16 +877,14 @@ void ContentWidget::showingRect(const QRect & rect)
  *
  * \param info The item info to be displayed.
  * \param itemIndex List index of the item info.
- * \param width Width the element currently has. This parameter is optional and intended for fine tuning, as ContentWidget will always set the geometry afterwards.
- * \param height Height the element currently has. This parameter is optional and intended for fine tuning, as ContentWidget will always set the geometry afterwards.
  * \return The newly created widget.
  * \see itemFactory
  * \see prefetchBefore
  * \see prefetchAfter
  */
-QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemIndex,int width, int height)
+QWidget *ContentWidget::createItemWidget(const ContentItemInfo & info, int itemIndex)
 {
-	QWidget * widget = itemFactory->createItemWidget(info, itemIndex, width, height, this);
+	QWidget * widget = itemFactory->createItemWidget(info, itemIndex, this);
 #if CONTENTWIDGET_DEMO_STYLESHEETS
 	widget->setStyleSheet("QWidget{ background: blue; } QLabel { background: red; }");
 #endif
@@ -1425,7 +1423,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			}
 			else
 			{
-				itemWidget = createItemWidget(*item.item, item.index, item.width, rowH);
+				itemWidget = createItemWidget(*item.item, rowH);
 				itemWidgets[item.index] = itemWidget;
 #if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
 				if (item.index == trackingItem.index)

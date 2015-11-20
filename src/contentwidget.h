@@ -133,7 +133,7 @@ public slots:
 	virtual void showingRect(QRect const & rect) override;
 
 protected:
-	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height);
+	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex);
 
 	int rowAt(int y, bool * onNavigator = 0);
 	int colAt(int x, int row);

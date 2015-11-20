@@ -11,13 +11,13 @@ ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage)
 {
 }
 
-QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo & info, int itemIndex, int /*width*/, int /*height*/, ContentWidget * cw)
+QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo & info, int itemIndex, ContentWidget * cw)
 {
 	return new ImageItemWidget(info, itemIndex, imageFit, cw);
 }
 
 
-QWidget *ContentWidgetImageInfoFactory::createItemWidget(const ContentItemInfo & info, int /*itemIndex*/, int /*width*/, int /*height*/, ContentWidget * /*cw*/)
+QWidget *ContentWidgetImageInfoFactory::createItemWidget(const ContentItemInfo & info, int /*itemIndex*/, ContentWidget * /*cw*/)
 {
 	return new ImageInfoWidget(info);
 }
