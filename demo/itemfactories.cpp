@@ -1,8 +1,8 @@
 #include "itemfactories.h"
 #include "loaderimageitem.h"
 
-ContentWidgetLoaderImageItemFactory::ContentWidgetLoaderImageItemFactory(bool fitImage, QObject * parent)
-    : ContentWidgetItemFactory(parent),
+ContentWidgetLoaderImageItemFactory::ContentWidgetLoaderImageItemFactory(bool fitImage)
+    : ContentWidgetItemFactory(),
       imageFit(fitImage)
 {
 }

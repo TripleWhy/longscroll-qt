@@ -5,8 +5,8 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
-ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage, QObject * parent)
-    : ContentWidgetItemFactory(parent),
+ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage)
+    : ContentWidgetItemFactory(),
       imageFit(fitImage)
 {
 }

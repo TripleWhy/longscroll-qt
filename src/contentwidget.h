@@ -198,7 +198,7 @@ private:
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 	bool scaleRows = false;
 #endif
-	ContentWidgetItemFactory * itemFactory;
+	ContentWidgetItemFactory * itemFactory = 0;
 
 private:
 	QSize size;

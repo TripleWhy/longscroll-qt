@@ -23,7 +23,7 @@ LONGSCROLLQT_NAMESPACE_BEGIN
 ContentWidget::ContentWidget(QWidget * parent)
 	: NotifyableScrollContentWidget(parent)
 {
-	itemFactory = new ContentWidgetImageItemFactory(false, this);
+	itemFactory = new ContentWidgetImageItemFactory(false);
 
 	setNavigatorWidget(new ImageNavigatorWidget(this));
 	navigator->setVisible(false);
@@ -44,6 +44,7 @@ ContentWidget::ContentWidget(int rowHeight, int itemWidth, QWidget * parent)
 
 ContentWidget::~ContentWidget()
 {
+	delete itemFactory;
 }
 
 /*!
@@ -68,7 +69,6 @@ ContentWidgetItemFactory * ContentWidget::getItemFactory()
 void ContentWidget::setItemFactory(ContentWidgetItemFactory * factory)
 {
 	delete itemFactory;
-	factory->setParent(this);
 	itemFactory = factory;
 	rebuild();
 }

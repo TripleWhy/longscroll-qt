@@ -10,10 +10,10 @@ LONGSCROLLQT_NAMESPACE_BEGIN
 
 class ContentWidget;
 
-class LONGSCROLLQT_EXPORT ContentWidgetItemFactory : public QObject
+class LONGSCROLLQT_EXPORT ContentWidgetItemFactory
 {
 public:
-	using QObject::QObject;
+	virtual ~ContentWidgetItemFactory() {}
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height, ContentWidget * cw) = 0;
 };
 
@@ -22,14 +22,12 @@ class LONGSCROLLQT_EXPORT ContentWidgetImageItemFactory : public ContentWidgetIt
 private:
 	bool imageFit;
 public:
-	ContentWidgetImageItemFactory(bool fitImage = false, QObject * parent = 0);
+	ContentWidgetImageItemFactory(bool fitImage = false);
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height, ContentWidget * cw) override;
 };
 
 class LONGSCROLLQT_EXPORT ContentWidgetImageInfoFactory : public ContentWidgetItemFactory
 {
-private:
-	bool imageFit;
 public:
 	using ContentWidgetItemFactory::ContentWidgetItemFactory;
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, int width, int height, ContentWidget * cw) override;
