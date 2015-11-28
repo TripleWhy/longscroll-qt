@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QDebug>
+#include <algorithm>
+#include <random>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -54,7 +56,7 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos, int fixedSize)
+void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos, int fixedSize, bool shuffle)
 {
 	ContentWidget * cw = ui->longscroll->getContentWidget();
 	QList<ContentItemInfo> displayInfos = infos;
@@ -68,6 +70,13 @@ void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos, int fixedSiz
 		for (int i = 0; i < fixedSize; ++i)
 			displayInfos.append(infos.at(i % infos.count()));
 		qDebug() << "created" << fixedSize << "items";
+	}
+	if (shuffle)
+	{
+		std::random_device rd;
+		std::mt19937 rng(rd());
+		std::shuffle(displayInfos.begin(), displayInfos.end(), rng);
+		qDebug() << "shuffled";
 	}
 
 	fixedInfoSize = fixedSize;
@@ -309,4 +318,9 @@ void MainWindow::on_actionCount_triggered()
 	int val = QInputDialog::getInt(this, "Count", "Fixed number of images", fixedInfoSize, 0, std::numeric_limits<int>::max(), 1, &ok);
 	if (ok)
 		setFixedItemCount(val);
+}
+
+void MainWindow::on_actionShuffle_triggered()
+{
+	setItemInfos(itemInfos, fixedInfoSize, true);
 }

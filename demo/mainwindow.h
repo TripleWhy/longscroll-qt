@@ -22,7 +22,7 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
-	void setItemInfos(QList<ContentItemInfo> const & infos, int fixedSize = -1);
+	void setItemInfos(QList<ContentItemInfo> const & infos, int fixedSize = -1, bool shuffle = false);
 	void setFixedItemCount(int fixedSize);
 	void setDemoNumber(int demoNo);
 	void loadDir(QDir const & dir, bool useCache);
@@ -33,8 +33,8 @@ private slots:
 	void propertyMenuTriggered(QAction * action);
 	void demoMenuTriggered(QAction * action);
 	void on_actionOpen_triggered();
-
 	void on_actionCount_triggered();
+	void on_actionShuffle_triggered();
 
 private:
 	Ui::MainWindow *ui;

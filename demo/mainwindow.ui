@@ -45,6 +45,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionCount"/>
+    <addaction name="actionShuffle"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDemo"/>
@@ -70,6 +71,11 @@
   <action name="actionCount">
    <property name="text">
     <string notr="true">Count</string>
+   </property>
+  </action>
+  <action name="actionShuffle">
+   <property name="text">
+    <string>Shuffle</string>
    </property>
   </action>
  </widget>
