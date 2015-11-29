@@ -27,7 +27,6 @@ LONGSCROLLQT_NAMESPACE_BEGIN
  */
 ImageItemWidget::ImageItemWidget(const ContentItemInfo & info, int itemIndex, bool fit, bool doLoadImage, ContentWidget * cw, QWidget * parent)
     : QFrame(parent),
-      fit(fit),
       info(info),
       itemIndex(itemIndex)
 {
@@ -86,6 +85,9 @@ void ImageItemWidget::loadImage()
 	imageWidget->setPixmap(px);
 }
 
+/*!
+ * \reimp{QFrame::paintEvent}
+ */
 void ImageItemWidget::paintEvent(QPaintEvent * e)
 {
 	if (selected)
@@ -99,5 +101,25 @@ void ImageItemWidget::paintEvent(QPaintEvent * e)
 	}
 	QFrame::paintEvent(e);
 }
+
+/*!
+ * \var ImageItemWidget::imageWidget
+ * \brief Widget used to display the image.
+ */
+
+/*!
+ * \var ImageItemWidget::info
+ * \brief Info of the displayed item.
+ */
+
+/*!
+ * \var ImageItemWidget::itemIndex
+ * \brief Index of the displayed item.
+ */
+
+/*!
+ * \var ImageItemWidget::selected
+ * \brief Stores whether the item is selected.
+ */
 
 LONGSCROLLQT_NAMESPACE_END

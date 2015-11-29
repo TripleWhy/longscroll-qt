@@ -4,6 +4,16 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
+/*!
+ * \class ImageInfoWidget
+ * \brief A widget that displays a ContentItemInfo as an image and some meta data.
+ * The widget assumes ContentItemInfos data contains a path to an image file.
+ */
+
+/*!
+ * \brief Constructs an ImageInfoWidget.
+ * \param parent
+ */
 ImageInfoWidget::ImageInfoWidget(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::ImageInfoWidget)
@@ -11,6 +21,11 @@ ImageInfoWidget::ImageInfoWidget(QWidget *parent) :
 	ui->setupUi(this);
 }
 
+/*!
+ * \brief Constructs an ImageInfoWidget displays \c info.
+ * \param info Info to be displayed
+ * \param parent
+ */
 ImageInfoWidget::ImageInfoWidget(const ContentItemInfo & info, QWidget * parent)
     : ImageInfoWidget(parent)
 {
@@ -40,6 +55,10 @@ static QString fileSizeDisplayString(qint64 size)
 	return QString("%1 %2").arg(displaySize, 0, 'f' , 2).arg(displayUnit);
 }
 
+/*!
+ * \brief Sets the ContentItemInfo to be displayed.
+ * \param info
+ */
 void ImageInfoWidget::setItemInfo(const ContentItemInfo & info)
 {
 	QFileInfo fi(info.getData().toString());

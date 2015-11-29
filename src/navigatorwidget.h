@@ -14,6 +14,8 @@ class LONGSCROLLQT_EXPORT NavigatorWidget : public QFrame
 	Q_OBJECT
 public:
 	using QFrame::QFrame;
+	Q_PROPERTY(ContentItemInfo itemInfo READ getItemInfo WRITE setItemInfo)
+	ContentItemInfo const & getItemInfo() const;
 	virtual void setItemInfo(ContentItemInfo const & info);
 
 signals:
@@ -21,16 +23,15 @@ signals:
 	void nextImageRequested();
 	void closeRequested();
 
-protected:
+private:
 	ContentItemInfo itemInfo;
 };
 
 LONGSCROLLQT_NAMESPACE_END
 
 
-
 namespace Ui {
-class AbstractNavigatorWidget;
+class BaseNavigatorWidget;
 }
 
 class QToolButton;
@@ -38,26 +39,19 @@ class QGridLayout;
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
-class LONGSCROLLQT_EXPORT AbstractNavigatorWidget : public NavigatorWidget
+class LONGSCROLLQT_EXPORT BaseNavigatorWidget : public NavigatorWidget
 {
 	Q_OBJECT
 public:
-	explicit AbstractNavigatorWidget(QWidget *parent = 0, Qt::WindowFlags f = 0);
-	~AbstractNavigatorWidget();
+	explicit BaseNavigatorWidget(QWidget *parent = 0, Qt::WindowFlags f = 0);
+	~BaseNavigatorWidget();
 
 protected:
-	QToolButton * closeButton;
-	QToolButton * nextButton;
-	QToolButton * prevButton;
-	QWidget * infoWidget;
-	QGridLayout * mainLayout;
-
-private:
-	Ui::AbstractNavigatorWidget *ui;
+	Ui::BaseNavigatorWidget *ui;
 };
 
 
-class LONGSCROLLQT_EXPORT ImageNavigatorWidget : public AbstractNavigatorWidget
+class LONGSCROLLQT_EXPORT ImageNavigatorWidget : public BaseNavigatorWidget
 {
 	Q_OBJECT
 public:

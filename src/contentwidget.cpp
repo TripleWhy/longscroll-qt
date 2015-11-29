@@ -18,8 +18,62 @@
 # include <QElapsedTimer>
 #endif
 
+//TODO: Create custom layout class to have standard margin and spacing?
+//TODO: Stylesheets don't work with the class names.
+//TODO: Column layouts. 1: layout columns. 2: Make it look like columns but actually lay out rows.
+//      Might need a layout abstraction layer for this.
+
 LONGSCROLLQT_NAMESPACE_BEGIN
 
+/*!
+ * \class ContentWidget
+ * \brief Longscroll-qt's central widget.
+ * \note You probably want to use LongscrollWidget instead of instantiating this class directly.
+ *
+ * Implements a widget that can display a lot of items, similar to a QAbstractItemView, but allows dynamic item positions and uses real widgets to display the items,
+ * thus there is no MVC concept.
+ *
+ * Items can be any kind of data and their number is not limited by this widget, however you may face other limits. For example, any QWidget can only have a size of
+ * \ref QWidget#QWIDGETSIZE_MAX "QWIDGETSIZE_MAX" pixels in each dimension.
+ * An item is visualized by a widget that is created when the item becomes visible and destroyed when it's hidden. This item widget determines how the item looks and
+ * what its data mean. The widget is created using the createItemWidget() function, which again calls ContentWidgetItemFactory::createItemWidget().
+ * This can be customized by setting a different \ref itemFactory or by overriding createItemWidget(), so that a custom widget is returned.
+ *
+ * Items are always aligned in rows. The height of the rows can be fixed or dynamic, the width of the items inside a row can also be fixed or dynamic.
+ * That way different kind of layouts can be achieved: Tables, lists or Goolge-Image-like views.
+ * Set the properties to achieve a layout before seetting \ref itemInfos, since each property change causes re-layouting.
+ * The following properties affect the layout:
+ * \ref rowHeight,
+ * \ref itemWidth,
+ * \ref allowOverfill,
+ * \ref stretchRows,
+ * \ref stretchLastRow,
+ * \ref scaleRows,
+ * \ref horizontalSpacing,
+ * \ref verticalSpacing,
+ * \ref itemFactory,
+ * \ref navigatorHeight.
+ *
+ * <DIV class="images">
+ * \image html img/layout1.png
+ * \image html img/layout2.png
+ * \image html img/layout3.png
+ * \image html img/layout4.png
+ * \image html img/layout5.png
+ * \image html img/layout6.png
+ * <DIV class="caption">Some possible layouts.</DIV>
+ * </DIV>
+ *
+ * ContentWidget offers a so called navigator widget. The \ref navigatorWidget represents a single item and is shown below the row the item is in. It always has a
+ * fixed height of \ref navigatorHeight and the full width of this widget.
+ * The navigator widget can for example provide additional information about the selected item.
+ * By default the navigator widget is shown when an item is clicked, this can be disabled using showNavigatorOnClick.
+ */
+
+/*!
+ * \brief Constructs a ContentWidget.
+ * \param parent
+ */
 ContentWidget::ContentWidget(QWidget * parent)
 	: NotifyableScrollContentWidget(parent)
 {
@@ -35,6 +89,12 @@ ContentWidget::ContentWidget(QWidget * parent)
 #endif
 }
 
+/*!
+ * \brief Constructs a ContentWidget.
+ * \param rowHeight
+ * \param itemWidth
+ * \param parent
+ */
 ContentWidget::ContentWidget(int rowHeight, int itemWidth, QWidget * parent)
     : ContentWidget(parent)
 {
@@ -42,6 +102,9 @@ ContentWidget::ContentWidget(int rowHeight, int itemWidth, QWidget * parent)
 	setItemWidth(itemWidth);
 }
 
+/*!
+ * \brief Destroys the widget.
+ */
 ContentWidget::~ContentWidget()
 {
 	delete itemFactory;
@@ -324,7 +387,7 @@ void ContentWidget::setVerticalSpacing(int spacing)
 /*!
  * \property ContentWidget::rowHeight
  * \brief Row base height.
- * If \c scaleRows is not set, every row will have this height. If \c scaleRows is set, this will be the base value to calculate the actual size from.
+ * If \ref scaleRows is not set, every row will have this height. If \c scaleRows is set, this will be the base value to calculate the actual size from.
  * The value must be > 0.
  * \default 200
  * \accessors getRowHeight(), setRowHeight()
@@ -353,9 +416,9 @@ void ContentWidget::setRowHeight(int height)
 /*!
  * \property ContentWidget::itemWidth
  * \brief Item base width.
- * If <tt>itemWidth > 0</tt>, all items will have this width, unless stretchRows is set. \n
+ * If <tt>itemWidth > 0</tt>, all items will have this width, unless \ref stretchRows is set. \n
  * If <tt>itemWidth < 0</tt>, all items will have some large width. Only use this to gether with \ref stretchRows and without \ref scaleRows. That has the effect that one item takes exactly one row. \n
- * If <tt>itemWidth == 0</tt>, the items will have their size assigned by using item.widthForHeight(rowHeight), i.e. each item has the width that fits the rowHeight best.
+ * If <tt>itemWidth == 0</tt>, the items will have their size assigned by using <TT>item.widthForHeight(rowHeight)</TT>, i.e. each item has the width that fits the \ref rowHeight best.
  * \default 0
  * \accessors getItemWidth(), setItemWidth()
  * \see stretchRows
@@ -384,7 +447,7 @@ void ContentWidget::setItemWidth(int width)
  * If \c allowOverfill is not set, a row is never wider than the widget.\n
  * If \c allowOverfill is set, the widget decides for the first item that does not fit inside a row anymore, if it adds the item to the row anyway or creates a new row.
  * The item is added to the row if more than half of the item fits inside the row.
- * This is usually used this together with \ref stretchRows or \ref scaleRows.
+ * This is usually used together with \ref stretchRows or \ref scaleRows.
  * \default true
  * \accessors getAllowOverfill(), setAllowOverfill()
  * \see stretchRows
@@ -412,7 +475,7 @@ void ContentWidget::setAllowOverfill(bool allow)
  * \property ContentWidget::stretchRows
  * \brief Stretch row widths to the actual widget's width.
  * If \c stretchRows is set, all rows will be stretched to the actual widget's width. This is done by stretching all items of a row proportionally to their widths.
- * If \c stretchRows is not set, all items will have the size specified by itemWidth.
+ * If \c stretchRows is not set, all items will have the size specified by \ref itemWidth.
  * This value does not affect the last row, which is controlled by \ref stretchLastRow.
  * \default true
  * \accessors getStretchRows(), setStretchRows()
@@ -466,9 +529,9 @@ void ContentWidget::setStretchLastRow(bool stretch)
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 /*!
  * \property ContentWidget::scaleRows
- * \brief Scale rows to the actual widget's width, keeping the row's aspect ratio.
+ * \brief Scale rows to the actual widget's width, keeping the items' aspect ratio.
  * Similar to \ref stretchRows, but keeps the aspect ratios of the items. Instead it changes the row height. If enabled, overrides \ref stretchRows, but respects \ref stretchLastRow.
- * However, for (theoretically) better performance disable \ref stretchRows when \c scaleRows is set.
+ * For (theoretically) better performance you should disable \ref stretchRows when \c scaleRows is set.
  *
  * Enabling \c scaleRows means that rows don't have fixed row heights anymore, which causes some operations to be a bit more complex.
  * For maximum performance, this feature can be disabled completely by compiling the library with \c CONTENTWIDGET_VARIABLE_ROW_HEIGHT=0 defined.
@@ -500,7 +563,7 @@ void ContentWidget::setScaleRows(bool scale)
 #endif
 
 /*!
- * \property handleMouseEvents
+ * \property ContentWidget::handleMouseEvents
  * \brief Handle mouse events.
  * Handle press, release and move events to change the selection, start dragging, emit events or show navigator.
  * \default true
@@ -527,7 +590,7 @@ void ContentWidget::setHandleMouseEvents(bool handle)
 }
 
 /*!
- * \property showNavigatorOnClick
+ * \property ContentWidget::showNavigatorOnClick
  * \brief Show the navigator widget on item click, requires \ref handleMouseEvents to be set.
  * \default true
  * \accessors getShowNavigatorOnClick(), setShowNavigatorOnClick()
@@ -556,7 +619,7 @@ void ContentWidget::setShowNavigatorOnClick(bool show)
 }
 
 /*!
- * \property dragEnabled
+ * \property ContentWidget::dragEnabled
  * \brief Enables drag detection, requires \ref handleMouseEvents to be set.
  * If \c dragEnabled is set, the widget detects mouse dragging.
  * If a drag was detected, \ref startDrag is called. Any actual actions need to be implemented by overriding it.
@@ -583,7 +646,7 @@ void ContentWidget::setDragEnabled(bool enabled)
 }
 
 /*!
- * \property selectionMode
+ * \property ContentWidget::selectionMode
  * \brief Selection mode.
  * If \c selectionMode is set to \c QAbstractItemView::NoSelection, the selection is cleared and disabled.
  * Requires \ref handleMouseEvents for mouse selection to work.
@@ -611,7 +674,7 @@ void ContentWidget::setSelectionMode(QAbstractItemView::SelectionMode mode)
 }
 
 /*!
- * \property selectedItems
+ * \property ContentWidget::selectedItems
  * \brief Selected item indexes.
  * \accessors getSelectedItems(), setSelectedItems()
  */
@@ -637,7 +700,7 @@ void ContentWidget::setSelectedItems(QList<int> const & indexes)
 }
 
 /*!
- * \property currentItem
+ * \property ContentWidget::currentItem
  * \brief Current item index.
  * \accessors getcurrentItem(), setcurrentItem()
  */
@@ -645,7 +708,7 @@ void ContentWidget::setSelectedItems(QList<int> const & indexes)
 /*!
  * \see ContentWidget::currentItem
  */
-int ContentWidget::getcurrentItem() const
+int ContentWidget::getCurrentItem() const
 {
 	return currentItemIndex;
 }
@@ -653,7 +716,7 @@ int ContentWidget::getcurrentItem() const
 /*!
  * \see ContentWidget::currentItem
  */
-void ContentWidget::setcurrentItem(int index)
+void ContentWidget::setCurrentItem(int index)
 {
 	if (index == currentItemIndex)
 		return;
@@ -789,7 +852,7 @@ void ContentWidget::showNavigator(int row, int col)
 }
 
 /*!
- * \reimp{NotifyableScrollContentWidget::sizeHint()}
+ * \reimp{NotifyableScrollContentWidget::sizeHint}
  */
 QSize ContentWidget::sizeHint() const
 {
@@ -797,7 +860,7 @@ QSize ContentWidget::sizeHint() const
 }
 
 /*!
- * \reimp{NotifyableScrollContentWidget::showingRect()}
+ * \reimp{NotifyableScrollContentWidget::showingRect}
  */
 void ContentWidget::showingRect(const QRect & rect)
 {
@@ -870,7 +933,7 @@ void ContentWidget::showingRect(const QRect & rect)
 /*!
  * \brief Creates an item widget.
  * This method creates a widget to visualize an item. These widgets are created when the respective item becomes close to the visible region
- * and destroyed when it moves away. For fine control when the widget is created, use \ref prefetchBefore and \ref prefetchAfter.
+ * and destroyed when it moves away. For fine control when the widget is created, use \ref prefetchRowsBefore and \ref prefetchRowsAfter.
  * This widget takes ownership of the returned widget.
  *
  * This method can be overridden. However, the same effect can be achieved by changing the \ref itemFactory.
@@ -1007,7 +1070,7 @@ void ContentWidget::previousImage(int & row, int & col)
 }
 
 /*!
- * \reimp{NotifyableScrollContentWidget::mousePressEvent()}
+ * \reimp{NotifyableScrollContentWidget::mousePressEvent}
  */
 void ContentWidget::mousePressEvent(QMouseEvent * event)
 {
@@ -1051,7 +1114,7 @@ void ContentWidget::mousePressEvent(QMouseEvent * event)
 }
 
 /*!
- * \reimp{NotifyableScrollContentWidget::mouseMoveEvent()}
+ * \reimp{NotifyableScrollContentWidget::mouseMoveEvent}
  */
 void ContentWidget::mouseMoveEvent(QMouseEvent * event)
 {
@@ -1088,7 +1151,7 @@ void ContentWidget::mouseMoveEvent(QMouseEvent * event)
 }
 
 /*!
- * \reimp{NotifyableScrollContentWidget::mouseReleaseEvent()}
+ * \reimp{NotifyableScrollContentWidget::mouseReleaseEvent}
  */
 void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
 {
@@ -1117,7 +1180,7 @@ void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
 }
 
 /*!
- * \reimp{NotifyableScrollContentWidget::mouseDoubleClickEvent()}
+ * \reimp{NotifyableScrollContentWidget::mouseDoubleClickEvent}
  */
 void ContentWidget::mouseDoubleClickEvent(QMouseEvent * event)
 {
@@ -1532,7 +1595,7 @@ void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPr
 	}
 
 	setSelectedItems(newSelection);
-	setcurrentItem(newCurrentItemIndex);
+	setCurrentItem(newCurrentItemIndex);
 }
 
 void ContentWidget::showNavigator(const int row, const int col, const bool blockUpdates)

@@ -4,30 +4,58 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
+/*!
+ * \class NotifyingScrollArea
+ * \brief Scroll area that informs widgets inside about their visible region.
+ * When the the content is scrolled, resized, shown or hidden, the widget searches for instances of NotifyableScrollContentWidget and
+ * informs them about their current visible rectangle by calling NotifyableScrollContentWidget::showingRect().
+ * However it does not informa all children. If the \ref widget() returns an instance of NotifyableScrollContentWidget, only that
+ * one will be informed, otherwise all direct children of widget() that derive from NotifyableScrollContentWidget will be informed.
+ *
+ * Note: A widget can determine its visible region on its own, but it does not now when it changes.
+ * It is also slightly more effective to determine the visible rectangle for all children than let it do every widget.
+ */
+
+/*!
+ * \reimp{QScrollArea::scrollContentsBy}
+ */
 void NotifyingScrollArea::scrollContentsBy(int dx, int dy)
 {
 	QScrollArea::scrollContentsBy(dx, dy);
 	findVisible();
 }
 
+/*!
+ * \reimp{QScrollArea::resizeEvent}
+ */
 void NotifyingScrollArea::resizeEvent(QResizeEvent * event)
 {
 	QScrollArea::resizeEvent(event);
 	findVisible();
 }
 
+/*!
+ * \reimp{QScrollArea::showEvent}
+ */
 void NotifyingScrollArea::showEvent(QShowEvent * event)
 {
 	QScrollArea::showEvent(event);
 	findVisible();
 }
 
+/*!
+ * \reimp{QScrollArea::hideEvent}
+ */
 void NotifyingScrollArea::hideEvent(QHideEvent * event)
 {
 	QScrollArea::hideEvent(event);
 	findVisible();
 }
 
+/*!
+ * \brief Finds NotifyableScrollContentWidget and informs them about their visible region.
+ * Called every thime the widget is scrolled, resized, shown or hidden.
+ */
 void NotifyingScrollArea::findVisible()
 {
 	QWidget * wid = widget();

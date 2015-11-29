@@ -47,7 +47,7 @@
      <item>
       <widget class="QLabel" name="nameLabel">
        <property name="text">
-        <string>File name</string>
+        <string notr="true">File name</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -57,7 +57,7 @@
      <item>
       <widget class="QLabel" name="fileSizeLabel">
        <property name="text">
-        <string>File size</string>
+        <string notr="true">File size</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -67,7 +67,7 @@
      <item>
       <widget class="QLabel" name="fileFormatLabel">
        <property name="text">
-        <string>File format</string>
+        <string notr="true">File format</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -77,7 +77,7 @@
      <item>
       <widget class="QLabel" name="qualityLabel">
        <property name="text">
-        <string>Quality</string>
+        <string notr="true">Quality</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -87,7 +87,7 @@
      <item>
       <widget class="QLabel" name="sizeLabel">
        <property name="text">
-        <string>Size</string>
+        <string notr="true">Size</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -97,7 +97,7 @@
      <item>
       <widget class="QLabel" name="errorLabel">
        <property name="text">
-        <string>Error</string>
+        <string notr="true">Error</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>

@@ -114,9 +114,9 @@ public:
 	Q_PROPERTY(QList<int> selectedItems READ getSelectedItems WRITE setSelectedItems)
 	QList<int> getSelectedItems() const;
 	void setSelectedItems(QList<int> const & indexes);
-	Q_PROPERTY(int currentItem READ getcurrentItem WRITE setcurrentItem)
-	int getcurrentItem() const;
-	void setcurrentItem(int index);
+	Q_PROPERTY(int currentItem READ getCurrentItem WRITE setCurrentItem)
+	int getCurrentItem() const;
+	void setCurrentItem(int index);
 
 	Q_PROPERTY(QList<ContentItemInfo> itemInfos READ getItemInfos WRITE setItemInfos)
 	QList<ContentItemInfo> const & getItemInfos() const;

@@ -5,18 +5,55 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
+/*!
+ * \interface ContentWidgetItemFactory
+ * \brief Interface for item factories used by ContentWidget to create display items.
+ */
+
+/*!
+ * \fn ContentWidgetItemFactory::createItemWidget
+ * \brief Creates a display widget for given item info.
+ * This method receives a pointer to the ContentWidget, this is useful for example if the widget vizualizes the selection in some way, to connect to selection changes.
+ * The ContentWidget will take ownership of the returned widget.
+ * \param info Item info to be displayed.
+ * \param itemIndex Item info index in ContentWidget's item info list.
+ * \param cw The ContentWidget.
+ * \return A newly created QWidget.
+ * \see ContentWidget::createItemWidget
+ */
+
+/*!
+ * \class ContentWidgetImageItemFactory
+ * \brief ContentWidgetItemFactory that creates \ref ImageItemWidget "ImageItemWidget"s.
+ */
+
+/*!
+ * \brief Constructs a ContentWidgetImageItemFactory.
+ * \param fitImage \c fit parameter passed to ImageItemWidget.
+ */
 ContentWidgetImageItemFactory::ContentWidgetImageItemFactory(bool fitImage)
     : ContentWidgetItemFactory(),
       imageFit(fitImage)
 {
 }
 
+/*!
+ * \reimp{ContentWidgetItemFactory::createItemWidget}
+ */
 QWidget * ContentWidgetImageItemFactory::createItemWidget(const ContentItemInfo & info, int itemIndex, ContentWidget * cw)
 {
 	return new ImageItemWidget(info, itemIndex, imageFit, cw);
 }
 
 
+/*!
+ * \class ContentWidgetImageInfoFactory
+ * \brief ContentWidgetImageInfoFactory that creates \ref ImageInfoWidget "ImageInfoWidget"s.
+ */
+
+/*!
+ * \reimp{ContentWidgetItemFactory::createItemWidget}
+ */
 QWidget *ContentWidgetImageInfoFactory::createItemWidget(const ContentItemInfo & info, int /*itemIndex*/, ContentWidget * /*cw*/)
 {
 	return new ImageInfoWidget(info);

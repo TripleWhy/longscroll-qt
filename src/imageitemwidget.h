@@ -12,13 +12,7 @@ class ContentWidget;
 
 class LONGSCROLLQT_EXPORT ImageItemWidget : public QFrame
 {
-protected:
-	ImageWidget * imageWidget = 0;
-	bool fit = false;
-	ContentItemInfo info;
-	int itemIndex = -1;
-	bool selected = false;
-
+	Q_OBJECT
 protected:
 	ImageItemWidget(ContentItemInfo const & info, int itemIndex, bool fit, bool loadImage, ContentWidget * cw, QWidget * parent);
 public:
@@ -33,6 +27,12 @@ protected:
 
 protected:
 	virtual void paintEvent(QPaintEvent * e) override;
+
+protected:
+	ImageWidget * imageWidget = 0;
+	ContentItemInfo info;
+	int itemIndex = -1;
+	bool selected = false;
 };
 
 LONGSCROLLQT_NAMESPACE_END

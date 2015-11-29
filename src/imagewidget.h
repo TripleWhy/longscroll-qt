@@ -13,15 +13,21 @@ class LONGSCROLLQT_EXPORT ImageWidget : public QFrame
 {
 	Q_OBJECT
 
-private:
-	QIcon icon;
-	QSize pxSize;
-	bool fit = true;
-	bool selected = false;
-
 public:
 	explicit ImageWidget(QWidget *parent = 0);
 	~ImageWidget();
+
+public:
+	Q_PROPERTY(QPixmap pixmap READ getPixmap WRITE setPixmap)
+	QPixmap const & getPixmap() const;
+	Q_PROPERTY(bool fit READ getFit WRITE setFit)
+	bool getFit() const;
+	Q_PROPERTY(bool selected READ isSelected WRITE setSelected)
+	bool isSelected() const;
+public slots:
+	void setPixmap(QPixmap const & px);
+	void setFit(bool fit);
+	virtual void setSelected(bool selected);
 
 protected:
 	virtual void paintEvent(QPaintEvent * e) override;
@@ -30,11 +36,11 @@ protected:
 	virtual int heightForWidth(int w) const override;
 	virtual QSize sizeHint() const override;
 
-public slots:
-	void setPixmap(QPixmap const & px);
-	void setFit(bool fit);
-	void setSelected(bool selected);
-
+private:
+	QIcon icon;
+	QSize pxSize;
+	bool fit = true;
+	bool selected = false;
 };
 
 LONGSCROLLQT_NAMESPACE_END

@@ -2,14 +2,109 @@
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
-ImageWidget::ImageWidget(QWidget *parent) : QFrame(parent)
+/*!
+ * \class ImageWidget
+ * \brief A widget that displays an image.
+ * The image is scaled to the size of the widget keeping its aspect ratio, either by leaving widget space empty or cropping the image.
+ * This can be controlled by using setFit().
+ */
+
+/*!
+ * \brief Constructs an empty ImageWidget.
+ * \param parent Parent widget.
+ */
+ImageWidget::ImageWidget(QWidget *parent)
+    : QFrame(parent)
 {
 }
 
+/*!
+ * \brief Destructor.
+ */
 ImageWidget::~ImageWidget()
 {
 }
 
+/*!
+ * \property ImageWidget::pixmap
+ * \brief The displayed Pixmap.
+ * \accessors getPixmap(), setPixmap()
+ */
+
+/*!
+ * \see ImageWidget::pixmap
+ */
+const QPixmap &ImageWidget::getPixmap() const
+{
+	return icon.pixmap(pxSize, QIcon::Normal, QIcon::Off);
+}
+
+/*!
+ * \see ImageWidget::pixmap
+ */
+void ImageWidget::setPixmap(const QPixmap &px)
+{
+	icon = QIcon(px);
+	pxSize = px.size();
+	update();
+}
+
+/*!
+ * \property ImageWidget::fit
+ * \brief Fit the image entireley inside the widget.
+ * Decides wheter the image is fit entirely inside the widget, leaving empty widget space (true) or fills the complete widget space cropping image information (false).
+ * \default true
+ * \accessors getFit(), setFit()
+ */
+
+/*!
+ * \see ImageWidget::fit
+ */
+bool ImageWidget::getFit() const
+{
+	return fit;
+}
+
+/*!
+ * \see ImageWidget::fit
+ */
+void ImageWidget::setFit(bool _fit)
+{
+	if (_fit == fit)
+		return;
+	fit = _fit;
+	update();
+}
+
+/*!
+ * \property ImageWidget::selected
+ * \brief Draw the widget as selected.
+ * \default false
+ * \accessors isSelected(), setSelected()
+ */
+
+/*!
+ * \see ImageWidget::selected
+ */
+bool ImageWidget::isSelected() const
+{
+	return selected;
+}
+
+/*!
+ * \see ImageWidget::selected
+ */
+void ImageWidget::setSelected(bool _selected)
+{
+	if (_selected == selected)
+		return;
+	selected = _selected;
+	update();
+}
+
+/*!
+ * \reimp{QFrame::paintEvent}
+ */
 void ImageWidget::paintEvent(QPaintEvent * e)
 {
 	QFrame::paintEvent(e);
@@ -32,11 +127,18 @@ void ImageWidget::paintEvent(QPaintEvent * e)
 	painter.drawPixmap(rect(), pix, r);
 }
 
+/*!
+ * \reimp{QFrame::hasHeightForWidth}
+ * \return true
+ */
 bool ImageWidget::hasHeightForWidth() const
 {
 	return true;
 }
 
+/*!
+ * \reimp{QFrame::heightForWidth}
+ */
 int ImageWidget::heightForWidth(int w) const
 {
 	if (pxSize.isEmpty())
@@ -44,32 +146,12 @@ int ImageWidget::heightForWidth(int w) const
 	return qRound(qreal(w * pxSize.height()) / qreal(pxSize.width()));
 }
 
+/*!
+ * \reimp{QFrame::sizeHint}
+ */
 QSize ImageWidget::sizeHint() const
 {
 	return pxSize;
-}
-
-void ImageWidget::setPixmap(const QPixmap &px)
-{
-	icon = QIcon(px);
-	pxSize = px.size();
-	update();
-}
-
-void ImageWidget::setFit(bool _fit)
-{
-	if (_fit == fit)
-		return;
-	fit = _fit;
-	update();
-}
-
-void ImageWidget::setSelected(bool _selected)
-{
-	if (_selected == selected)
-		return;
-	selected = _selected;
-	update();
 }
 
 LONGSCROLLQT_NAMESPACE_END
