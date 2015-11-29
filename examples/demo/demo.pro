@@ -22,7 +22,7 @@ TARGET = demo
 TEMPLATE = app
 CONFIG += c++11
 
-include($$PWD/../src/longscroll-qt_dst-dir.pri)
+include($$PWD/../../src/longscroll-qt_dst-dir.pri)
 DEPENDPATH += $$LONGSCROLLQT_DST_DIR/include
 INCLUDEPATH += $$LONGSCROLLQT_DST_DIR/include
 
