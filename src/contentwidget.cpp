@@ -1340,7 +1340,7 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 	}
 	else
 	{
-		size.setHeight(y - ySpacing);
+		size.setHeight(qMax(0, y - ySpacing));
 	}
 	setMinimumSize(size);
 
