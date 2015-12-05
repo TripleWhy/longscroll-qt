@@ -53,7 +53,7 @@ ImageWidget::~ImageWidget()
 /*!
  * \see ImageWidget::pixmap
  */
-const QPixmap &ImageWidget::getPixmap() const
+QPixmap ImageWidget::getPixmap() const
 {
 	return icon.pixmap(pxSize, QIcon::Normal, QIcon::Off);
 }

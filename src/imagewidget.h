@@ -38,7 +38,7 @@ public:
 
 public:
 	Q_PROPERTY(QPixmap pixmap READ getPixmap WRITE setPixmap)
-	QPixmap const & getPixmap() const;
+	QPixmap getPixmap() const;
 	Q_PROPERTY(bool fit READ getFit WRITE setFit)
 	bool getFit() const;
 	Q_PROPERTY(bool selected READ isSelected WRITE setSelected)
