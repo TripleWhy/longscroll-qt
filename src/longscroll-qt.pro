@@ -15,8 +15,8 @@
 #You should have received a copy of the GNU Affero General Public License
 #along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 
-QT       += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+lessThan(QT_MAJOR_VERSION, 5): error("This library needs Qt 5.")
+QT       += core gui widgets
 
 CONFIG(debug, debug|release) {
     TARGET = longscroll-qtd
