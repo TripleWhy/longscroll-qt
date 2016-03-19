@@ -19,7 +19,7 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 
 #include "imageloader.h"
 
-bool ImageLoader::QueueEntry::operator==(const ImageLoader::QueueEntry & other)
+bool ImageLoader::QueueEntry::operator==(const ImageLoader::QueueEntry & other) const
 {
 	return (fileName == other.fileName);
 }

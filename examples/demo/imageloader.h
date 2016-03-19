@@ -37,7 +37,7 @@ private:
 		QString fileName;
 		QSet<QObject *> receivers;
 
-		bool operator==(QueueEntry const & other);
+		bool operator==(QueueEntry const & other) const;
 	};
 
 	QQueue<QueueEntry> queue;
