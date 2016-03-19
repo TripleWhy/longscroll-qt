@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015 Yannick Mueller
+Copyright (C) 2015-2016 Yannick Mueller
 
 This file is part of longscroll-qt.
 
@@ -29,6 +29,10 @@ LONGSCROLLQT_NAMESPACE_BEGIN
  * \brief Interface for item factories used by ContentWidget to create display items.
  */
 
+ContentWidgetItemFactory::~ContentWidgetItemFactory()
+{
+}
+
 /*!
  * \fn ContentWidgetItemFactory::createItemWidget
  * \brief Creates a display widget for given item info.
@@ -40,6 +44,7 @@ LONGSCROLLQT_NAMESPACE_BEGIN
  * \return A newly created QWidget.
  * \see ContentWidget::createItemWidget
  */
+
 
 /*!
  * \class ContentWidgetImageItemFactory

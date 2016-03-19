@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015 Yannick Mueller
+Copyright (C) 2015-2016 Yannick Mueller
 
 This file is part of longscroll-qt.
 
@@ -32,7 +32,7 @@ class ContentWidget;
 class LONGSCROLLQT_EXPORT ContentWidgetItemFactory
 {
 public:
-	virtual ~ContentWidgetItemFactory() {}
+	virtual ~ContentWidgetItemFactory();
 	virtual QWidget * createItemWidget(ContentItemInfo const & info, int itemIndex, ContentWidget * cw) = 0;
 };
 

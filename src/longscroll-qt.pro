@@ -1,4 +1,4 @@
-#Copyright (C) 2015 Yannick Mueller
+#Copyright (C) 2015-2016 Yannick Mueller
 #
 #This file is part of longscroll-qt.
 #
@@ -31,6 +31,7 @@ CONFIG += c++11
 *-g++*|*-clang*|*-icc* {
 	QMAKE_CXXFLAGS_RELEASE += -Ofast
 	QMAKE_CXXFLAGS_WARN_ON += -Wextra -Wconversion -Werror=return-type   -Wpedantic -Wcast-qual -Wcast-align -Wwrite-strings
+	clang: QMAKE_CXXFLAGS_WARN_ON += -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-documentation -Wno-padded -Wno-shadow -Wno-undefined-reinterpret-cast
 } else:*-msvc* {
 	QMAKE_CXXFLAGS_RELEASE += /O2
 }

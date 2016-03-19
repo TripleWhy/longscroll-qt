@@ -24,6 +24,13 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 #include "longscroll-qt_qtincludes.h"
 #include <QApplication>
 
+#ifdef Q_CC_CLANG
+# define FALLTHROUGH [[clang::fallthrough]];
+#else
+# define FALLTHROUGH
+#endif
+
+
 #define CONTENTWIDGET_MEASURE_SHOWINGRECT   0
 #define CONTENTWIDGET_MEASURE_CALCULATESIZE 0
 #define CONTENTWIDGET_MEASURE_SETINFOS      0
@@ -1526,6 +1533,7 @@ void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPr
 			newCurrentItemIndex = itemIndex;
 			break;
 		case QAbstractItemView::ExtendedSelection:
+		{
 			if (!controlPressed)
 			{
 				if (dragging || shiftPressed)
@@ -1550,7 +1558,8 @@ void ContentWidget::updateSelection(int itemIndex, bool dragging, bool controlPr
 				}
 				break;
 			}
-			//no break
+			FALLTHROUGH
+		}
 		case QAbstractItemView::MultiSelection:
 			newCurrentItemIndex = itemIndex;
 			newSelection = selection;
