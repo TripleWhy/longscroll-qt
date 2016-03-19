@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015 Yannick Mueller
+Copyright (C) 2015-2016 Yannick Mueller
 
 This file is part of longscroll-qt.
 
@@ -36,9 +36,9 @@ LoaderImageItem::~LoaderImageItem()
 		loader->removeImageRequest(info.getData().toString(), this);
 }
 
-void LoaderImageItem::requestFinished(const QString &, const QObject * receiver, const QPixmap & px)
+void LoaderImageItem::requestFinished(const QString & fileName, const QObject * receiver, const QPixmap & px)
 {
-	if (receiver != this)
+	if (receiver != this || info.getData().toString() != fileName)
 		return;
 
 	imageSet = true;

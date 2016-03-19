@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015 Yannick Mueller
+Copyright (C) 2015-2016 Yannick Mueller
 
 This file is part of longscroll-qt.
 
@@ -39,7 +39,7 @@ public:
 	~LoaderImageItem();
 
 private slots:
-	void requestFinished(QString const & /*fileName*/, QObject const * receiver, QPixmap const & px);
+	void requestFinished(QString const & fileName, QObject const * receiver, QPixmap const & px);
 };
 
 #endif // LOADERIMAGEITEM_H
