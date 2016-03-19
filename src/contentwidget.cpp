@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015 Yannick Mueller
+Copyright (C) 2015-2016 Yannick Mueller
 
 This file is part of longscroll-qt.
 
@@ -773,34 +773,24 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	itemWidths.clear();
 	itemWidths.reserve(size);
 	qDeleteAll(itemWidgets);
-	itemWidgets.clear();
-	itemWidgets.reserve(size);
+	itemWidgets.fill(0, size); //resize and fill
 	qDeleteAll(rowWidgets);
 	rowWidgets.clear();
 	rowInfos.clear();
 	if (itemWidth == 0)
 	{
 		for (ContentItemInfo const & img : infos)
-		{
 			itemWidths.append(img.widthForHeight(rowHeight));
-			itemWidgets.append(0);
-		}
 	}
 	else if (itemWidth < 0)
 	{
 		for (int i = 0; i < size; ++i)
-		{
 			itemWidths.append( std::numeric_limits<decltype(itemWidth)>::max() / 4 );	// big value, but also leave some room for calculations.
-			itemWidgets.append(0);
-		}
 	}
 	else
 	{
 		for (int i = 0; i < size; ++i)
-		{
 			itemWidths.append(itemWidth);
-			itemWidgets.append(0);
-		}
 	}
 
 	refresh();
@@ -1355,34 +1345,34 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 		QList<ItemInfo> const & items2 = rowInfosNew[i].items;
 		if (items1 != items2)
 		{
-			QObjectList children = rowWidgets[i]->children();	//copy list
+			QWidget *& rowWidget = rowWidgets[i];
+			QObjectList children = rowWidget->children();	//copy list
 			for (QObject * o : children)
 			{
 				QWidget * w = static_cast<QWidget *>(o);
 				w->setVisible(false);
 				w->setParent(this);
 			}
-			delete rowWidgets[i];
-			rowWidgets[i] = 0;
+			delete rowWidget;
+			rowWidget = 0;
 		}
 	}
 	for (int i = is; i < ws; ++i)
 	{
-		QWidget * last = rowWidgets.takeLast();
-		if (last == 0)
+		QWidget *& rowWidget = rowWidgets[i];
+		if (rowWidget == 0)
 			continue;
-		QObjectList children = last->children();	//copy list
+		QObjectList children = rowWidget->children();	//copy list
 		for (QObject * o : children)
 		{
 			QWidget * w = static_cast<QWidget *>(o);
 			w->setVisible(false);
 			w->setParent(this);
 		}
-		delete last;
+		delete rowWidget;
+		rowWidget = 0;
 	}
-	rowWidgets.reserve(is);
-	for (int i = ws; i < is; ++i)
-		rowWidgets.append(0);
+	rowWidgets.resize(is);
 	Q_ASSERT(rowWidgets.size() == rowInfosNew.size());
 	rowInfos.swap(rowInfosNew);
 

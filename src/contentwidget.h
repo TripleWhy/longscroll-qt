@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2015 Yannick Mueller
+Copyright (C) 2015-2016 Yannick Mueller
 
 This file is part of longscroll-qt.
 
@@ -243,8 +243,8 @@ private:
 	QList<ContentItemInfo> itemInfos;
 	QList<int> itemWidths;
 	QList<RowInfo> rowInfos;
-	QList<QWidget *> rowWidgets;
-	QList<QWidget *> itemWidgets;
+	QVector<QWidget *> rowWidgets;
+	QVector<QWidget *> itemWidgets;
 
 	bool handleMouseEvents = true;
 	QMetaObject::Connection navigatorClickConnection;
