@@ -44,10 +44,11 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 # include <QElapsedTimer>
 #endif
 
+//TODO: Keyboard selection
 //TODO: Create custom layout class to have standard margin and spacing?
 //TODO: Stylesheets don't work with the class names.
-//TODO: Column layouts. 1: layout columns. 2: Make it look like columns but actually lay out rows.
-//      Might need a layout abstraction layer for this.
+//TODO: Column layouts. Might need a layout abstraction layer for this.
+//TODO: Use Qt::LayoutDirection
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
