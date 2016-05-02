@@ -44,6 +44,20 @@ CONFIG(debug, debug|release):   RD = debug
 include( longscroll-qt_dst-dir.pri )
 
 
+docDistDir.target = $$PWD/../dist/doc
+docDistDir.commands = mkdir -p $$docDistDir.target
+
+docHtml.commands = cd $$PWD && doxygen ../doxygen/doxyfile-html
+docHtml.depends = docDistDir
+
+docQhp.commands = cd $$PWD && doxygen ../doxygen/doxyfile-qhp
+docQhp.depends = docDistDir
+
+docs.depends = docHtml docQhp
+
+QMAKE_EXTRA_TARGETS += docDistDir docHtml docQhp docs
+
+
 HEADERS += \
     contentwidget.h \
     contentwidgetitemfactory.h \
