@@ -23,9 +23,24 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 #include <QtGlobal>
 
 #ifdef Q_CC_GNU
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wfloat-conversion"
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wconversion"
+# if defined(__GNUC__) && defined(__GNUC_MINOR__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9))
+#  pragma GCC diagnostic ignored "-Wfloat-conversion"
+# endif
+#endif
+#ifdef Q_CC_CLANG
+# pragma GCC diagnostic ignored "-Wdeprecated"
+# pragma GCC diagnostic ignored "-Wused-but-marked-unused"
+# pragma GCC diagnostic ignored "-Wfloat-equal"
+# pragma GCC diagnostic ignored "-Wsign-conversion"
+# pragma GCC diagnostic ignored "-Wexit-time-destructors"
+# pragma GCC diagnostic ignored "-Wcovered-switch-default"
+# pragma GCC diagnostic ignored "-Wdisabled-macro-expansion"
+# ifdef Q_OS_MAC
+#  pragma GCC diagnostic ignored "-Wdeprecated"
+# else
+# endif
 #endif
 
 #include <QScrollArea>
@@ -35,6 +50,7 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 #include <QPainter>
 #include <QMouseEvent>
 #include <QImageReader>
+#include <QAbstractItemView>
 
 #ifdef Q_CC_GNU
 #pragma GCC diagnostic pop

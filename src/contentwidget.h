@@ -23,7 +23,6 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 #include "longscroll-qt_global.h"
 #include "notifyablescrollcontentwidget.h"
 #include "contentiteminfo.h"
-#include <QAbstractItemView>
 
 LONGSCROLLQT_NAMESPACE_BEGIN
 
