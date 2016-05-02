@@ -140,6 +140,7 @@ ContentWidget::~ContentWidget()
 /*!
  * \property ContentWidget::itemFactory
  * \brief ContentWidgetItemFactory used to create displaying widgets.
+ * This ContentWidget takes ownership of the ContentWidgetItemFactory.
  * \accessors getItemFactory(), setItemFactory()
  * \default{new ContentWidgetImageItemFactory(false, this)}
  * \see ContentWidgetImageItemFactory
