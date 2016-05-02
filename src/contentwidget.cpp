@@ -787,6 +787,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	qDeleteAll(rowWidgets);
 	rowWidgets.clear();
 	rowInfos.clear();
+	trackingItemIndex = -1;
 	if (itemWidth == 0)
 	{
 		for (ContentItemInfo const & img : infos)
