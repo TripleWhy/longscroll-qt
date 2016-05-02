@@ -1,0 +1,80 @@
+version: 0.0.0.{build}
+os: Visual Studio 2015
+clone_depth: 1
+test: off
+clone_folder: C:\projects\longscroll-qt
+
+environment:
+  matrix:
+  # MinGW
+  - platform: mingw
+    qt: C:\Qt\5.6\mingw49_32
+    artifactName: longscroll-qt-$(APPVEYOR_REPO_TAG_NAME)-win32-mingw
+  # MSVC 2015 x64
+  - platform: amd64
+    qt: C:\Qt\5.6\msvc2015_64
+    artifactName: longscroll-qt-$(APPVEYOR_REPO_TAG_NAME)-win64-msvc2015
+
+init:
+  - set PATH=%qt%\bin;%PATH%
+  - if not %platform%==mingw call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %platform%
+  - if %platform%==mingw set PATH=C:\Qt\Tools\mingw492_32\bin;%PATH%
+
+install:
+- cd "%clone_folder%"
+
+before_build:
+  - md build
+  - md build\longscroll
+  - md build\simple
+  - md build\demo
+
+build_script:
+- cmd: >-
+    if not %platform%==mingw (set MAKETOOL=nmake) else (set MAKETOOL=mingw32-make)
+
+    cd build\longscroll
+
+    qmake --version
+
+    qmake -r ..\..\src\longscroll-qt.pro "CONFIG+=release" "CONTINUOUS_INTEGRATION=1"
+
+    %MAKETOOL%
+
+    %MAKETOOL% install
+
+    %MAKETOOL% clean
+
+    cd ..\simple
+
+    qmake -r ..\..\examples\simple\simple.pro "CONFIG+=release" "CONTINUOUS_INTEGRATION=1"
+
+    %MAKETOOL%
+
+    %MAKETOOL% install
+
+    %MAKETOOL% clean
+
+    cd ..\demo
+
+    qmake -r ..\..\examples\demo\demo.pro "CONFIG+=release" "CONTINUOUS_INTEGRATION=1"
+
+    %MAKETOOL%
+
+    %MAKETOOL% install
+
+    %MAKETOOL% clean
+
+    cd ..\..
+
+artifacts:
+  - path: dist
+    name: $(artifactName)
+
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: YgZks6UZDak1zPo6DPuSZbOAJ1+EVIctLu2zperMenMeVfIHnfi5yELyFBCCifTo
+  artifact: $(artifactName)
+  on:
+    appveyor_repo_tag: true

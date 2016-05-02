@@ -1,0 +1,123 @@
+sudo: required
+dist: trusty
+language: cpp
+
+compiler:
+- gcc
+- clang
+
+os:
+- linux
+- osx
+
+matrix:
+  exclude:
+  - os: osx
+    compiler: gcc
+  - os: linux
+    compiler: clang
+
+addons:
+  apt:
+    packages:
+    - build-essential
+    - clang
+    - qtbase5-dev
+    - qtbase5-doc-html
+    - qttools5-dev-tools
+    - doxygen
+    - graphviz
+    - libqt5sql5-sqlite
+
+before_install:
+- if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install qt5 && brew link
+  --force qt5; fi
+- mkdir build
+- mkdir build/longscroll
+- mkdir build/simple
+- mkdir build/demo
+
+script:
+- |
+  if [ $TRAVIS_OS_NAME == linux ]; then
+    if [ "$CXX" == "clang++" ]; then
+      QMAKECMD='qmake -qt=5 -spec linux-clang'
+    else
+      QMAKECMD='qmake -qt=5 -spec linux-g++-64'
+    fi
+  elif [ $TRAVIS_OS_NAME == osx ]; then
+    if [ "$CXX" == "clang++" ]; then
+      QMAKECMD='qmake -spec macx-clang'
+    else
+      QMAKECMD='qmake -spec macx-g++'
+    fi
+  fi
+- pushd build/longscroll
+- $QMAKECMD -v
+- $QMAKECMD -r ../../src/longscroll-qt.pro "CONTINUOUS_INTEGRATION=1" "CONFIG+=release"
+- make -j4
+- make install
+- if [ $TRAVIS_OS_NAME == linux ] && [ "$CXX" == "g++" ]; then make docs; fi
+- make clean
+- popd
+- pushd build/simple
+- $QMAKECMD -v
+- $QMAKECMD -r ../../examples/simple/simple.pro "CONFIG+=release"
+- make -j4
+- make install
+- make clean
+- popd
+- pushd build/demo
+- $QMAKECMD -v
+- $QMAKECMD -r ../../examples/demo/demo.pro "CONFIG+=release"
+- make -j4
+- make install
+- make clean
+- popd
+
+before_deploy:
+- export DOCZIPNAME="longscroll-qt-$TRAVIS_TAG"
+- export ZIPNAME="$DOCZIPNAME-$TRAVIS_OS_NAME-$CC"
+- pushd dist
+- |
+  if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "g++" ]; then
+    pushd doc/html
+    mv html doc
+    XZ_OPT=-9 tar -cJf "../../../$DOCZIPNAME-doc-html.tar.xz" doc
+    popd
+    pushd doc/qhp
+    pwd
+    ls -al
+    mv longscroll.qch longscroll-$TRAVIS_TAG.qch
+    XZ_OPT=-9 tar -cJf "../../../$DOCZIPNAME-doc-qhp.tar.xz" *.qch
+    popd
+    rm -rf doc
+  fi
+- XZ_OPT=-9 tar -cJf "$ZIPNAME.tar.xz" *
+- popd
+- ls -al
+- ls -al dist
+
+deploy:
+- provider: releases
+  api_key:
+    secure: el31wUJpI8+TN36GjXCjhkII3yEEb44h6UgVOJr35VHZa6me1Gx3K5QhE6MXitPLqUBkK81DqnWPQED1cYqmW3g7Uryn9i6vYkRTuU5qIBx+aLhFJWJbeo54f6a1zYGG0Am1SmenTFV6URVtI/QID8/Zhxm/HKPswSw7PFFnZJKzu9RIc9k+gmGkzglSu9V8GaNBbdQe2AEjPK2vpp/4qTLfvZRtP2wtfVeFND2AOzUzKPp0fAwSKgd62T/VwIzrVxu16SjV4QuaGCZMQL/Aa/TKCPHYIDMfO065IQKg6rc8r5SLQXr+zw1ruWH3sZgH2Ey+H03lp7rwwXDcBk7rVGPRcWAHYIdRavGZjI5ld/IQGZSzp/flIbfSwzOg6jAdR4K4OZBQT6qZp9eXEAKrBxrsIcJCgrrbJD2R1Co1ni/Dmi7i0ZNL04sAufyaYvPVbXuQkXCAmKdUP2mMf88JD/6rICbj507YcdzGXLBU09Bv+RH5F1RGRrc4B+F9cFeBTwJeGGxyj1cZgkP1LBc8YCa8QrEtLyCN9UiU7IcK3v2KgVo6MUEMxd2PD8ywRayh6w+nkh5WuGmSe6w6ltObA21UnPQwYHG6ZIyyg2GX3J8wx2MaXO0V4mD6Zvd0x0KKeS3Nb6CLtL9iTHup6EaOmDfd6YoGSOWh2V3LuJY1ADE=
+  file:
+  - "dist/$ZIPNAME.tar.xz"
+  - "$DOCZIPNAME-doc-html.tar.xz"
+  - "$DOCZIPNAME-doc-qhp.tar.xz"
+  skip_cleanup: true
+  on:
+    all_branches: true
+    tags: true
+    condition: ("$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++")
+- provider: releases
+  api_key:
+    secure: el31wUJpI8+TN36GjXCjhkII3yEEb44h6UgVOJr35VHZa6me1Gx3K5QhE6MXitPLqUBkK81DqnWPQED1cYqmW3g7Uryn9i6vYkRTuU5qIBx+aLhFJWJbeo54f6a1zYGG0Am1SmenTFV6URVtI/QID8/Zhxm/HKPswSw7PFFnZJKzu9RIc9k+gmGkzglSu9V8GaNBbdQe2AEjPK2vpp/4qTLfvZRtP2wtfVeFND2AOzUzKPp0fAwSKgd62T/VwIzrVxu16SjV4QuaGCZMQL/Aa/TKCPHYIDMfO065IQKg6rc8r5SLQXr+zw1ruWH3sZgH2Ey+H03lp7rwwXDcBk7rVGPRcWAHYIdRavGZjI5ld/IQGZSzp/flIbfSwzOg6jAdR4K4OZBQT6qZp9eXEAKrBxrsIcJCgrrbJD2R1Co1ni/Dmi7i0ZNL04sAufyaYvPVbXuQkXCAmKdUP2mMf88JD/6rICbj507YcdzGXLBU09Bv+RH5F1RGRrc4B+F9cFeBTwJeGGxyj1cZgkP1LBc8YCa8QrEtLyCN9UiU7IcK3v2KgVo6MUEMxd2PD8ywRayh6w+nkh5WuGmSe6w6ltObA21UnPQwYHG6ZIyyg2GX3J8wx2MaXO0V4mD6Zvd0x0KKeS3Nb6CLtL9iTHup6EaOmDfd6YoGSOWh2V3LuJY1ADE=
+  file:
+  - "dist/$ZIPNAME.tar.xz"
+  skip_cleanup: true
+  on:
+    all_branches: true
+    tags: true
+    condition: ("$TRAVIS_OS_NAME" != "linux" || $CXX != "g++")

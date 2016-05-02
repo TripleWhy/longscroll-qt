@@ -1,0 +1,30 @@
+image: ubuntu:14.04
+
+before_script:
+  - uname -a
+
+stages:
+  - deploy
+
+pages:
+  stage: deploy
+  script:
+  - set
+  - apt-get update -qq && apt-get install -y -qq build-essential clang qtbase5-dev qtbase5-doc-html qttools5-dev-tools doxygen graphviz libqt5sql5-sqlite
+  - gcc --version
+  - mkdir build-longscroll
+  - pushd build-longscroll
+  - qmake -qt=5 -v
+  - qmake -qt=5 ../src/longscroll-qt.pro "CONTINUOUS_INTEGRATION=1" "CONFIG+=release"
+  - make docs
+  - popd
+  - mkdir public
+  - mv dist/doc/html/html/ public/doc/
+  - ls -al
+  - ls -al public/
+  - ls -al public/doc/
+  artifacts:
+    paths:
+    - public
+  only:
+  - tags
