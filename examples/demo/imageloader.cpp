@@ -89,8 +89,8 @@ void ImageLoader::run()
 		locker.unlock();
 
 		QPixmap p;
-		p.load(entry.fileName);
-		msleep(10);
+		p.load(entry.fileName); //TODO? Occasionally crashes here.
+		msleep(10); //Simulate some loading time.
 
 		for (QObject * receiver : entry.receivers)
 			emit imageLoaded(entry.fileName, receiver, p);
