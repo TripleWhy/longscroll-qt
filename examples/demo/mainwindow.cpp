@@ -158,7 +158,7 @@ void MainWindow::setDemoNumber(int demoNo)
 			break;
 		case 4:
 			cw->setRowHeight(100);
-			cw->setItemWidth(200);
+			cw->setItemWidth(400);
 			cw->setStretchRows(false);
 			cw->setScaleRows(false);
 			cw->setStretchLastRow(false);
