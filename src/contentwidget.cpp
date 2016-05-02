@@ -776,6 +776,7 @@ void ContentWidget::setItemInfos(const QList<ContentItemInfo> & infos)
 	t.start();
 #endif
 
+	hideNavigator();
 	itemInfos = infos;
 	int const size = itemInfos.size();
 	itemWidths.clear();
