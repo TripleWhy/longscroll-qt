@@ -226,7 +226,7 @@ private:
 	//TODO: Implement the following two properties:
 //	bool itemTrackingHeightChangeUpdateItem = true;
 //	bool itmeTrackingHeightChangeScroll = false;
-	ItemInfo trackingItem;
+	int trackingItemIndex;
 	QPoint trackingPoint;
 	int trackingItemOffset = 0;
 	uchar itemTrackingX = 0;

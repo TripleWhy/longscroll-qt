@@ -268,7 +268,7 @@ void ContentWidget::setItemTrackingEnabled(bool enabled)
 	if (enabled == itemTrackingEnabled)
 		return;
 	itemTrackingEnabled = enabled;
-	trackingItem = ItemInfo();
+	trackingItemIndex = -1;
 }
 
 /*!
@@ -311,7 +311,7 @@ void ContentWidget::setItemTrackingScreenPositionPercentage(uchar percentX, ucha
 		return;
 	itemTrackingX = percentX;
 	itemTrackingY = percentY;
-	trackingItem = ItemInfo();
+	trackingItemIndex = -1;
 }
 
 /*!
@@ -901,7 +901,7 @@ void ContentWidget::showingRect(const QRect & rect)
 	{
 		if (itemTrackingEnabled)
 		{
-			if (trackingItem.index < 0)
+			if (trackingItemIndex < 0)
 				updateTrackingItem();
 			else
 				updateTrackingPoint();
@@ -920,9 +920,9 @@ void ContentWidget::showingRect(const QRect & rect)
 #endif
 
 		// changed == true implies itemTrackingEnabled == true
-		if (changed && trackingItem.index >= 0)
+		if (changed && trackingItemIndex >= 0)
 		{
-			int const r = findRow(trackingItem.index);
+			int const r = findRow(trackingItemIndex);
 			blockScroll = true;
 			emit scrollToRequest(rowInfos[r].y + trackingItemOffset - (trackingPoint.y() - rect.y()));
 			blockScroll = false;
@@ -1748,7 +1748,7 @@ void ContentWidget::updateTrackingItem()
 
 	if (rowInfos.isEmpty())
 	{
-		trackingItem = ItemInfo();
+		trackingItemIndex = -1;
 		trackingItemOffset = 0;
 	}
 	else
@@ -1756,7 +1756,7 @@ void ContentWidget::updateTrackingItem()
 		updateTrackingPoint();
 		RowInfo const & row = rowInfos.at(rowAt(trackingPoint.y()));
 		int colIndex = colAt(trackingPoint.x(), row);
-		trackingItem = row.items.at(colIndex);
+		trackingItemIndex = row.items.at(colIndex).index;
 
 		trackingItemOffset = trackingPoint.y() - row.y;
 	}
