@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 	}
 
 	demoGroup = new QActionGroup(ui->menuProperties);
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 6; ++i)
 	{
 		QAction * a = new QAction(tr("Demo %1").arg(i+1), demoGroup);
 		a->setData(i);
@@ -165,6 +165,16 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setAllowOverfill(false);
 			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetImageInfoFactory();
+			break;
+		case 5:
+			cw->setRowHeight(150);
+			cw->setItemWidth(0);
+			cw->setStretchRows(false);
+			cw->setStretchLastRow(false);
+			cw->setScaleRows(false);
+			cw->setAllowOverfill(false);
+			cw->setNavigatorHeight(400);
+			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 	}
 	cw->setItemFactory(cwif);
