@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 	//Show longscroll widget
 	longscroll::LongscrollWidget * lw = new longscroll::LongscrollWidget();
 	lw->getContentWidget()->setItemInfos(infos);
+	lw->setWindowTitle("longscroll-qt Simple Example");
 	lw->show();
 
 	return a.exec();
