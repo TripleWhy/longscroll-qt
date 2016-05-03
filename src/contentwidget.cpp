@@ -1506,7 +1506,7 @@ void ContentWidget::showRow(const ContentWidget::RowInfo & rowInfo, int rowIndex
 			}
 			else
 			{
-				itemWidget = createItemWidget(*item.item, rowH);
+				itemWidget = createItemWidget(*item.item, item.index);
 				itemWidgets[item.index] = itemWidget;
 #if CONTENTWIDGET_DEBUG_VISUALIZE_TRACKINGITEM
 				if (item.index == trackingItem.index)
