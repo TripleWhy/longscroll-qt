@@ -207,12 +207,12 @@ private:
 	int xSpacing = 5;
 	int ySpacing = 5;
 
-	int rowHeight = 200;
+	int rowHeight = 150;
 	int itemWidth = 0;
 	bool allowOverfill = true;
 	bool align = true;
 	bool alignLast = false;
-	int navigatorHeight = 500;
+	int navigatorHeight = 400;
 #if CONTENTWIDGET_VARIABLE_ROW_HEIGHT
 	bool scaleRows = false;
 #endif

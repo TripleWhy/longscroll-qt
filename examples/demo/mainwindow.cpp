@@ -117,23 +117,23 @@ void MainWindow::setDemoNumber(int demoNo)
 		default:
 		case 0:
 			//Default Values
-			cw->setRowHeight(200);
+			cw->setRowHeight(150);
 			cw->setItemWidth(0);
 			cw->setStretchRows(true);
 			cw->setStretchLastRow(false);
 			cw->setScaleRows(false);
 			cw->setAllowOverfill(true);
-			cw->setNavigatorHeight(500);
+			cw->setNavigatorHeight(400);
 			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 		case 1:
-			cw->setRowHeight(200);
+			cw->setRowHeight(150);
 			cw->setItemWidth(0);
 			cw->setStretchRows(true);
 			cw->setStretchLastRow(false);
 			cw->setScaleRows(true);
 			cw->setAllowOverfill(true);
-			cw->setNavigatorHeight(500);
+			cw->setNavigatorHeight(400);
 			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 		case 2:
@@ -143,7 +143,7 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setStretchLastRow(false);
 			cw->setScaleRows(false);
 			cw->setAllowOverfill(false);
-			cw->setNavigatorHeight(200);
+			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
 		case 3:
@@ -153,7 +153,7 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setStretchLastRow(true);
 			cw->setScaleRows(false);
 			cw->setAllowOverfill(false);
-			cw->setNavigatorHeight(200);
+			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
 		case 4:
@@ -163,7 +163,7 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setScaleRows(false);
 			cw->setStretchLastRow(false);
 			cw->setAllowOverfill(false);
-			cw->setNavigatorHeight(200);
+			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetImageInfoFactory();
 			break;
 	}

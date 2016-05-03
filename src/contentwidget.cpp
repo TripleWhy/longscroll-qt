@@ -218,7 +218,7 @@ void ContentWidget::setNavigatorWidget(NavigatorWidget * nav)
  * \property ContentWidget::navigatorHeight
  * \brief Navigator widget height.
  * The navigator widget always has a fixed height.
- * \default 500
+ * \default 400
  * \accessors getNavigatorHeight(), setNavigatorHeight()
  * \see navigatorWidget
  */
@@ -417,7 +417,7 @@ void ContentWidget::setVerticalSpacing(int spacing)
  * \brief Row base height.
  * If \ref scaleRows is not set, every row will have this height. If \c scaleRows is set, this will be the base value to calculate the actual size from.
  * The value must be > 0.
- * \default 200
+ * \default 150
  * \accessors getRowHeight(), setRowHeight()
  * \see scaleRows
  */
