@@ -179,7 +179,7 @@ void MainWindow::loadDir(const QDir & dir, bool useCache)
 	if (!dir.exists())
 		return;
 	QMap<QString, ContentItemInfo> cache, loadedCache;
-	QFile cacheFile(dir.absoluteFilePath("images.cache"));
+	QFile cacheFile(dir.absoluteFilePath(".imagecache"));
 	if (cacheFile.exists())
 	{
 		if (cacheFile.open(QIODevice::ReadOnly))
@@ -219,7 +219,7 @@ void MainWindow::loadDir(const QDir & dir, bool useCache)
 	for (auto it = cache.begin(); it != cache.end(); )
 	{
 		QFileInfo fi(it.key());
-		if (fi.exists())
+		if (fi.exists() && fi.absoluteDir() == dir)
 			++it;
 		else
 			it = cache.erase(it);
@@ -319,7 +319,7 @@ void MainWindow::on_actionOpen_triggered()
 		return;
 	QDir dir(fileDialog->selectedFiles().first());
 	dir.makeAbsolute();
-	QFileInfo cacheInfo(dir.filePath("images.cache"));
+	QFileInfo cacheInfo(dir.filePath(".imagecache"));
 
 	qDebug() << cacheInfo.absoluteFilePath() << cacheInfo.exists() << cacheInfo.isFile() << cacheInfo.isWritable() << cacheInfo.permissions();
 	QFileInfo dirInfo(dir.absolutePath());
