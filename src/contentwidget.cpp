@@ -1398,11 +1398,11 @@ bool ContentWidget::calculateSize(const bool calculateChanges)
 
 void ContentWidget::updateRows()
 {
-	int firstRow = qMax(0, rowAt(visibleRect.y())  -  prefetchBefore);
 	int bottom = visibleRect.bottom();
 	if (navigatorVisible)
 		bottom += navigatorHeight;
 	int lastRow = qMin(rowInfos.length() - 1, rowAt(bottom)  +  prefetchAfter);
+	int firstRow = qBound(0, rowAt(visibleRect.y())  -  prefetchBefore, lastRow);
 
 	for (int i = 0; i < firstRow; i++)
 	{
