@@ -678,6 +678,10 @@ void ContentWidget::setDragEnabled(bool enabled)
  * \brief Selection mode.
  * If \c selectionMode is set to \c QAbstractItemView::NoSelection, the selection is cleared and disabled.
  * Requires \ref handleMouseEvents for mouse selection to work.
+ *
+ * Note that selection is not automatically displayed. The item widget has to visualize the selection.
+ * ImageItemWidget for example can be configured to visualize selections.
+ *
  * Currently only mouse selection is implemented.
  * \accessors getSelectionMode(), setSelectionMode()
  * \see handleMouseEvents
