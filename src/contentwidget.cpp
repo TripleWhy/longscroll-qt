@@ -895,7 +895,7 @@ void ContentWidget::showingRect(const QRect & rect)
 	t.start();
 #endif
 
-	if (rect == visibleRect)
+	if (rect == visibleRect || itemInfos.isEmpty())
 		return;
 
 	bool needsUpdate = itemTrackingEnabled && !blockScroll && rect.size() == visibleRect.size() && rect.topLeft() != visibleRect.topLeft();
