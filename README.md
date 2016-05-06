@@ -39,9 +39,9 @@ Alright here are some real screenshots anyway:
 
 ![screenshot 2](doxygen/img/screen02.jpg)
 
-![screenshot 3](doxygen/img/screen03.jpg)
+![screenshot 3](doxygen/img/screen04.jpg)
 
-![screenshot 4](doxygen/img/screen04.jpg)
+![screenshot 4](doxygen/img/screen06.jpg)
 
 ![screenshot 5](doxygen/img/screen05.jpg)
 
