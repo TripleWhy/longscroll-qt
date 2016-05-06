@@ -366,3 +366,8 @@ void MainWindow::on_actionShuffle_triggered()
 {
 	setItemInfos(itemInfos, fixedInfoSize, true);
 }
+
+void MainWindow::on_actionClear_triggered()
+{
+	setItemInfos({});
+}

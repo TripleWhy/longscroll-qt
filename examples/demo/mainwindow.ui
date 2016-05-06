@@ -64,6 +64,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionCount"/>
     <addaction name="actionShuffle"/>
+    <addaction name="actionClear"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDemo"/>
@@ -94,6 +95,11 @@
   <action name="actionShuffle">
    <property name="text">
     <string>Shuffle</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
    </property>
   </action>
  </widget>

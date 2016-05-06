@@ -54,6 +54,7 @@ private slots:
 	void on_actionOpen_triggered();
 	void on_actionCount_triggered();
 	void on_actionShuffle_triggered();
+	void on_actionClear_triggered();
 
 private:
 	Ui::MainWindow *ui;
