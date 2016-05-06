@@ -197,7 +197,10 @@ void MainWindow::setDemoNumber(int demoNo)
 void MainWindow::loadDir(const QDir & dir, bool useCache)
 {
 	if (!dir.exists())
+	{
+		qDebug() << dir.absolutePath() << "does not exist";
 		return;
+	}
 	QMap<QString, ContentItemInfo> cache, loadedCache;
 	QFile cacheFile(dir.absoluteFilePath(".imagecache"));
 	if (cacheFile.exists())
