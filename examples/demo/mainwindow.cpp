@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 	}
 
 	demoGroup = new QActionGroup(ui->menuProperties);
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 7; ++i)
 	{
 		QAction * a = new QAction(tr("Demo %1").arg(i+1), demoGroup);
 		a->setData(i);
@@ -137,6 +137,16 @@ void MainWindow::setDemoNumber(int demoNo)
 			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 		case 2:
+			cw->setRowHeight(150);
+			cw->setItemWidth(0);
+			cw->setStretchRows(false);
+			cw->setStretchLastRow(false);
+			cw->setScaleRows(false);
+			cw->setAllowOverfill(false);
+			cw->setNavigatorHeight(400);
+			cwif = new ContentWidgetLoaderImageItemFactory(false);
+			break;
+		case 3:
 			cw->setRowHeight(100);
 			cw->setItemWidth(100);
 			cw->setStretchRows(false);
@@ -146,7 +156,17 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
-		case 3:
+		case 4:
+			cw->setRowHeight(100);
+			cw->setItemWidth(100);
+			cw->setStretchRows(false);
+			cw->setStretchLastRow(false);
+			cw->setScaleRows(false);
+			cw->setAllowOverfill(false);
+			cw->setNavigatorHeight(150);
+			cwif = new ContentWidgetLoaderImageItemFactory(false);
+			break;
+		case 5:
 			cw->setRowHeight(100);
 			cw->setItemWidth(-1);
 			cw->setStretchRows(true);
@@ -156,7 +176,7 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetLoaderImageItemFactory(true);
 			break;
-		case 4:
+		case 6:
 			cw->setRowHeight(100);
 			cw->setItemWidth(400);
 			cw->setStretchRows(false);
@@ -165,16 +185,6 @@ void MainWindow::setDemoNumber(int demoNo)
 			cw->setAllowOverfill(false);
 			cw->setNavigatorHeight(150);
 			cwif = new ContentWidgetImageInfoFactory();
-			break;
-		case 5:
-			cw->setRowHeight(150);
-			cw->setItemWidth(0);
-			cw->setStretchRows(false);
-			cw->setStretchLastRow(false);
-			cw->setScaleRows(false);
-			cw->setAllowOverfill(false);
-			cw->setNavigatorHeight(400);
-			cwif = new ContentWidgetLoaderImageItemFactory(false);
 			break;
 	}
 	cw->setItemFactory(cwif);
