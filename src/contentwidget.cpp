@@ -1105,6 +1105,10 @@ void ContentWidget::mousePressEvent(QMouseEvent * event)
 	}
 	event->accept();
 	mouseState = 0;
+
+	if (itemInfos.isEmpty())
+		return;
+
 	bool onNavigator;
 	int row = rowAt(event->y(), &onNavigator);
 	if (onNavigator)
@@ -1148,7 +1152,7 @@ void ContentWidget::mouseMoveEvent(QMouseEvent * event)
 		return;
 	}
 	event->accept();
-	if (event->buttons() == Qt::LeftButton)
+	if (event->buttons() == Qt::LeftButton && !itemInfos.isEmpty())
 	{
 		if (dragEnabled)
 		{
@@ -1187,6 +1191,9 @@ void ContentWidget::mouseReleaseEvent(QMouseEvent * event)
 
 	event->accept();
 
+	if (itemInfos.isEmpty())
+		return;
+
 	bool onNavigator;
 	int row = rowAt(event->y(), &onNavigator);
 	if (onNavigator)
@@ -1210,6 +1217,10 @@ void ContentWidget::mouseDoubleClickEvent(QMouseEvent * event)
 {
 	event->accept();
 	mouseState = -2;
+
+	if (itemInfos.isEmpty())
+		return;
+
 	bool onNavigator;
 	int row = rowAt(event->y(), &onNavigator);
 	if (onNavigator)

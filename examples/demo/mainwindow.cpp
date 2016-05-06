@@ -82,7 +82,7 @@ void MainWindow::setItemInfos(const QList<ContentItemInfo> & infos, int fixedSiz
 
 	if (fixedSize == -1)
 		fixedSize = fixedInfoSize;
-	if (fixedSize > 0)
+	if (fixedSize > 0 && !infos.isEmpty())
 	{
 		qDebug() << "creating items ...";
 		displayInfos.clear();
