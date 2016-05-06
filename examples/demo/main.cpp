@@ -25,10 +25,8 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 #include <QImageReader>
 
 /*
- * Run this program with one or more directories that contain image files as arguments.
- * Add another integer paramter at the end to enable different demo modes.
- *
- * Change the preprocesser #if at the bottom if you want to test an arbitrary amount of images.
+ * Run this program with a directory that contains image files as argument.
+ * Add a second integer paramter to start with a different demo mode.
  */
 int main(int argc, char *argv[])
 {
