@@ -54,6 +54,5 @@ SOURCES += \
     valueeditdialog.cpp
 
 FORMS += \
-    itemtype1.ui \
     mainwindow.ui \
     valueeditdialog.ui
