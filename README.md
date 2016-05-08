@@ -62,7 +62,9 @@ LD_LIBRARY_PATH=<longscroll-qt lib dir> ./demo [some dir [demo number]]
 # for example:
 LD_LIBRARY_PATH=../../dist/linux-g++-64/lib ./demo
 ```
-Note: You might have to use `qmake -qt=5` on ubuntu.
+Notes:
+- You might have to use `qmake -qt=5` on ubuntu.
+- Replace `make` by `nmake` or `jom` when building a msvc version.
 
 ### Additional Make Targets:
 ```
