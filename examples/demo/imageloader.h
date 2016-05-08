@@ -27,6 +27,8 @@ along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 #include <QSet>
 #include <QPixmap>
 
+// This class simulates slow asynchronous image loading (e.g. over network).
+// To change the delay, edit the msleep command in ImageLoader::run().
 class ImageLoader : public QThread
 {
 	Q_OBJECT
