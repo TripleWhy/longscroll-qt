@@ -22,6 +22,17 @@ The library comes with two [examples](examples). To understand the behavior best
 
 The documentation of [longscroll::ContentWidget](https://triplewhy.gitlab.io/longscroll-qt/doc/classlongscroll_1_1_content_widget.html) can give a good overview of what longscroll-qt can do, as most of its functionality is provided by that class.
 
+## Stylesheets
+longscroll-qt widgets can be styled like any other widget. Since longscroll-qt uses a the namespace, `longscroll` by default, stylesheets have to specify it too. For example:
+```css
+longscroll--ContentWidget {
+	background: blue;
+}
+longscroll--ImageWidget {
+	background: yellow;
+}
+```
+
 ## Requirements
 longscroll-qt needs Qt 5 and a C++11 compatible compiler. It can run on all systems that have Qt, including Linux, Windows and Mac OS X.
 Building the documentation additionally requires doxygen and graphviz.
