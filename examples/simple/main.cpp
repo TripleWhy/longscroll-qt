@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with longscroll-qt.  If not see <http://www.gnu.org/licenses/>.
 */
 
-#include "longscroll-qt/longscrollwidget.h"
+#include <longscroll-qt/longscrollwidget.h>
 #include <QApplication>
 #include <QDir>
 
