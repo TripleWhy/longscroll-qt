@@ -77,7 +77,7 @@ Notes:
 - You might have to use `qmake -qt=5` on ubuntu.
 - Replace `make` by `nmake` or `jom` when building a msvc version.
 
-### Additional Make Targets:
+### Additional Make Targets
 ```
 make install
 make docHtml
