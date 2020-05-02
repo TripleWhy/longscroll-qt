@@ -1,6 +1,8 @@
 # longscroll-qt
 [![Build Status](https://travis-ci.org/TripleWhy/longscroll-qt.svg?branch=master)](https://travis-ci.org/TripleWhy/longscroll-qt) [![Build status](https://ci.appveyor.com/api/projects/status/wpkj3f4oca4umh4t/branch/master?svg=true)](https://ci.appveyor.com/project/TripleWhy/longscroll-qt/branch/master)
 
+![icon](doxygen/img/longscroll-qt-icon-128.png)
+
 longscroll-qt is a C++ library to create very long, fast and responsive scrollable widgets in Qt.
 
 The longscroll widget can visualize a large list of items, similar to a QAbstractItemView.
